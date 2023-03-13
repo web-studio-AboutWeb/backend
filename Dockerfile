@@ -18,6 +18,6 @@ RUN apk add --update nodejs npm
 RUN npm i -g redoc-cli
 RUN redoc-cli build -o api/docs/api.html --title "API Docs" api/docs/swagger.yaml
 
-EXPOSE 8443
+EXPOSE 443
 
 CMD ["./web-studio"]
