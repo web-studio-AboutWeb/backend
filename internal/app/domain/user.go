@@ -6,58 +6,71 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type UserRole int16
+type (
+	UserRole     string
+	UserPosition string
+)
 
 const (
-	_ UserRole = iota
-	UserRoleGlobalAdmin
-	UserRoleAdmin
-	UserRoleModerator
-	UserRoleUser
+	UserRoleGlobalAdmin = "global admin"
+	UserRoleAdmin       = "admin"
+	UserRoleModerator   = "moderator"
+	UserRoleUser        = "user"
+)
+
+const (
+	UserPositionFrontendDev = "frontend"
+	UserPositionBackendDev  = "backend"
+	UserPositionTeamLead    = "teamlead"
+	UserPositionManager     = "manager"
+	UserPositionMarketer    = "marketer"
 )
 
 type (
 	User struct {
-		Id        int64      `json:"id"`
-		Username  string     `json:"username"`
-		Email     string     `json:"email"`
-		Password  string     `json:"-"`
-		CreatedAt time.Time  `json:"createdAt"`
-		UpdatedAt *time.Time `json:"updatedAt,omitempty"`
-		Role      UserRole   `json:"role"`
+		Id        int16        `json:"id"`
+		Name      string       `json:"name"`
+		Surname   string       `json:"surname"`
+		Login     string       `json:"-"`
+		Password  string       `json:"-"`
+		CreatedAt time.Time    `json:"createdAt"`
+		Role      UserRole     `json:"role"`
+		Position  UserPosition `json:"position"`
 	}
 
 	CreateUserRequest struct {
-		Id       int64    `json:"id"`
-		Username string   `json:"username"`
-		Email    string   `json:"email"`
-		Password string   `json:"-"`
-		Role     UserRole `json:"role"`
+		Id       int64        `json:"id"`
+		Name     string       `json:"name"`
+		Surname  string       `json:"surname"`
+		Login    string       `json:"login"`
+		Password string       `json:"password"`
+		Role     UserRole     `json:"role"`
+		Position UserPosition `json:"position"`
 	}
 	CreateUserResponse struct {
 		User *User `json:"data"`
 	}
 
 	GetUserRequest struct {
-		UserId int64 `json:"-"`
+		UserId int16 `json:"-"`
 	}
 	GetUserResponse struct {
 		User *User `json:"data"`
 	}
 
 	UpdateUserRequest struct {
-		UserId   int64     `json:"userId"`
-		Username *string   `json:"username"`
-		Email    *string   `json:"email"`
-		Password *string   `json:"password"`
-		Role     *UserRole `json:"role"`
+		UserId   int16        `json:"-"`
+		Name     string       `json:"name"`
+		Surname  string       `json:"surname"`
+		Role     UserRole     `json:"role"`
+		Position UserPosition `json:"position"`
 	}
 	UpdateUserResponse struct {
 		User *User `json:"data"`
 	}
 
 	DeleteUserRequest struct {
-		UserId int64 `json:"userId"`
+		UserId int16 `json:"-"`
 	}
 	DeleteUserResponse struct{}
 )

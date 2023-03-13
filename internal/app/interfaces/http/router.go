@@ -16,10 +16,18 @@ func (s *server) initRouter() http.Handler {
 
 	r.Use(corsMiddleware())
 
-	r.Post("/api/v1/auth/sign-in", s.SignIn)
-	r.Post(`/api/v1/auth/sign-up`, s.SignUp)
-
 	r.Get(`/api/v1/users/{user_id}`, s.GetUser)
+	r.Post(`/api/v1/users`, s.CreateUser)
+	r.Put(`/api/v1/users/{user_id}`, s.UpdateUser)
+	r.Delete(`/api/v1/users/{user_id}`, s.DeleteUser)
+
+	r.Get(`/api/v1/projects/{project_id}`, s.GetProject)
+	r.Post(`/api/v1/projects`, s.CreateProject)
+	r.Put(`/api/v1/projects/{project_id}`, s.UpdateProject)
+	r.Delete(`/api/v1/projects/{project_id}`, s.DeleteProject)
+	r.Get(`/api/v1/projects/{project_id}/participants`, s.GetProjectParticipants)
+
+	r.Get(`/api/v1/docs`, s.GetApiDocs)
 
 	return r
 }

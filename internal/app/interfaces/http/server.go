@@ -24,8 +24,8 @@ type server struct {
 }
 
 func NewHttpServer(core core.Core) Server {
-	httpPort := config.Config.Interfaces.Https.Port
-	httpHost := config.Config.Interfaces.Https.Host
+	httpPort := config.Config.Interfaces.Http.Port
+	httpHost := config.Config.Interfaces.Http.Host
 
 	router := chi.NewRouter()
 
@@ -39,8 +39,8 @@ func NewHttpServer(core core.Core) Server {
 	}
 
 	if os.Getenv("USE_HTTPS") != "" {
-		httpsPort := config.Config.Interfaces.Http.Port
-		httpsHost := config.Config.Interfaces.Http.Host
+		httpsPort := config.Config.Interfaces.Https.Port
+		httpsHost := config.Config.Interfaces.Https.Host
 
 		s.httpsServer = &http.Server{
 			Addr:    fmt.Sprintf("%s:%d", httpsHost, httpsPort),

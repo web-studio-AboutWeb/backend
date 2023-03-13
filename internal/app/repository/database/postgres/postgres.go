@@ -7,12 +7,12 @@ import (
 	"web-studio-backend/internal/app/repository/database"
 )
 
-type driver struct {
+type client struct {
 	conn *pgxpool.Pool
 }
 
-// NewDriver connects to PostgreSQL and return database.Database interface.
-func NewDriver(ctx context.Context, connString string) (database.Database, error) {
+// NewClient connects to PostgreSQL and returns database.Database interface implementation.
+func NewClient(ctx context.Context, connString string) (database.Database, error) {
 	pool, err := pgxpool.New(ctx, connString)
 	if err != nil {
 		return nil, fmt.Errorf("connectiong to postgresql: %w", err)
@@ -23,9 +23,9 @@ func NewDriver(ctx context.Context, connString string) (database.Database, error
 		return nil, fmt.Errorf("pinging postgresql: %w", err)
 	}
 
-	return &driver{conn: pool}, nil
+	return &client{conn: pool}, nil
 }
 
-func (d *driver) Close() {
-	d.conn.Close()
+func (c *client) Close() {
+	c.conn.Close()
 }

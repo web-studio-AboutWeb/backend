@@ -6,13 +6,13 @@ app:
     refresh_token_secret_key: abc123
 interfaces:
   https:
-    port: 443
-    host: localhost
-    key_file_path: key.pem
-    cert_file_path: cert.pem
+    port: 8443
+    host:
+    key_file_path: /opt/web-studio/certs/key.key
+    cert_file_path: /opt/web-studio/certs/cert.crt
   http:
-    port: 8081
-    host: localhost
+    port: 8080
+    host:
 logger:
   log_to_console: true
   encode_logs_as_json: true

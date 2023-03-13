@@ -11,10 +11,16 @@ import (
 
 // Core represents business logic layer interface.
 type Core interface {
-	SignIn(ctx context.Context, req *domain.SignInRequest) (*domain.SignInResponse, error)
-	SignUp(ctx context.Context, req *domain.SignUpRequest) (*domain.SignUpResponse, error)
-
 	GetUser(ctx context.Context, req *domain.GetUserRequest) (*domain.GetUserResponse, error)
+	CreateUser(ctx context.Context, req *domain.CreateUserRequest) (*domain.CreateUserResponse, error)
+	UpdateUser(ctx context.Context, req *domain.UpdateUserRequest) (*domain.UpdateUserResponse, error)
+	DeleteUser(ctx context.Context, req *domain.DeleteUserRequest) (*domain.DeleteUserResponse, error)
+
+	GetProject(ctx context.Context, req *domain.GetProjectRequest) (*domain.GetProjectResponse, error)
+	CreateProject(ctx context.Context, req *domain.CreateProjectRequest) (*domain.CreateProjectResponse, error)
+	UpdateProject(ctx context.Context, req *domain.UpdateProjectRequest) (*domain.UpdateProjectResponse, error)
+	DeleteProject(ctx context.Context, req *domain.DeleteProjectRequest) (*domain.DeleteProjectResponse, error)
+	GetProjectParticipants(ctx context.Context, req *domain.GetProjectParticipantsRequest) (*domain.GetProjectParticipantsResponse, error)
 }
 
 // core implements Core interface.
@@ -24,7 +30,7 @@ type core struct {
 
 // New returns Core instance.
 func New(ctx context.Context) (Core, error) {
-	db, err := postgres.NewDriver(ctx, os.Getenv("DATABASE_DSN"))
+	db, err := postgres.NewClient(ctx, os.Getenv("DATABASE_DSN"))
 	if err != nil {
 		return nil, fmt.Errorf("creating postgres driver: %w", err)
 	}
