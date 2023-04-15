@@ -5,3 +5,4 @@ api
 !/deploy/.env.prod.example
 !/deploy/.example.env
 /deploy/config.*.yml
+/certs
