@@ -1,2 +1,7 @@
 .idea
 api
+/.vscode
+/deploy/.env**
+!/deploy/.env.prod.example
+!/deploy/.example.env
+/deploy/config.*.yml

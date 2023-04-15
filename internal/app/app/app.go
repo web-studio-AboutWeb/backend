@@ -14,16 +14,17 @@ import (
 )
 
 type application struct {
-	core core.Core
+	core *core.Core
+	config *config.Config
 }
 
 func New(configPath string) (app.App, error) {
-	err := config.Init(configPath)
+	config, err := config.Init(configPath)
 	if err != nil {
 		return nil, err
 	}
 
-	loggerConfig := config.Config.Logger
+	loggerConfig := config.Logger
 
 	logger.Init(&logger.Config{
 		LogToConsole:     loggerConfig.LogToConsole,
@@ -36,18 +37,19 @@ func New(configPath string) (app.App, error) {
 		MaxAge:           loggerConfig.MaxAge,
 	})
 
-	c, err := core.New(context.Background())
+	c, err := core.New(context.Background(), config)
 	if err != nil {
 		return nil, err
 	}
 
 	return &application{
 		core: c,
+		config: config,
 	}, nil
 }
 
 func (app *application) Start() error {
-	httpServer := http.NewHttpServer(app.core)
+	httpServer := http.NewHttpServer(app.core, app.config)
 
 	go func() {
 		err := httpServer.Run()

@@ -9,7 +9,7 @@ import (
 
 func main() {
 	readEnv := flag.String("env-file", "", "Path to application env file.")
-	configPath := flag.String("config-path", "config.yml", "Path to application config file.")
+	configPath := flag.String("config-path", "deploy/config.yml", "Path to application config file.")
 	flag.Parse()
 
 	if *readEnv != "" {
@@ -27,3 +27,4 @@ func main() {
 		log.Fatal(err)
 	}
 }
+ 

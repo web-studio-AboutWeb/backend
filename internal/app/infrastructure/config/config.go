@@ -1,11 +1,12 @@
 package config
 
 import (
-	"github.com/ilyakaznacheev/cleanenv"
 	"web-studio-backend/internal/app/infrastructure/logger"
+
+	"github.com/ilyakaznacheev/cleanenv"
 )
 
-var Config struct {
+type Config struct {
 	App struct {
 		Jwt struct {
 			AccessExpirationMinutes int16  `yaml:"access_expiration_minutes"`
@@ -28,9 +29,13 @@ var Config struct {
 	} `yaml:"interfaces"`
 	Logger             logger.Config `yaml:"logger"`
 	DatabaseConnString string        `yaml:"database_conn_string"`
+	UseHttp            bool          `yaml:"use_http"`
 }
 
-func Init(configPath string) error {
-	err := cleanenv.ReadConfig(configPath, &Config)
-	return err
+var config *Config
+
+func Init(configPath string) (*Config, error) {
+	config = &Config{}
+	err := cleanenv.ReadConfig(configPath, config)
+	return config, err
 }

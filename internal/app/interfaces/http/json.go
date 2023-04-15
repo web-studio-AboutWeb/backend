@@ -5,7 +5,7 @@ import (
 	"errors"
 	"io"
 	"net/http"
-	"web-studio-backend/internal/app/domain/errcore"
+	errcore "web-studio-backend/internal/app/core/shared/errors"
 )
 
 func (s *server) sendJSON(code int, data any, w http.ResponseWriter) {

@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/go-chi/chi/v5"
 	"net/http"
-	"os"
 	"web-studio-backend/internal/app/core"
 	"web-studio-backend/internal/app/infrastructure/config"
 	"web-studio-backend/internal/app/infrastructure/logger"
@@ -18,14 +17,15 @@ type Server interface {
 }
 
 type server struct {
-	core                    core.Core
+	core                    *core.Core
 	router                  chi.Router
 	httpServer, httpsServer *http.Server
+	config *config.Config
 }
 
-func NewHttpServer(core core.Core) Server {
-	httpPort := config.Config.Interfaces.Http.Port
-	httpHost := config.Config.Interfaces.Http.Host
+func NewHttpServer(core *core.Core, config *config.Config) Server {
+	httpPort := config.Interfaces.Http.Port
+	httpHost := config.Interfaces.Http.Host
 
 	router := chi.NewRouter()
 
@@ -36,11 +36,12 @@ func NewHttpServer(core core.Core) Server {
 			Addr:    fmt.Sprintf("%s:%d", httpHost, httpPort),
 			Handler: router,
 		},
+		config: config,
 	}
 
-	if os.Getenv("USE_HTTPS") != "" {
-		httpsPort := config.Config.Interfaces.Https.Port
-		httpsHost := config.Config.Interfaces.Https.Host
+	if config.UseHttp{
+		httpsPort := config.Interfaces.Https.Port
+		httpsHost := config.Interfaces.Https.Host
 
 		s.httpsServer = &http.Server{
 			Addr:    fmt.Sprintf("%s:%d", httpsHost, httpsPort),
@@ -56,12 +57,12 @@ func NewHttpServer(core core.Core) Server {
 func (s *server) Run() error {
 	if s.httpsServer != nil {
 		go func() {
-			httpsConfig := config.Config.Interfaces.Https
+			httpsConfig := s.config.Interfaces.Https
 
 			logger.Logger.Info().Msgf("Starting HTTPS server at %s", s.httpsServer.Addr)
 			err := s.httpsServer.ListenAndServeTLS(httpsConfig.CertFilePath, httpsConfig.KeyFilePath)
 			if err != nil && !errors.Is(err, http.ErrServerClosed) {
-				logger.Logger.Err(err)
+				logger.Logger.Error().Err(err).Msg("Starting HTTPS server")
 			}
 		}()
 	}
@@ -69,9 +70,9 @@ func (s *server) Run() error {
 	logger.Logger.Info().Msgf("Starting HTTP server at %s", s.httpServer.Addr)
 	err := s.httpServer.ListenAndServe()
 	if err != nil && !errors.Is(err, http.ErrServerClosed) {
+		logger.Logger.Error().Err(err).Msg("Starting HTTP server")
 		return err
 	}
-
 	return nil
 }
 

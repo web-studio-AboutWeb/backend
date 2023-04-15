@@ -1,0 +1,193 @@
+{"level":"info","time":"2023-04-15T00:33:22+03:00","message":"Starting HTTP server at :80"}
+{"level":"info","time":"2023-04-15T00:43:24+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T00:43:35+03:00","message":"Starting HTTP server at :80"}
+{"level":"info","time":"2023-04-15T00:43:35+03:00","message":"Starting HTTPS server at :443"}
+{"level":"info","time":"2023-04-15T01:40:26+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T01:40:26+03:00","message":"Server has been shut down"}
+{"level":"info","time":"2023-04-15T14:16:24+03:00","message":"Starting HTTP server at :80"}
+{"level":"info","time":"2023-04-15T14:16:24+03:00","message":"Starting HTTPS server at :443"}
+{"level":"info","time":"2023-04-15T14:17:26+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T14:17:26+03:00","message":"Server has been shut down"}
+{"level":"info","time":"2023-04-15T14:17:29+03:00","message":"Starting HTTP server at :80"}
+{"level":"info","time":"2023-04-15T14:17:29+03:00","message":"Starting HTTPS server at :8443"}
+{"level":"info","time":"2023-04-15T14:33:25+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T14:33:25+03:00","message":"Server has been shut down"}
+{"level":"info","time":"2023-04-15T14:43:35+03:00","message":"Starting HTTP server at :80"}
+{"level":"info","time":"2023-04-15T14:43:35+03:00","message":"Starting HTTPS server at :443"}
+{"level":"info","time":"2023-04-15T15:01:11+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T15:01:11+03:00","message":"Server has been shut down"}
+{"level":"info","time":"2023-04-15T15:01:28+03:00","message":"Starting HTTP server at :80"}
+{"level":"info","time":"2023-04-15T15:01:28+03:00","message":"Starting HTTPS server at :443"}
+{"level":"info","time":"2023-04-15T15:02:33+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T15:02:33+03:00","message":"Server has been shut down"}
+{"level":"info","time":"2023-04-15T15:02:40+03:00","message":"Starting HTTP server at :80"}
+{"level":"info","time":"2023-04-15T15:02:40+03:00","message":"pre"}
+{"level":"info","time":"2023-04-15T15:02:40+03:00","message":"Starting HTTPS server at :443"}
+{"level":"info","time":"2023-04-15T15:03:11+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T15:03:11+03:00","message":"Server has been shut down"}
+{"level":"info","time":"2023-04-15T15:03:17+03:00","message":"Starting HTTP server at :80"}
+{"level":"info","time":"2023-04-15T15:03:17+03:00","message":"Starting HTTPS server at :443"}
+{"level":"info","time":"2023-04-15T15:03:17+03:00","message":"pre"}
+{"level":"info","time":"2023-04-15T15:03:17+03:00","message":"test"}
+{"level":"info","time":"2023-04-15T15:03:48+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T15:03:48+03:00","message":"Server has been shut down"}
+{"level":"info","time":"2023-04-15T15:03:53+03:00","message":"Starting HTTP server at :80"}
+{"level":"info","time":"2023-04-15T15:03:53+03:00","message":"Starting HTTPS server at :443"}
+{"level":"info","time":"2023-04-15T15:03:53+03:00","message":"Starting"}
+{"level":"info","time":"2023-04-15T15:04:45+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T15:04:45+03:00","message":"Server has been shut down"}
+{"level":"info","time":"2023-04-15T15:04:49+03:00","message":"Starting HTTP server at :80"}
+{"level":"info","time":"2023-04-15T15:04:49+03:00","message":"Starting"}
+{"level":"info","time":"2023-04-15T15:04:49+03:00","message":"Starting HTTPS server at :443"}
+{"level":"info","time":"2023-04-15T15:04:49+03:00","message":"https err"}
+{"level":"info","time":"2023-04-15T15:08:40+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T15:08:40+03:00","message":"Server has been shut down"}
+{"level":"info","time":"2023-04-15T15:08:44+03:00","message":"Starting HTTP server at :80"}
+{"level":"info","time":"2023-04-15T15:08:44+03:00","message":"Starting"}
+{"level":"info","time":"2023-04-15T15:08:44+03:00","message":"Starting HTTPS server at :443"}
+{"level":"info","time":"2023-04-15T15:08:44+03:00","message":"https err"}
+{"level":"error","error":"listen tcp :443: bind: permission denied","myCustomField":"customValue","time":"2023-04-15T15:08:44+03:00","message":"Ошибка обработки запроса"}
+{"level":"info","time":"2023-04-15T15:09:03+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T15:09:03+03:00","message":"Server has been shut down"}
+{"level":"info","time":"2023-04-15T15:09:07+03:00","message":"Starting HTTP server at :80"}
+{"level":"info","time":"2023-04-15T15:09:07+03:00","message":"Starting HTTPS server at :443"}
+{"level":"info","time":"2023-04-15T15:09:07+03:00","message":"Starting"}
+{"level":"info","time":"2023-04-15T15:09:07+03:00","message":"https err"}
+{"level":"info","time":"2023-04-15T15:09:46+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T15:09:46+03:00","message":"Server has been shut down"}
+{"level":"info","time":"2023-04-15T15:09:51+03:00","message":"Starting HTTP server at :80"}
+{"level":"info","time":"2023-04-15T15:09:51+03:00","message":"Starting"}
+{"level":"info","time":"2023-04-15T15:09:51+03:00","message":"Starting HTTPS server at :443"}
+{"level":"info","time":"2023-04-15T15:09:51+03:00","message":"https err"}
+{"level":"error","error":"listen tcp :443: bind: permission denied","time":"2023-04-15T15:09:51+03:00","message":"Starting HTTPS server"}
+{"level":"info","time":"2023-04-15T15:10:04+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T15:10:04+03:00","message":"Server has been shut down"}
+{"level":"info","time":"2023-04-15T15:10:06+03:00","message":"Starting HTTP server at :80"}
+{"level":"info","time":"2023-04-15T15:10:06+03:00","message":"Starting HTTPS server at :8443"}
+{"level":"info","time":"2023-04-15T15:10:06+03:00","message":"Starting"}
+{"level":"info","time":"2023-04-15T15:10:06+03:00","message":"https err"}
+{"level":"error","error":"open /opt/web-studio/certs/cert.crt: no such file or directory","time":"2023-04-15T15:10:06+03:00","message":"Starting HTTPS server"}
+{"level":"info","time":"2023-04-15T15:13:15+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T15:13:15+03:00","message":"Server has been shut down"}
+{"level":"info","time":"2023-04-15T15:13:32+03:00","message":"Starting HTTP server at :80"}
+{"level":"info","time":"2023-04-15T15:13:32+03:00","message":"Starting HTTPS server at :8443"}
+{"level":"info","time":"2023-04-15T15:13:32+03:00","message":"Starting"}
+{"level":"info","time":"2023-04-15T15:14:39+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T15:14:39+03:00","message":"Server has been shut down"}
+{"level":"info","time":"2023-04-15T15:14:44+03:00","message":"Starting HTTP server at :80"}
+{"level":"info","time":"2023-04-15T15:14:44+03:00","message":"Starting HTTPS server at :8443"}
+{"level":"info","time":"2023-04-15T15:14:44+03:00","message":"pre"}
+{"level":"error","error":"listen tcp :80: bind: permission denied","time":"2023-04-15T15:14:44+03:00","message":"Starting HTTP server"}
+{"level":"info","time":"2023-04-15T15:14:55+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T15:14:55+03:00","message":"Server has been shut down"}
+{"level":"info","time":"2023-04-15T15:14:57+03:00","message":"Starting HTTP server at :8001"}
+{"level":"info","time":"2023-04-15T15:14:57+03:00","message":"Starting HTTPS server at :8443"}
+{"level":"info","time":"2023-04-15T15:15:55+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T15:15:55+03:00","message":"Server has been shut down"}
+{"level":"info","time":"2023-04-15T15:15:58+03:00","message":"Starting HTTP server at :8001"}
+{"level":"info","time":"2023-04-15T15:15:58+03:00","message":"Starting HTTPS server at :8443"}
+{"level":"info","time":"2023-04-15T15:17:30+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T15:17:30+03:00","message":"Server has been shut down"}
+{"level":"info","time":"2023-04-15T15:17:33+03:00","message":"Starting HTTP server at :8001"}
+{"level":"info","time":"2023-04-15T15:17:33+03:00","message":"Starting HTTPS server at :8443"}
+{"level":"info","time":"2023-04-15T15:19:59+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T15:19:59+03:00","message":"Server has been shut down"}
+{"level":"info","time":"2023-04-15T15:20:02+03:00","message":"Starting HTTP server at :8001"}
+{"level":"info","time":"2023-04-15T15:20:02+03:00","message":"pre"}
+{"level":"info","time":"2023-04-15T15:20:02+03:00","message":"Starting HTTPS server at :8443"}
+{"level":"info","time":"2023-04-15T15:20:34+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T15:20:34+03:00","message":"Server has been shut down"}
+{"level":"info","time":"2023-04-15T15:20:40+03:00","message":"Starting HTTP server at :8001"}
+{"level":"info","time":"2023-04-15T15:20:40+03:00","message":"pre"}
+{"level":"info","time":"2023-04-15T15:20:40+03:00","message":"Starting HTTPS server at :8443"}
+{"level":"info","time":"2023-04-15T15:20:45+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T15:20:45+03:00","message":"Server has been shut down"}
+{"level":"info","time":"2023-04-15T15:20:46+03:00","message":"Starting HTTP server at :8001"}
+{"level":"info","time":"2023-04-15T15:20:46+03:00","message":"pre"}
+{"level":"info","time":"2023-04-15T15:20:46+03:00","message":"Starting HTTPS server at :8443"}
+{"level":"info","time":"2023-04-15T15:20:47+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T15:20:47+03:00","message":"Server has been shut down"}
+{"level":"info","time":"2023-04-15T15:20:47+03:00","message":"Starting HTTP server at :8001"}
+{"level":"info","time":"2023-04-15T15:20:47+03:00","message":"pre"}
+{"level":"info","time":"2023-04-15T15:20:47+03:00","message":"Starting HTTPS server at :8443"}
+{"level":"info","time":"2023-04-15T15:20:48+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T15:20:48+03:00","message":"Server has been shut down"}
+{"level":"info","time":"2023-04-15T15:20:49+03:00","message":"Starting HTTP server at :8001"}
+{"level":"info","time":"2023-04-15T15:20:49+03:00","message":"pre"}
+{"level":"info","time":"2023-04-15T15:20:49+03:00","message":"Starting HTTPS server at :8443"}
+{"level":"info","time":"2023-04-15T15:20:50+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T15:20:50+03:00","message":"Server has been shut down"}
+{"level":"info","time":"2023-04-15T15:20:51+03:00","message":"Starting HTTP server at :8001"}
+{"level":"info","time":"2023-04-15T15:20:51+03:00","message":"pre"}
+{"level":"info","time":"2023-04-15T15:20:51+03:00","message":"Starting HTTPS server at :8443"}
+{"level":"info","time":"2023-04-15T15:39:39+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T15:39:39+03:00","message":"Server has been shut down"}
+{"level":"info","time":"2023-04-15T15:40:10+03:00","message":"Starting HTTP server at :8001"}
+{"level":"info","time":"2023-04-15T15:40:10+03:00","message":"Starting HTTPS server at :8443"}
+{"level":"info","time":"2023-04-15T15:40:54+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T15:40:54+03:00","message":"Server has been shut down"}
+{"level":"info","time":"2023-04-15T15:40:56+03:00","message":"Starting HTTP server at :8001"}
+{"level":"info","time":"2023-04-15T15:41:55+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T15:42:01+03:00","message":"Starting HTTP server at :8001"}
+{"level":"info","time":"2023-04-15T15:42:39+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T15:42:44+03:00","message":"Starting HTTP server at :8001"}
+{"level":"info","time":"2023-04-15T15:43:57+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T15:44:01+03:00","message":"Starting HTTP server at 0.0.0.0:8001"}
+{"level":"info","time":"2023-04-15T15:45:50+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T15:45:53+03:00","message":"Starting HTTP server at :8001"}
+{"level":"info","time":"2023-04-15T15:47:24+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T15:47:27+03:00","message":"Starting HTTP server at :8006"}
+{"level":"info","time":"2023-04-15T15:53:35+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T15:53:38+03:00","message":"Starting HTTP server at :8006"}
+{"level":"info","time":"2023-04-15T15:55:20+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T15:55:48+03:00","message":"Starting HTTP server at :8006"}
+{"level":"info","time":"2023-04-15T16:47:16+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T17:04:34+03:00","message":"Starting HTTP server at :8006"}
+{"level":"info","time":"2023-04-15T17:05:29+03:00","message":"{\"id\":2,\"name\":\"Даниил\",\"surname\":\"Михеев\",\"createdAt\":\"2023-04-15T17:04:40.311197+03:00\",\"role\":\"user\",\"position\":\"backend\"}"}
+{"level":"info","time":"2023-04-15T17:05:44+03:00","message":"{\"id\":2,\"name\":\"Даниил\",\"surname\":\"Михеев\",\"createdAt\":\"2023-04-15T17:04:40.311197+03:00\",\"role\":\"user\",\"position\":\"frontend\"}"}
+{"level":"info","time":"2023-04-15T17:38:18+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T17:38:28+03:00","message":"Starting HTTP server at :8006"}
+{"level":"info","time":"2023-04-15T17:45:04+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T17:45:08+03:00","message":"Starting HTTP server at :8006"}
+{"level":"info","time":"2023-04-15T17:47:57+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T17:48:01+03:00","message":"Starting HTTP server at :8006"}
+{"level":"info","time":"2023-04-15T17:48:55+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T17:49:40+03:00","message":"Starting HTTP server at :8006"}
+{"level":"info","time":"2023-04-15T17:50:45+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T17:50:47+03:00","message":"Starting HTTP server at :8006"}
+{"level":"info","time":"2023-04-15T17:53:38+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T17:53:41+03:00","message":"Starting HTTP server at :8006"}
+{"level":"info","time":"2023-04-15T17:54:24+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T17:54:50+03:00","message":"Starting HTTP server at :8006"}
+{"level":"info","time":"2023-04-15T17:59:25+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T17:59:29+03:00","message":"Starting HTTP server at :8006"}
+{"level":"info","time":"2023-04-15T18:01:52+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T18:01:56+03:00","message":"Starting HTTP server at :8006"}
+{"level":"info","time":"2023-04-15T18:06:26+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T18:06:29+03:00","message":"Starting HTTP server at :8006"}
+{"level":"info","time":"2023-04-15T18:06:43+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T18:06:44+03:00","message":"Starting HTTP server at :8006"}
+{"level":"info","time":"2023-04-15T18:06:45+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T18:06:48+03:00","message":"Starting HTTP server at :8006"}
+{"level":"info","time":"2023-04-15T18:08:17+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T18:08:20+03:00","message":"Starting HTTP server at :8006"}
+{"level":"info","time":"2023-04-15T18:08:50+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T18:08:54+03:00","message":"Starting HTTP server at :8006"}
+{"level":"info","time":"2023-04-15T18:09:21+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T18:09:23+03:00","message":"Starting HTTP server at :8006"}
+{"level":"info","time":"2023-04-15T18:50:58+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T18:51:02+03:00","message":"Starting HTTP server at :8006"}
+{"level":"info","time":"2023-04-15T18:51:56+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T18:52:00+03:00","message":"Starting HTTP server at :8006"}
+{"level":"info","time":"2023-04-15T18:52:57+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T18:53:01+03:00","message":"Starting HTTP server at :8006"}
+{"level":"info","time":"2023-04-15T18:54:00+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T18:55:48+03:00","message":"Starting HTTP server at :8006"}
+{"level":"info","time":"2023-04-15T18:55:55+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T18:57:40+03:00","message":"Starting HTTP server at :8006"}
+{"level":"info","time":"2023-04-15T19:00:36+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T19:01:44+03:00","message":"Starting HTTP server at :8006"}
+{"level":"info","time":"2023-04-15T19:02:23+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T19:02:27+03:00","message":"Starting HTTP server at :8006"}
+{"level":"info","time":"2023-04-15T19:04:54+03:00","message":"Shutting down the server..."}
+{"level":"info","time":"2023-04-15T19:04:58+03:00","message":"Starting HTTP server at :8006"}

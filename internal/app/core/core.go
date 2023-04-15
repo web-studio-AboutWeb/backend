@@ -3,37 +3,40 @@ package core
 import (
 	"context"
 	"fmt"
-	"os"
-	"web-studio-backend/internal/app/domain"
-	"web-studio-backend/internal/app/repository/database"
-	"web-studio-backend/internal/app/repository/database/postgres"
+	"web-studio-backend/internal/app/infrastructure/config"
+	"web-studio-backend/internal/app/infrastructure/storage/postgres/gateways"
+	"web-studio-backend/internal/app/infrastructure/storage/postgres"
+	user_handlers "web-studio-backend/internal/app/core/user/handlers"
+	project_handlers "web-studio-backend/internal/app/core/project/handlers"
 )
 
-// Core represents business logic layer interface.
-type Core interface {
-	GetUser(ctx context.Context, req *domain.GetUserRequest) (*domain.GetUserResponse, error)
-	CreateUser(ctx context.Context, req *domain.CreateUserRequest) (*domain.CreateUserResponse, error)
-	UpdateUser(ctx context.Context, req *domain.UpdateUserRequest) (*domain.UpdateUserResponse, error)
-	DeleteUser(ctx context.Context, req *domain.DeleteUserRequest) (*domain.DeleteUserResponse, error)
-
-	GetProject(ctx context.Context, req *domain.GetProjectRequest) (*domain.GetProjectResponse, error)
-	CreateProject(ctx context.Context, req *domain.CreateProjectRequest) (*domain.CreateProjectResponse, error)
-	UpdateProject(ctx context.Context, req *domain.UpdateProjectRequest) (*domain.UpdateProjectResponse, error)
-	DeleteProject(ctx context.Context, req *domain.DeleteProjectRequest) (*domain.DeleteProjectResponse, error)
-	GetProjectParticipants(ctx context.Context, req *domain.GetProjectParticipantsRequest) (*domain.GetProjectParticipantsResponse, error)
-}
-
-// core implements Core interface.
-type core struct {
-	repo database.Database
+type Core struct {
+	UserHandlers *user_handlers.UserHandlers
+	ProjectHandlers *project_handlers.ProjectHandlers
 }
 
 // New returns Core instance.
-func New(ctx context.Context) (Core, error) {
-	db, err := postgres.NewClient(ctx, os.Getenv("DATABASE_DSN"))
+func New(ctx context.Context, config *config.Config) (*Core, error) {
+	client, err := postgres.NewClient(ctx, config.DatabaseConnString)
 	if err != nil {
 		return nil, fmt.Errorf("creating postgres driver: %w", err)
 	}
+	
+	gateways, err := gateways.New(client)
+	if err != nil {
+		return nil, fmt.Errorf("creating gateways: %w", err)
+	}
+	userHandlers, err := user_handlers.New(gateways)
+	if err != nil {
+		return nil, fmt.Errorf("creating user handlers: %w", err)
+	}
+	projectHandlers, err := project_handlers.New(gateways)
+	if err != nil {
+		return nil, fmt.Errorf("creating project handlers: %w", err)
+	}
 
-	return &core{repo: db}, nil
+	return &Core{
+		UserHandlers: userHandlers, 
+		ProjectHandlers: projectHandlers,
+	}, nil
 }
