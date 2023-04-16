@@ -17,23 +17,14 @@ const (
 	UserRoleUser        = "user"
 )
 
-const (
-	UserPositionFrontendDev = "frontend"
-	UserPositionBackendDev  = "backend"
-	UserPositionTeamLead    = "teamlead"
-	UserPositionManager     = "manager"
-	UserPositionMarketer    = "marketer"
-)
-
 type User struct {
-		Id        int16        `json:"id"`
-		Name      string       `json:"name"`
-		Surname   string       `json:"surname"`
-		Login     string       `json:"-"`
-		Password  string       `json:"-"`
-		CreatedAt time.Time    `json:"createdAt"`
-		Role      UserRole     `json:"role"`
-		Position  UserPosition `json:"position"`
+	Id        int16        `json:"id"`
+	Name      string       `json:"name"`
+	Surname   string       `json:"surname"`
+	Login     string       `json:"-"`
+	Password  string       `json:"-"`
+	CreatedAt time.Time    `json:"createdAt"`
+	Role      UserRole     `json:"role"`
 }
 
 func (u *User) CheckPassword(password string) bool {

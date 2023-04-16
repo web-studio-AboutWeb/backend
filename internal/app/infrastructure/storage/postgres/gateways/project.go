@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	user_core "web-studio-backend/internal/app/core/user"
 	project_core "web-studio-backend/internal/app/core/project"
 	project_dto "web-studio-backend/internal/app/core/project/dto"
 	"web-studio-backend/internal/app/infrastructure/storage/postgres"
@@ -16,9 +15,9 @@ type ProjectGateway interface {
 	GetProject(
 		ctx context.Context, dto *project_dto.ProjectGet,
 	) (*project_core.Project, error)
-	GetProjectParticipants(
-		ctx context.Context, dto *project_dto.ProjectParticipantsGet,
-	) ([]user_core.User, error)
+	GetProjectStaffers(
+		ctx context.Context, dto *project_dto.ProjectStaffersGet,
+	) ([]project_dto.ProjectStaffer, error)
 	UpdateProject(ctx context.Context, project *project_core.Project) error
 	DeleteProject(ctx context.Context, dto *project_dto.ProjectDelete) error
 }
@@ -77,39 +76,43 @@ func (c *projectGateway) GetProject(
 	return &project, nil
 }
 
-func (c *projectGateway) GetProjectParticipants(
-	ctx context.Context, dto *project_dto.ProjectParticipantsGet,
-) ([]user_core.User, error) {
-	rows, err := c.client.Conn.Query(ctx, `select u.id, u.name, u.surname, u.created_at, u.role, u.position
-                                 from projects p
-                                 	inner join project_participants pp on pp.project_id = p.id
-                                 	inner join users u on u.id = pp.user_id
-                                 where p.id = $1`, dto.ProjectId)
+func (c *projectGateway) GetProjectStaffers(
+	ctx context.Context, dto *project_dto.ProjectStaffersGet,
+) ([]project_dto.ProjectStaffer, error) {
+	rows, err := c.client.Conn.Query(ctx, 
+		`select s.id, s.project_id, s.position, u.id, u.name, 
+				u.surname, u.created_at, u.role
+			from projects p
+				inner join staffers s on s.project_id = p.id
+				inner join users u on u.id = s.user_id
+			where p.id = $1`, dto.ProjectId)
 	if err != nil {
 		return nil, fmt.Errorf("selectiong project %d participants: %w", dto.ProjectId, err)
 	}
 	defer rows.Close()
 
 	var (
-		participant  user_core.User
-		participants []user_core.User
+		staffer  project_dto.ProjectStaffer
+		staffers []project_dto.ProjectStaffer
 	)
 	for rows.Next() {
 		if err := rows.Scan(
-			&participant.Id,
-			&participant.Name,
-			&participant.Surname,
-			&participant.CreatedAt,
-			&participant.Role,
-			&participant.Position,
+			&staffer.Id,
+			&staffer.ProjectId,
+			&staffer.Position,
+			&staffer.User.Id,
+			&staffer.User.Name,
+			&staffer.User.Surname,
+			&staffer.User.CreatedAt,
+			&staffer.User.Role,
 		); err != nil {
 			return nil, fmt.Errorf("scanning participant: %w", err)
 		}
 
-		participants = append(participants, participant)
+		staffers = append(staffers, staffer)
 	}
 
-	return participants, nil
+	return staffers, nil
 }
 
 

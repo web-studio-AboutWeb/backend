@@ -7,7 +7,6 @@ import (
 	user_core "web-studio-backend/internal/app/core/user"
 	user_dto "web-studio-backend/internal/app/core/user/dto"
 	"web-studio-backend/internal/app/infrastructure/storage/postgres"
-
 	"github.com/jackc/pgx/v5"
 )
 
@@ -31,15 +30,14 @@ func (c *userGateway) CreateUser(
 	ctx context.Context, user *user_core.User,
 ) (int16, error) {
 	row := c.client.Conn.QueryRow(ctx,
-		`insert into users(name, surname, login, password, role, position)
-             values($1, $2, $3, $4, $5, $6)
+		`insert into users(name, surname, login, password, role)
+             values($1, $2, $3, $4, $5)
              returning  id`,
 		user.Name,
 		user.Surname,
 		user.Login,
 		user.Password,
 		user.Role,
-		user.Position,
 	)
 
 	var userId int16
@@ -51,7 +49,7 @@ func (c *userGateway) CreateUser(
 }
 
 func (c *userGateway) GetUser(ctx context.Context, dto *user_dto.UserGet) (*user_core.User, error) {
-	row := c.client.Conn.QueryRow(ctx, `select id, name, surname, created_at, role, position
+	row := c.client.Conn.QueryRow(ctx, `select id, name, surname, created_at, role
                                  from users
                                  where id = $1`, dto.UserId)
 
@@ -62,7 +60,6 @@ func (c *userGateway) GetUser(ctx context.Context, dto *user_dto.UserGet) (*user
 		&user.Surname,
 		&user.CreatedAt,
 		&user.Role,
-		&user.Position,
 	); err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, postgres.ErrObjectNotFound
@@ -74,7 +71,7 @@ func (c *userGateway) GetUser(ctx context.Context, dto *user_dto.UserGet) (*user
 }
 
 func (c *userGateway) GetUserByLogin(ctx context.Context, login string) (*user_core.User, error) {
-	row := c.client.Conn.QueryRow(ctx, `select id, name, surname, login, password, created_at, role, position
+	row := c.client.Conn.QueryRow(ctx, `select id, name, surname, login, password, created_at, role
                                  from users
                                  where lower(login) = lower($1)`, login)
 
@@ -87,7 +84,6 @@ func (c *userGateway) GetUserByLogin(ctx context.Context, login string) (*user_c
 		&user.Password,
 		&user.CreatedAt,
 		&user.Role,
-		&user.Position,
 	); err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, postgres.ErrObjectNotFound
@@ -99,12 +95,11 @@ func (c *userGateway) GetUserByLogin(ctx context.Context, login string) (*user_c
 }
 
 func (c *userGateway) UpdateUser(ctx context.Context, user *user_core.User) error {
-	_, err := c.client.Conn.Exec(ctx, `update users set name = $2, surname = $3, role = $4, position = $5 where id = $1`,
+	_, err := c.client.Conn.Exec(ctx, `update users set name = $2, surname = $3, role = $4  where id = $1`,
 		user.Id,
 		user.Name,
 		user.Surname,
 		user.Role,
-		user.Position,
 	)
 	if err != nil {
 		return fmt.Errorf("updating user %d: %w", user.Id, err)

@@ -46,7 +46,7 @@ func (s *server) CreateProject(w http.ResponseWriter, r *http.Request) {
 		s.sendError(err, w)
 		return
 	}
-	
+
 	response, err := s.core.ProjectHandlers.CreateProjectHandler.Execute(
 		r.Context(), &project,
 	)
@@ -116,7 +116,7 @@ func (s *server) DeleteProject(w http.ResponseWriter, r *http.Request) {
 	s.sendJSON(http.StatusOK, response, w)
 }
 
-// GetProjectParticipants godoc
+// GetProjectStaffers godoc
 // @Summary      Get project participants.
 // @Description  Returns a list of project participants.
 // @Tags         Projects
@@ -126,11 +126,11 @@ func (s *server) DeleteProject(w http.ResponseWriter, r *http.Request) {
 // @Failure      404  {object}  errors.CoreError
 // @Failure      500  {object}  errors.CoreError
 // @Router       /api/v1/projects/{project_id}/participants [get]
-func (s *server) GetProjectParticipants(w http.ResponseWriter, r *http.Request) {
+func (s *server) GetProjectStaffers(w http.ResponseWriter, r *http.Request) {
 	ProjectId := s.parseParamInt16("project_id", r)
 
-	response, err := s.core.ProjectHandlers.GetProjectParticipantsHandler.Execute(
-		r.Context(), &project_dto.ProjectParticipantsGet{ProjectId: ProjectId},
+	response, err := s.core.ProjectHandlers.GetProjectStaffersHandler.Execute(
+		r.Context(), &project_dto.ProjectStaffersGet{ProjectId: ProjectId},
 	)
 	if err != nil {
 		s.sendError(err, w)

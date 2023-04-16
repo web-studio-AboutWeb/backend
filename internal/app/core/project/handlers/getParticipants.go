@@ -21,8 +21,8 @@ func NewGetProjectParticipantsHandler(
 }
 
 func (h *GetProjectParticipantsHandler) Execute(
-	ctx context.Context, dto *project_dto.ProjectParticipantsGet,
-) (*project_dto.ProjectParticipants, error) {
+	ctx context.Context, dto *project_dto.ProjectStaffersGet,
+) (*project_dto.ProjectStaffers, error) {
 	_, err := h.getProjectHandler.Execute(
 		ctx, &project_dto.ProjectGet{ProjectId: dto.ProjectId},
 	)
@@ -30,10 +30,10 @@ func (h *GetProjectParticipantsHandler) Execute(
 		return nil, err
 	}
 
-	participants, err := h.gateway.GetProjectParticipants(ctx, dto)
+	staffers, err := h.gateway.GetProjectStaffers(ctx, dto)
 	if err != nil {
 		return nil, errcore.NewInternalError(err)
 	}
 
-	return &project_dto.ProjectParticipants{Participants: participants}, nil
+	return &project_dto.ProjectStaffers{Staffers: staffers}, nil
 }

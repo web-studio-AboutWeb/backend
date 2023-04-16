@@ -6,11 +6,10 @@ import (
 
 type(
 	UserCreate struct {
-		Id       int16        `json:"id"`
-		Name     string       `json:"name"`
-		Surname  string       `json:"surname"`
-		Login    string       `json:"login"`
-		Password string       `json:"password"`
+		Name     string            `json:"name"`
+		Surname  string            `json:"surname"`
+		Login    string            `json:"login"`
+		Password string            `json:"password"`
 		Role     user.UserRole     `json:"role"`
 		Position user.UserPosition `json:"position"`
 	}
@@ -20,9 +19,9 @@ type(
 	}
 
 	UserUpdate struct {
-		UserId   int16        `json:"-"`
-		Name     string       `json:"name"`
-		Surname  string       `json:"surname"`
+		UserId   int16             `json:"-"`
+		Name     string            `json:"name"`
+		Surname  string            `json:"surname"`
 		Role     user.UserRole     `json:"role"`
 		Position user.UserPosition `json:"position"`
 	}

@@ -35,7 +35,6 @@ func (h *CreateUserHandler) Execute(
 		Login:     dto.Login,
 		Password:  dto.Password,
 		Role:      dto.Role,
-		Position:  dto.Position,
 	}
 
 	userId, err := h.gateway.CreateUser(ctx, user)

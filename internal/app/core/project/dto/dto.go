@@ -2,6 +2,7 @@ package dto
 
 import (
 	"time"
+	"web-studio-backend/internal/app/core/staffer"	
 	"web-studio-backend/internal/app/core/user"	
 	"web-studio-backend/internal/app/core/project"	
 )
@@ -11,13 +12,20 @@ type (
 		ProjectId int16 `json:"-"`
 	}
 
-	ProjectParticipantsGet struct {
+	ProjectStaffersGet struct {
 		ProjectId int16  `json:"-"`
 		Role      string `json:"-"`
 	}
 	
-	ProjectParticipants struct {
-		Participants []user.User `json:"data"`
+	ProjectStaffers struct {
+		Staffers []ProjectStaffer `json:"data"`
+	}
+
+	ProjectStaffer struct {
+		Id        int16                   `json:"id"`
+		User    user.User                 `json:"user"`
+		ProjectId int16                   `json:"project_id"`
+		Position  staffer.StafferPosition `json:"position"`
 	}
 
 	ProjectCreate struct {

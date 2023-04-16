@@ -34,7 +34,6 @@ func (h *UpdateUserHandler) Execute(
 	user.Name = dto.Name
 	user.Surname = dto.Surname
 	user.Role = dto.Role
-	user.Position = dto.Position
 
     jsonBytes, err := json.Marshal(user)
     if err != nil {

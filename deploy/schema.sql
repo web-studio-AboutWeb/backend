@@ -6,7 +6,7 @@ create table if not exists projects
   cover_id     text,
   started_at   timestamptz not null,
   ended_at     timestamptz,
-  link text
+  link         text
 );
 
 create table if not exists project_documents
@@ -16,7 +16,6 @@ create table if not exists project_documents
 );
 
 create type user_role as enum ('global admin', 'admin', 'moderator', 'user');
-create type user_position as enum ('frontend', 'backend', 'teamlead', 'manager', 'marketer');
 
 create table if not exists users
 (
@@ -26,17 +25,20 @@ create table if not exists users
   login       text          not null,
   password    text          not null,
   role        user_role     not null default 'user',
-  position    user_position not null,
   created_at  timestamptz   not null default now(),
   disabled_at timestamptz
 );
 
-create table if not exists project_participants
+create type staffer_position as enum ('frontend', 'backend', 'teamlead', 'manager', 'marketer');
+
+create table if not exists staffers
 (
-  project_id smallint not null references projects (id) on delete cascade,
-  user_id    smallint not null references users (id) on delete cascade
+  id          smallserial      not null primary key,
+  user_id     smallint         not null references users (id) on delete cascade,
+  project_id  smallint         not null references projects (id) on delete cascade,
+  position    staffer_position not null
 );
 
-insert into users(name, surname, login, password, role, position)
-values ('Денис', 'Камчатов', 'dkamchatov', 'something', 'admin', 'frontend')
+insert into users(name, surname, login, password, role)
+values ('Денис', 'Камчатов', 'dkamchatov', 'something', 'admin')
 on conflict do nothing;

@@ -5,11 +5,11 @@ import (
 )
 
 type ProjectHandlers struct {
-	CreateProjectHandler *CreateProjectHandler
-	GetProjectHandler *GetProjectHandler
-	GetProjectParticipantsHandler *GetProjectParticipantsHandler
-	UpdateProjectHandler *UpdateProjectHandler
-	DeleteProjectHandler *DeleteProjectHandler
+	CreateProjectHandler      *CreateProjectHandler
+	GetProjectHandler         *GetProjectHandler
+	GetProjectStaffersHandler *GetProjectParticipantsHandler
+	UpdateProjectHandler      *UpdateProjectHandler
+	DeleteProjectHandler      *DeleteProjectHandler
 }
 
 func New(gateways *gateways.Gateways) (*ProjectHandlers, error) {
@@ -28,10 +28,10 @@ func New(gateways *gateways.Gateways) (*ProjectHandlers, error) {
 	)
 
 	return &ProjectHandlers{
-		CreateProjectHandler: createProjectHandler,
-		GetProjectHandler: getProjectHandler,
-		GetProjectParticipantsHandler: getProjectParticipantsHandler,
-		UpdateProjectHandler: updateProjectHandler,
-		DeleteProjectHandler: deleteProjectHandler,
+		CreateProjectHandler:      createProjectHandler,
+		GetProjectHandler:         getProjectHandler,
+		GetProjectStaffersHandler: getProjectParticipantsHandler,
+		UpdateProjectHandler:      updateProjectHandler,
+		DeleteProjectHandler:      deleteProjectHandler,
 	}, nil
 }
