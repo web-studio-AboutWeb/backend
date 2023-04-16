@@ -117,15 +117,15 @@ func (s *server) DeleteProject(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetProjectStaffers godoc
-// @Summary      Get project participants.
-// @Description  Returns a list of project participants.
+// @Summary      Get project staffers.
+// @Description  Returns a list of project staffers.
 // @Tags         Projects
 // @Produce      json
 // @Param        project_id path int64 true "Project identifier."
 // @Success      200  {object}  dto.ProjectParticipants
 // @Failure      404  {object}  errors.CoreError
 // @Failure      500  {object}  errors.CoreError
-// @Router       /api/v1/projects/{project_id}/participants [get]
+// @Router       /api/v1/projects/{project_id}/staffers [get]
 func (s *server) GetProjectStaffers(w http.ResponseWriter, r *http.Request) {
 	ProjectId := s.parseParamInt16("project_id", r)
 
