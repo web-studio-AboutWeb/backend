@@ -6,3 +6,4 @@ api
 !/deploy/.example.env
 /deploy/config.*.yml
 /certs
+web-studio
