@@ -6,7 +6,7 @@ services:
     container_name: webstudio-postgresql
     restart: always
     ports:
-      - "5433:5432"
+      - "5432:5432"
     volumes:
       - pg_data:/var/lib/postgresql/data
       - ./schema.sql:/docker-entrypoint-initdb.d/init.sql
@@ -25,21 +25,17 @@ services:
     build:
       context: ../
       dockerfile: deploy/Dockerfile
-    volumes:
-      - certs:/opt/web-studio/certs
     networks:
       - default
     depends_on:
       - ws-postgresql
     environment:
-      - USE_HTTPS=true
       - ENV=dev
     ports:
-      - "443:443"
+      - "3000:3000"
 
 volumes:
   pg_data:
-  certs:
 
 networks:
   default:

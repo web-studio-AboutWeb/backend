@@ -16,12 +16,6 @@ type Config struct {
 		} `yaml:"jwt"`
 	} `yaml:"app"`
 	Interfaces struct {
-		Https struct {
-			Port         uint32 `yaml:"port"`
-			Host         string `yaml:"host"`
-			KeyFilePath  string `yaml:"key_file_path"`
-			CertFilePath string `yaml:"cert_file_path"`
-		} `yaml:"https"`
 		Http struct {
 			Port uint32 `yaml:"port"`
 			Host string `yaml:"host"`

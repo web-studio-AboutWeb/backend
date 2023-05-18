@@ -2,7 +2,8 @@ package http
 
 import (
 	"net/http"
-	project_dto "web-studio-backend/internal/app/core/project/dto"
+
+	"web-studio-backend/internal/app/core/project/dto"
 	_ "web-studio-backend/internal/app/core/shared/errors"
 )
 
@@ -20,7 +21,7 @@ func (s *server) GetProject(w http.ResponseWriter, r *http.Request) {
 	ProjectId := s.parseParamInt16("project_id", r)
 
 	response, err := s.core.ProjectHandlers.GetProjectHandler.Execute(
-		r.Context(), &project_dto.ProjectGet{ProjectId: ProjectId})
+		r.Context(), &dto.ProjectGet{ProjectId: ProjectId})
 	if err != nil {
 		s.sendError(err, w)
 		return
@@ -41,7 +42,7 @@ func (s *server) GetProject(w http.ResponseWriter, r *http.Request) {
 // @Failure      500  {object}  errors.CoreError
 // @Router       /api/v1/projects [post]
 func (s *server) CreateProject(w http.ResponseWriter, r *http.Request) {
-	var project project_dto.ProjectCreate
+	var project dto.ProjectCreate
 	if err := s.readJSON(&project, r); err != nil {
 		s.sendError(err, w)
 		return
@@ -73,7 +74,7 @@ func (s *server) CreateProject(w http.ResponseWriter, r *http.Request) {
 func (s *server) UpdateProject(w http.ResponseWriter, r *http.Request) {
 	ProjectId := s.parseParamInt16("project_id", r)
 
-	var project project_dto.ProjectUpdate
+	var project dto.ProjectUpdate
 	if err := s.readJSON(&project, r); err != nil {
 		s.sendError(err, w)
 		return
@@ -106,7 +107,7 @@ func (s *server) DeleteProject(w http.ResponseWriter, r *http.Request) {
 	ProjectId := s.parseParamInt16("project_id", r)
 
 	response, err := s.core.ProjectHandlers.DeleteProjectHandler.Execute(
-		r.Context(), &project_dto.ProjectDelete{ProjectId: ProjectId},
+		r.Context(), &dto.ProjectDelete{ProjectId: ProjectId},
 	)
 	if err != nil {
 		s.sendError(err, w)
@@ -122,7 +123,7 @@ func (s *server) DeleteProject(w http.ResponseWriter, r *http.Request) {
 // @Tags         Projects
 // @Produce      json
 // @Param        project_id path int64 true "Project identifier."
-// @Success      200  {object}  dto.ProjectParticipants
+// @Success      200  {object}  dto.ProjectStaffers
 // @Failure      404  {object}  errors.CoreError
 // @Failure      500  {object}  errors.CoreError
 // @Router       /api/v1/projects/{project_id}/staffers [get]
@@ -130,7 +131,7 @@ func (s *server) GetProjectStaffers(w http.ResponseWriter, r *http.Request) {
 	ProjectId := s.parseParamInt16("project_id", r)
 
 	response, err := s.core.ProjectHandlers.GetProjectStaffersHandler.Execute(
-		r.Context(), &project_dto.ProjectStaffersGet{ProjectId: ProjectId},
+		r.Context(), &dto.ProjectStaffersGet{ProjectId: ProjectId},
 	)
 	if err != nil {
 		s.sendError(err, w)
