@@ -42,6 +42,10 @@ type (
 		Project *project.Project `json:"data"`
 	}
 
+	ProjectsObject struct {
+		Projects []project.Project `json:"data"`
+	}
+
 	ProjectUpdate struct {
 		ProjectId   int16     `json:"-"`
 		Title       string    `json:"title"`

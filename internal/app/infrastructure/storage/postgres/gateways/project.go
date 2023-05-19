@@ -4,10 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
+	"github.com/jackc/pgx/v5"
+
 	project_core "web-studio-backend/internal/app/core/project"
 	project_dto "web-studio-backend/internal/app/core/project/dto"
 	"web-studio-backend/internal/app/infrastructure/storage/postgres"
-	"github.com/jackc/pgx/v5"
 )
 
 type ProjectGateway interface {
@@ -15,6 +17,7 @@ type ProjectGateway interface {
 	GetProject(
 		ctx context.Context, dto *project_dto.ProjectGet,
 	) (*project_core.Project, error)
+	GetProjects(ctx context.Context) ([]project_core.Project, error)
 	GetProjectStaffers(
 		ctx context.Context, dto *project_dto.ProjectStaffersGet,
 	) ([]project_dto.ProjectStaffer, error)
@@ -76,10 +79,42 @@ func (c *projectGateway) GetProject(
 	return &project, nil
 }
 
+func (c *projectGateway) GetProjects(ctx context.Context) ([]project_core.Project, error) {
+	rows, err := c.client.Conn.Query(ctx, `select id, title, description, cover_id, started_at, ended_at, link
+                                 from projects`)
+	if err != nil {
+		return nil, fmt.Errorf("getting projects: %w", err)
+	}
+	defer rows.Close()
+
+	var (
+		project  project_core.Project
+		projects []project_core.Project
+	)
+
+	for rows.Next() {
+		if err = rows.Scan(
+			&project.Id,
+			&project.Title,
+			&project.Description,
+			&project.CoverId,
+			&project.StartedAt,
+			&project.EndedAt,
+			&project.Link,
+		); err != nil {
+			return nil, fmt.Errorf("scanning project: %w", err)
+		}
+
+		projects = append(projects, project)
+	}
+
+	return projects, nil
+}
+
 func (c *projectGateway) GetProjectStaffers(
 	ctx context.Context, dto *project_dto.ProjectStaffersGet,
 ) ([]project_dto.ProjectStaffer, error) {
-	rows, err := c.client.Conn.Query(ctx, 
+	rows, err := c.client.Conn.Query(ctx,
 		`select s.id, s.project_id, s.position, u.id, u.name, 
 				u.surname, u.created_at, u.role
 			from projects p
@@ -114,7 +149,6 @@ func (c *projectGateway) GetProjectStaffers(
 
 	return staffers, nil
 }
-
 
 func (c *projectGateway) UpdateProject(ctx context.Context, project *project_core.Project) error {
 	_, err := c.client.Conn.Exec(ctx, `update projects set title=$2, description=$3, started_at=$4, ended_at=$5, link=$6 where id = $1`,

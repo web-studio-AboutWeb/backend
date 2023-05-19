@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"errors"
+
 	project_dto "web-studio-backend/internal/app/core/project/dto"
 	errcore "web-studio-backend/internal/app/core/shared/errors"
 	"web-studio-backend/internal/app/infrastructure/storage/postgres"
@@ -29,4 +30,24 @@ func (h *GetProjectHandler) Execute(
 	}
 
 	return &project_dto.ProjectObject{Project: project}, nil
+}
+
+type GetProjectsHandler struct {
+	gateway gateways.ProjectGateway
+}
+
+func NewGetProjectsHandler(gateway gateways.ProjectGateway) *GetProjectsHandler {
+	return &GetProjectsHandler{gateway: gateway}
+}
+
+func (h *GetProjectsHandler) Execute(ctx context.Context) (*project_dto.ProjectsObject, error) {
+	projects, err := h.gateway.GetProjects(ctx)
+	if err != nil {
+		if errors.Is(err, postgres.ErrObjectNotFound) {
+			return nil, errcore.ProjectNotFoundError
+		}
+		return nil, err
+	}
+
+	return &project_dto.ProjectsObject{Projects: projects}, nil
 }

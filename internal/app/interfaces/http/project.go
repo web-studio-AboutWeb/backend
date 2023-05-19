@@ -30,6 +30,25 @@ func (s *server) GetProject(w http.ResponseWriter, r *http.Request) {
 	s.sendJSON(http.StatusOK, response, w)
 }
 
+// GetProjects godoc
+// @Summary      Get list of projects.
+// @Description  Returns information about single user.
+// @Tags         Projects
+// @Produce      json
+// @Success      200  {object}  dto.ProjectsObject
+// @Failure      404  {object}  errors.CoreError
+// @Failure      500  {object}  errors.CoreError
+// @Router       /api/v1/projects [get]
+func (s *server) GetProjects(w http.ResponseWriter, r *http.Request) {
+	response, err := s.core.ProjectHandlers.GetProjectsHandler.Execute(r.Context())
+	if err != nil {
+		s.sendError(err, w)
+		return
+	}
+
+	s.sendJSON(http.StatusOK, response, w)
+}
+
 // CreateProject godoc
 // @Summary      Created project.
 // @Description  Creates a new project. Returns an object with information about created project.

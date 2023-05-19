@@ -23,6 +23,7 @@ func (s *server) initRouter() http.Handler {
 	r.Delete(`/api/v1/users/{user_id}`, s.DeleteUser)
 
 	r.Get(`/api/v1/projects/{project_id}`, s.GetProject)
+	r.Get(`/api/v1/projects`, s.GetProjects)
 	r.Post(`/api/v1/projects`, s.CreateProject)
 	r.Put(`/api/v1/projects/{project_id}`, s.UpdateProject)
 	r.Delete(`/api/v1/projects/{project_id}`, s.DeleteProject)
