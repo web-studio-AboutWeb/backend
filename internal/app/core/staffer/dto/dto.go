@@ -4,15 +4,18 @@ import (
 	"web-studio-backend/internal/app/core/staffer"
 )
 
-type(
+type (
 	StafferCreate struct {
-		UserId    int16   	              `json:"user_id"`
+		UserId    int16                   `json:"user_id"`
 		ProjectId int16                   `json:"project_id"`
 		Position  staffer.StafferPosition `json:"position"`
 	}
 
 	StafferGet struct {
 		StafferId int16 `json:"-"`
+	}
+	StaffersGet struct {
+		ProjectId int16 `json:"-"`
 	}
 
 	StafferUpdate struct {
@@ -25,9 +28,10 @@ type(
 		StafferId int16 `json:"-"`
 	}
 
-	StafferObject struct { 
+	StafferObject struct {
 		Staffer *staffer.Staffer `json:"data"`
 	}
-
-	
+	StaffersObject struct {
+		Staffers []staffer.Staffer `json:"data"`
+	}
 )

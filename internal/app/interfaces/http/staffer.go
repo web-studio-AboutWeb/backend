@@ -2,6 +2,8 @@ package http
 
 import (
 	"net/http"
+	"strconv"
+
 	_ "web-studio-backend/internal/app/core/shared/errors"
 	staffer_dto "web-studio-backend/internal/app/core/staffer/dto"
 )
@@ -50,6 +52,38 @@ func (s *server) GetStaffer(w http.ResponseWriter, r *http.Request) {
 
 	response, err := s.core.StafferHandlers.GetStafferHandler.Execute(
 		r.Context(), &staffer_dto.StafferGet{StafferId: stafferId},
+	)
+	if err != nil {
+		s.sendError(err, w)
+		return
+	}
+
+	s.sendJSON(http.StatusOK, response, w)
+}
+
+// GetStaffers godoc
+// @Summary      Get list of staffers.
+// @Description  Returns information about single staffer.
+// @Tags         Staffers
+// @Produce      json
+// @Param        project_id query int64 true "Project filter."
+// @Success      200  {object}  dto.StaffersObject
+// @Failure      400  {object}  errors.CoreError
+// @Failure      500  {object}  errors.CoreError
+// @Router       /api/v1/staffers [get]
+func (s *server) GetStaffers(w http.ResponseWriter, r *http.Request) {
+	var projectID int16
+	if v := r.URL.Query().Get("project_id"); v != "" {
+		pid, err := strconv.Atoi(v)
+		if err != nil {
+			s.sendError(err, w)
+			return
+		}
+		projectID = int16(pid)
+	}
+
+	response, err := s.core.StafferHandlers.GetStaffersHandler.Execute(
+		r.Context(), &staffer_dto.StaffersGet{ProjectId: projectID},
 	)
 	if err != nil {
 		s.sendError(err, w)

@@ -6,13 +6,15 @@ import (
 
 type StafferHandlers struct {
 	CreateStafferHandler *CreateStafferHandler
-	GetStafferHandler *GetStafferHandler
+	GetStafferHandler    *GetStafferHandler
+	GetStaffersHandler   *GetStaffersHandler
 	UpdateStafferHandler *UpdateStafferHandler
 	DeleteStafferHandler *DeleteStafferHandler
 }
 
 func New(gateways *gateways.Gateways) (*StafferHandlers, error) {
 	getStafferHandler := NewGetStafferHandler(gateways.StafferGateway)
+	getStaffersHandler := NewGetStaffersHandler(gateways.StafferGateway)
 	createStafferHandler := NewCreateStafferHandler(
 		gateways.StafferGateway, getStafferHandler)
 	updateStafferHandler := NewUpdateStafferHandler(
@@ -24,8 +26,9 @@ func New(gateways *gateways.Gateways) (*StafferHandlers, error) {
 
 	return &StafferHandlers{
 		CreateStafferHandler: createStafferHandler,
-		GetStafferHandler: getStafferHandler,
+		GetStafferHandler:    getStafferHandler,
+		GetStaffersHandler:   getStaffersHandler,
 		UpdateStafferHandler: updateStafferHandler,
 		DeleteStafferHandler: deleteStafferHandler,
 	}, nil
-} 
+}

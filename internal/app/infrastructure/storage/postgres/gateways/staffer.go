@@ -4,10 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
+	"github.com/jackc/pgx/v5"
+
 	staffer_core "web-studio-backend/internal/app/core/staffer"
 	staffer_dto "web-studio-backend/internal/app/core/staffer/dto"
 	"web-studio-backend/internal/app/infrastructure/storage/postgres"
-	"github.com/jackc/pgx/v5"
 )
 
 type StafferGateway interface {
@@ -17,6 +19,7 @@ type StafferGateway interface {
 	GetStaffer(
 		ctx context.Context, dto *staffer_dto.StafferGet,
 	) (*staffer_core.Staffer, error)
+	GetStaffers(ctx context.Context, dto *staffer_dto.StaffersGet) ([]staffer_core.Staffer, error)
 	UpdateStaffer(
 		ctx context.Context, staffer *staffer_core.Staffer,
 	) error
@@ -56,12 +59,12 @@ func (g *stafferGateway) CreateStaffer(
 func (g *stafferGateway) GetStaffer(
 	ctx context.Context, dto *staffer_dto.StafferGet,
 ) (*staffer_core.Staffer, error) {
-	row := g.client.Conn.QueryRow(ctx, 
+	row := g.client.Conn.QueryRow(ctx,
 		`select id, user_id, project_id, position
             from staffers
-            where id = $1`, 
-			dto.StafferId,
-		)
+            where id = $1`,
+		dto.StafferId,
+	)
 
 	var staffer staffer_core.Staffer
 	if err := row.Scan(
@@ -79,10 +82,49 @@ func (g *stafferGateway) GetStaffer(
 	return &staffer, nil
 }
 
+func (g *stafferGateway) GetStaffers(ctx context.Context, dto *staffer_dto.StaffersGet) ([]staffer_core.Staffer, error) {
+	filter := ""
+	args := make([]any, 0)
+	if dto.ProjectId != 0 {
+		filter += "WHERE project_id = $1"
+		args = append(args, dto.ProjectId)
+	}
+
+	rows, err := g.client.Conn.Query(ctx,
+		fmt.Sprintf(`select id, user_id, project_id, position
+            from staffers
+            %s`, filter), args...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var (
+		staffer  staffer_core.Staffer
+		staffers []staffer_core.Staffer
+	)
+
+	for rows.Next() {
+		if err = rows.Scan(
+			&staffer.Id,
+			&staffer.UserId,
+			&staffer.ProjectId,
+			&staffer.Position,
+		); err != nil {
+			return nil, fmt.Errorf("scanning staffer: %w", err)
+		}
+
+		staffers = append(staffers, staffer)
+	}
+
+	return staffers, nil
+}
+
 func (g *stafferGateway) UpdateStaffer(
 	ctx context.Context, staffer *staffer_core.Staffer,
 ) error {
-	_, err := g.client.Conn.Exec(ctx, 
+	_, err := g.client.Conn.Exec(ctx,
 		`update staffers set user_id = $2, project_id = $3, position = $4
 			where id = $1`,
 		staffer.Id,
@@ -100,8 +142,8 @@ func (g *stafferGateway) UpdateStaffer(
 func (g *stafferGateway) DeleteStaffer(
 	ctx context.Context, dto *staffer_dto.StafferDelete,
 ) error {
-	_, err := g.client.Conn.Exec(ctx, 
-		`delete from staffers where id = $1`, 
+	_, err := g.client.Conn.Exec(ctx,
+		`delete from staffers where id = $1`,
 		dto.StafferId,
 	)
 	if err != nil {

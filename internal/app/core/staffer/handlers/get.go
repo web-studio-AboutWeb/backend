@@ -3,8 +3,9 @@ package handlers
 import (
 	"context"
 	"errors"
-	staffer_dto "web-studio-backend/internal/app/core/staffer/dto"
+
 	errcore "web-studio-backend/internal/app/core/shared/errors"
+	staffer_dto "web-studio-backend/internal/app/core/staffer/dto"
 	"web-studio-backend/internal/app/infrastructure/storage/postgres"
 	"web-studio-backend/internal/app/infrastructure/storage/postgres/gateways"
 )
@@ -29,4 +30,26 @@ func (h *GetStafferHandler) Execute(
 	}
 
 	return &staffer_dto.StafferObject{Staffer: staffer}, nil
+}
+
+type GetStaffersHandler struct {
+	gateway gateways.StafferGateway
+}
+
+func NewGetStaffersHandler(gateway gateways.StafferGateway) *GetStaffersHandler {
+	return &GetStaffersHandler{gateway: gateway}
+}
+
+func (h *GetStaffersHandler) Execute(
+	ctx context.Context, dto *staffer_dto.StaffersGet,
+) (*staffer_dto.StaffersObject, error) {
+	staffers, err := h.gateway.GetStaffers(ctx, dto)
+	if err != nil {
+		if errors.Is(err, postgres.ErrObjectNotFound) {
+			return nil, errcore.ProjectNotFoundError
+		}
+		return nil, err
+	}
+
+	return &staffer_dto.StaffersObject{Staffers: staffers}, nil
 }

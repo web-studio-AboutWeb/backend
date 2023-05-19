@@ -30,6 +30,7 @@ func (s *server) initRouter() http.Handler {
 	r.Get(`/api/v1/projects/{project_id}/staffers`, s.GetProjectStaffers)
 
 	r.Get(`/api/v1/staffers/{staffer_id}`, s.GetStaffer)
+	r.Get(`/api/v1/staffers`, s.GetStaffers)
 	r.Post(`/api/v1/staffers`, s.CreateStaffer)
 	r.Put(`/api/v1/staffers/{staffer_id}`, s.UpdateStaffer)
 	r.Delete(`/api/v1/staffers/{staffer_id}`, s.DeleteStaffer)
