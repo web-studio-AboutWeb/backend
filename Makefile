@@ -6,3 +6,6 @@ swag:
 
 mcreate:
 	migrate create -ext sql -dir migrations -seq $(name) # $ name=<migration_name> make mcreate
+
+migrate:
+	go run cmd/migrate/migrate.go
