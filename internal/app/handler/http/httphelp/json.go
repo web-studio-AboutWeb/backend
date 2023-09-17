@@ -1,14 +1,15 @@
-package http
+package httphelp
 
 import (
 	"encoding/json"
 	"errors"
 	"io"
 	"net/http"
-	"web-studio-backend/internal/app/domain/errcore"
+
+	"web-studio-backend/internal/app/domain/apperror"
 )
 
-func (s *server) sendJSON(code int, data any, w http.ResponseWriter) {
+func SendJSON(code int, data any, w http.ResponseWriter) {
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(code)
 
@@ -27,7 +28,7 @@ func (s *server) sendJSON(code int, data any, w http.ResponseWriter) {
 	}
 }
 
-func (s *server) readJSON(to any, r *http.Request) error {
+func ReadJSON(to any, r *http.Request) error {
 	buf, err := io.ReadAll(r.Body)
 	if err != nil {
 		return err
@@ -41,30 +42,30 @@ func (s *server) readJSON(to any, r *http.Request) error {
 	return nil
 }
 
-func (s *server) sendError(err error, w http.ResponseWriter) {
-	var coreError *errcore.CoreError
+func SendError(err error, w http.ResponseWriter) {
+	var coreError *apperror.CoreError
 
 	if errors.As(err, &coreError) {
 		var code int
 
 		switch coreError.Type {
-		case errcore.NotFoundType:
+		case apperror.NotFoundType:
 			code = http.StatusNotFound
-		case errcore.InvalidRequestType:
+		case apperror.InvalidRequestType:
 			code = http.StatusBadRequest
-		case errcore.UnauthorizedType:
+		case apperror.UnauthorizedType:
 			code = http.StatusUnauthorized
-		case errcore.ObjectDuplicateType, errcore.ObjectDisabledType:
+		case apperror.ObjectDuplicateType, apperror.ObjectDisabledType:
 			code = http.StatusConflict
-		case errcore.AccessDeniedType:
+		case apperror.AccessDeniedType:
 			code = http.StatusForbidden
 		default:
 			code = http.StatusInternalServerError
 		}
 
-		s.sendJSON(code, coreError, w)
+		SendJSON(code, coreError, w)
 		return
 	}
 
-	s.sendJSON(http.StatusInternalServerError, errcore.CoreError{Message: err.Error(), Type: errcore.InternalType}, w)
+	SendJSON(http.StatusInternalServerError, apperror.CoreError{Message: err.Error(), Type: apperror.InternalType}, w)
 }

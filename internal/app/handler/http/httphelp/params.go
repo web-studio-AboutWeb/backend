@@ -1,16 +1,17 @@
-package http
+package httphelp
 
 import (
-	"github.com/go-chi/chi/v5"
 	"net/http"
 	"strconv"
+
+	"github.com/go-chi/chi/v5"
 )
 
-func (s *server) parseParamString(name string, r *http.Request) string {
+func ParseParamString(name string, r *http.Request) string {
 	return chi.URLParam(r, name)
 }
 
-func (s *server) parseParamInt64(name string, r *http.Request) int64 {
+func ParseParamInt64(name string, r *http.Request) int64 {
 	param := chi.URLParam(r, name)
 	val, err := strconv.Atoi(param)
 	if err != nil {
@@ -19,7 +20,7 @@ func (s *server) parseParamInt64(name string, r *http.Request) int64 {
 	return int64(val)
 }
 
-func (s *server) parseParamInt(name string, r *http.Request) int {
+func ParseParamInt(name string, r *http.Request) int {
 	param := chi.URLParam(r, name)
 	val, err := strconv.Atoi(param)
 	if err != nil {
@@ -28,7 +29,7 @@ func (s *server) parseParamInt(name string, r *http.Request) int {
 	return val
 }
 
-func (s *server) parseParamInt16(name string, r *http.Request) int16 {
+func ParseParamInt16(name string, r *http.Request) int16 {
 	param := chi.URLParam(r, name)
 	val, err := strconv.Atoi(param)
 	if err != nil {
