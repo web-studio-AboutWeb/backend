@@ -30,8 +30,8 @@ func newProjectHandler(ps ProjectService) *projectHandler {
 // @Produce      json
 // @Param        project_id path int64 true "Project identifier."
 // @Success      200  {object}  domain.Project
-// @Failure      404  {object}  apperror.CoreError
-// @Failure      500  {object}  apperror.CoreError
+// @Failure      404  {object}  apperror.Error
+// @Failure      500  {object}  apperror.Error
 // @Router       /api/v1/projects/{project_id} [get]
 func (h *projectHandler) getProject(w http.ResponseWriter, r *http.Request) {
 	pid := httphelp.ParseParamInt16("project_id", r)
@@ -53,8 +53,8 @@ func (h *projectHandler) getProject(w http.ResponseWriter, r *http.Request) {
 // @Produce      json
 // @Param        request body domain.Project true "Request body."
 // @Success      200  {object}	domain.Project
-// @Failure      400  {object}  apperror.CoreError
-// @Failure      500  {object}  apperror.CoreError
+// @Failure      400  {object}  apperror.Error
+// @Failure      500  {object}  apperror.Error
 // @Router       /api/v1/projects [post]
 func (h *projectHandler) createProject(w http.ResponseWriter, r *http.Request) {
 	var project domain.Project
@@ -81,8 +81,8 @@ func (h *projectHandler) createProject(w http.ResponseWriter, r *http.Request) {
 // @Param        project_id path int64 true "Project identifier."
 // @Param        request body domain.Project true "Request body."
 // @Success      200  {object}	domain.Project
-// @Failure      404  {object}  apperror.CoreError
-// @Failure      500  {object}  apperror.CoreError
+// @Failure      404  {object}  apperror.Error
+// @Failure      500  {object}  apperror.Error
 // @Router       /api/v1/projects/{project_id} [put]
 func (h *projectHandler) updateProject(w http.ResponseWriter, r *http.Request) {
 	projectID := httphelp.ParseParamInt16("project_id", r)
@@ -110,8 +110,8 @@ func (h *projectHandler) updateProject(w http.ResponseWriter, r *http.Request) {
 // @Produce      json
 // @Param        project_id path int64 true "Project identifier."
 // @Success      200  {array}   domain.User
-// @Failure      404  {object}  apperror.CoreError
-// @Failure      500  {object}  apperror.CoreError
+// @Failure      404  {object}  apperror.Error
+// @Failure      500  {object}  apperror.Error
 // @Router       /api/v1/projects/{project_id}/participants [get]
 func (h *projectHandler) getProjectParticipants(w http.ResponseWriter, r *http.Request) {
 	projectID := httphelp.ParseParamInt16("project_id", r)

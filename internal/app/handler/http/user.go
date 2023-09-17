@@ -30,8 +30,8 @@ func newUserHandler(us UserService) *userHandler {
 // @Produce      json
 // @Param        user_id path int64 true "User identifier."
 // @Success      200  {object}  domain.User
-// @Failure      400  {object}  apperror.CoreError
-// @Failure      500  {object}  apperror.CoreError
+// @Failure      400  {object}  apperror.Error
+// @Failure      500  {object}  apperror.Error
 // @Router       /api/v1/users/{user_id} [get]
 func (h *userHandler) getUser(w http.ResponseWriter, r *http.Request) {
 	userID := httphelp.ParseParamInt16("user_id", r)
@@ -53,8 +53,8 @@ func (h *userHandler) getUser(w http.ResponseWriter, r *http.Request) {
 // @Produce      json
 // @Param        request body domain.User true "Request body."
 // @Success      200  {object}	domain.User
-// @Failure      400  {object}  apperror.CoreError
-// @Failure      500  {object}  apperror.CoreError
+// @Failure      400  {object}  apperror.Error
+// @Failure      500  {object}  apperror.Error
 // @Router       /api/v1/users [post]
 func (h *userHandler) createUser(w http.ResponseWriter, r *http.Request) {
 	var req domain.User
@@ -81,8 +81,8 @@ func (h *userHandler) createUser(w http.ResponseWriter, r *http.Request) {
 // @Param        user_id path int64 true "User identifier."
 // @Param        request body domain.User true "Request body."
 // @Success      200  {object}	domain.User
-// @Failure      404  {object}  apperror.CoreError
-// @Failure      500  {object}  apperror.CoreError
+// @Failure      404  {object}  apperror.Error
+// @Failure      500  {object}  apperror.Error
 // @Router       /api/v1/users/{user_id} [put]
 func (h *userHandler) updateUser(w http.ResponseWriter, r *http.Request) {
 	userID := httphelp.ParseParamInt16("user_id", r)
@@ -111,8 +111,8 @@ func (h *userHandler) updateUser(w http.ResponseWriter, r *http.Request) {
 // @Produce      json
 // @Param        user_id path int64 true "User identifier."
 // @Success      200  {object}	nil
-// @Failure      404  {object}  apperror.CoreError
-// @Failure      500  {object}  apperror.CoreError
+// @Failure      404  {object}  apperror.Error
+// @Failure      500  {object}  apperror.Error
 // @Router       /api/v1/users/{user_id} [delete]
 func (h *userHandler) removeUser(w http.ResponseWriter, r *http.Request) {
 	userID := httphelp.ParseParamInt16("user_id", r)

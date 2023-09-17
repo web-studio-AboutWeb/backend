@@ -40,6 +40,8 @@ func NewHandler(
 	})
 
 	r.Get("/static/*", getStatic)
+
+	// TODO: use auth middleware here to keep API private
 	r.Get(`/api/v1/docs`, getApiDocs)
 	r.Get(`/api/v1/docs/swagger.json`, getApiDocsSwagger)
 

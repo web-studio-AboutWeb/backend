@@ -1,7 +1,6 @@
 package http
 
 import (
-	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
@@ -24,8 +23,6 @@ var (
 func getApiDocsSwagger(w http.ResponseWriter, r *http.Request) {
 	filePath := filepath.Join(apiDocsDir, apiSwaggerFileName)
 
-	fmt.Println(filePath)
-
 	_, err := os.Stat(filePath)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -36,7 +33,6 @@ func getApiDocsSwagger(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println("1")
 	http.ServeFile(w, r, filePath)
 }
 
@@ -64,5 +60,5 @@ func getStatic(w http.ResponseWriter, r *http.Request) {
 	}
 	filename := strings.TrimPrefix(r.URL.Path, "/static/")
 
-	http.ServeFile(w, r, path.Join(path.Dir(os.Args[0]), "web", "static", filename))
+	http.ServeFile(w, r, path.Join("web", "static", filename))
 }
