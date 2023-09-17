@@ -2,10 +2,11 @@ package http
 
 import (
 	"net/http"
-	"os"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+
+	"web-studio-backend/internal/pkg/config"
 )
 
 func NewHandler(
@@ -17,7 +18,7 @@ func NewHandler(
 
 	r := chi.NewRouter()
 
-	if os.Getenv("ENV") != "prod" {
+	if config.Get().App.Env != "prod" {
 		r.Use(middleware.Logger)
 	}
 	r.Use(middleware.Recoverer)
@@ -25,7 +26,7 @@ func NewHandler(
 	r.Use(CorsMiddleware())
 
 	r.Group(func(r chi.Router) {
-		// TODO: router middleware
+		// TODO: auth middleware
 
 		r.Get(`/api/v1/users/{user_id}`, uh.getUser)
 		r.Post(`/api/v1/users`, uh.createUser)
@@ -38,7 +39,9 @@ func NewHandler(
 		r.Get(`/api/v1/projects/{project_id}/participants`, ph.getProjectParticipants)
 	})
 
+	r.Get("/static/*", getStatic)
 	r.Get(`/api/v1/docs`, getApiDocs)
+	r.Get(`/api/v1/docs/swagger.json`, getApiDocsSwagger)
 
 	return r
 }
