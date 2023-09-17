@@ -1,0 +1,17 @@
+app:
+  env: dev
+  key: bd53b9d5f1d53318e322f0a4cbb225972781ef66fb840b309e2a1951edc3abfb
+  jwt:
+    access_expiration_minutes: 15
+    refresh_expiration_days: 7
+    access_token_secret_key: helloworld
+    refresh_token_secret_key: abc123
+http:
+  port: 8000
+  host: localhost
+  http_enabled: false
+database:
+  user: nKPb8UwIZdl222S2RyZVI0C1zieT5ahN5JZ1fodX2QA=
+  password: gdPM2TlqG3BPx7-8CQ5lekHkIBQprdtCIub7j722YSM=
+  host: localhost
+  database: ws
