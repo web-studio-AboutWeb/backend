@@ -75,7 +75,11 @@ func Run(configPath string) error {
 		Handler: handler,
 	}
 
-	slog.Info("Server is started", slog.String("addr", httpServer.Addr))
+	slog.Info(
+		"Server is started",
+		slog.String("addr", httpServer.Addr),
+		slog.Bool("https", cfg.Http.HttpsEnabled),
+	)
 
 	httpServerCh := make(chan error)
 	if cfg.Http.HttpsEnabled {
