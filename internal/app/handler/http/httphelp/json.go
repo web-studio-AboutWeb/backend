@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
+	"log/slog"
 	"net/http"
 
 	"web-studio-backend/internal/app/domain/apperror"
@@ -43,7 +44,9 @@ func ReadJSON(to any, r *http.Request) error {
 }
 
 func SendError(err error, w http.ResponseWriter) {
-	var coreError *apperror.CoreError
+	slog.Error(err.Error())
+
+	var coreError *apperror.Error
 
 	if errors.As(err, &coreError) {
 		var code int
@@ -55,9 +58,9 @@ func SendError(err error, w http.ResponseWriter) {
 			code = http.StatusBadRequest
 		case apperror.UnauthorizedType:
 			code = http.StatusUnauthorized
-		case apperror.ObjectDuplicateType, apperror.ObjectDisabledType:
+		case apperror.DuplicateType, apperror.DisabledType:
 			code = http.StatusConflict
-		case apperror.AccessDeniedType:
+		case apperror.ForbiddenType:
 			code = http.StatusForbidden
 		default:
 			code = http.StatusInternalServerError
@@ -67,5 +70,5 @@ func SendError(err error, w http.ResponseWriter) {
 		return
 	}
 
-	SendJSON(http.StatusInternalServerError, apperror.CoreError{Message: err.Error(), Type: apperror.InternalType}, w)
+	SendJSON(http.StatusInternalServerError, apperror.Error{Message: err.Error(), Type: apperror.InternalType}, w)
 }

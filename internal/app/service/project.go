@@ -29,7 +29,7 @@ func (s *ProjectService) GetProject(ctx context.Context, id int16) (*domain.Proj
 	project, err := s.repo.GetProject(ctx, id)
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
-			return nil, apperror.ProjectNotFoundError
+			return nil, apperror.NewNotFound("project_id")
 		}
 		return nil, fmt.Errorf("getting project %d: %w", id, err)
 	}
@@ -59,7 +59,7 @@ func (s *ProjectService) UpdateProject(ctx context.Context, project *domain.Proj
 	project, err := s.repo.GetProject(ctx, project.ID)
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
-			return nil, apperror.ProjectNotFoundError
+			return nil, apperror.NewNotFound("project_id")
 		}
 		return nil, fmt.Errorf("getting project %d before update: %w", project.ID, err)
 	}
@@ -81,7 +81,7 @@ func (s *ProjectService) GetProjectParticipants(ctx context.Context, projectID i
 	project, err := s.repo.GetProject(ctx, projectID)
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
-			return nil, apperror.ProjectNotFoundError
+			return nil, apperror.NewNotFound("project_id")
 		}
 		return nil, fmt.Errorf("getting project %d: %w", project.ID, err)
 	}

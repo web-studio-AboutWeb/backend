@@ -23,14 +23,14 @@ type UserService struct {
 }
 
 func NewUserService(repo UserRepository) *UserService {
-	return nil
+	return &UserService{repo}
 }
 
 func (s *UserService) GetUser(ctx context.Context, id int16) (*domain.User, error) {
 	user, err := s.repo.GetUser(ctx, id)
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
-			return nil, apperror.UserNotFoundError
+			return nil, apperror.NewNotFound("user_id")
 		}
 		return nil, fmt.Errorf("getting user %d: %w", id, err)
 	}
@@ -44,7 +44,7 @@ func (s *UserService) CreateUser(ctx context.Context, user *domain.User) (*domai
 		return nil, fmt.Errorf("getting user by login %s: %w", err)
 	}
 	if foundUser != nil {
-		return nil, apperror.LoginAlreadyTakenError
+		return nil, apperror.NewDuplicate("Email already taken.", "email")
 	}
 
 	userId, err := s.repo.CreateUser(ctx, user)
@@ -64,7 +64,7 @@ func (s *UserService) UpdateUser(ctx context.Context, user *domain.User) (*domai
 	_, err := s.repo.GetUser(ctx, user.ID)
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
-			return nil, apperror.UserNotFoundError
+			return nil, apperror.NewNotFound("user_id")
 		}
 		return nil, fmt.Errorf("getting user %d: %w", user.ID, err)
 	}
@@ -86,7 +86,7 @@ func (s *UserService) RemoveUser(ctx context.Context, id int16) error {
 	user, err := s.repo.GetUser(ctx, id)
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
-			return apperror.UserNotFoundError
+			return apperror.NewNotFound("user_id")
 		}
 		return fmt.Errorf("getting user %d: %w", id, err)
 	}
