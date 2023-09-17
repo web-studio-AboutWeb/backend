@@ -4,26 +4,27 @@
 
 ## Зависимости
 1. CLI для компиляции Swagger документации:
-```shell
-$ go install github.com/swaggo/swag/cmd/swag@latest
-```
+    ```shell
+    $ go install github.com/swaggo/swag/cmd/swag@latest
+    ```
 
-Пример использования:
-```shell
-$ swag init -o api/docs --ot json -q -g cmd/main.go
-```
+    Пример использования:
+    ```shell
+    $ swag init -o api/docs --ot json -q -g cmd/main.go
+    ```
 
 2. CLI для создания миграций базы данных:
 
-[Инструкция по установке для разных ОС](https://github.com/golang-migrate/migrate/tree/master/cmd/migrate)
-
-Пример использования:
-```shell
-$ migrate create -dir migrations -seq -ext sql <migration_name> # Создает два файлика в папке migrations
-```
+    [Инструкция по установке для разных ОС](https://github.com/golang-migrate/migrate/tree/master/cmd/migrate)
+    
+    Пример использования:
+    ```shell
+    $ migrate create -dir migrations -seq -ext sql <migration_name> # Создает два файлика в папке migrations
+    ```
 
 3. База данных
-Мы используем PostgreSQL, поэтому для работы приложения необходима запущенная бд. Конфигурация для подключения к бд находится в конфиге.
+
+    Мы используем PostgreSQL, поэтому для работы приложения необходима запущенная бд.
 
 4. TODO: mock
 
