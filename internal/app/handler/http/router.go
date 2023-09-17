@@ -23,7 +23,7 @@ func NewHandler(
 	}
 	r.Use(middleware.Recoverer)
 
-	r.Use(CorsMiddleware())
+	r.Use(corsMiddleware())
 
 	r.Group(func(r chi.Router) {
 		// TODO: auth middleware
