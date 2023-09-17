@@ -38,7 +38,7 @@ func Run(configPath string) error {
 	}))
 	slog.SetDefault(logger)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	runCtx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
 	// Database stuff
@@ -49,7 +49,7 @@ func Run(configPath string) error {
 
 	dbConnString := postgres.ConnectionString(user, password, cfg.Database.Host, cfg.Database.Database)
 
-	pg, err := postgres.New(ctx, dbConnString)
+	pg, err := postgres.New(runCtx, dbConnString)
 	if err != nil {
 		return fmt.Errorf("creating postgres: %w", err)
 	}
@@ -75,18 +75,20 @@ func Run(configPath string) error {
 		Handler: handler,
 	}
 
+	httpServerCh := make(chan error)
+	go func() {
+		if cfg.Http.HttpsEnabled {
+			httpServerCh <- httpServer.ListenAndServeTLS(cfg.Http.CertFilePath, cfg.Http.KeyFilePath)
+		} else {
+			httpServerCh <- httpServer.ListenAndServe()
+		}
+	}()
+
 	slog.Info(
 		"Server is started",
 		slog.String("addr", httpServer.Addr),
 		slog.Bool("https", cfg.Http.HttpsEnabled),
 	)
-
-	httpServerCh := make(chan error)
-	if cfg.Http.HttpsEnabled {
-		httpServerCh <- httpServer.ListenAndServeTLS(cfg.Http.CertFilePath, cfg.Http.KeyFilePath)
-	} else {
-		httpServerCh <- httpServer.ListenAndServe()
-	}
 
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
@@ -98,10 +100,13 @@ func Run(configPath string) error {
 		slog.Error("Server stop signal: " + err.Error())
 	}
 
+	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer shutdownCancel()
+
 	// Shutdown
-	err = httpServer.Shutdown(ctx)
+	err = httpServer.Shutdown(shutdownCtx)
 	if err != nil {
-		slog.Error("failed to shutdown the server", err)
+		slog.Error("failed to shutdown the server: " + err.Error())
 	}
 	slog.Info("Server has been shut down successfully")
 
