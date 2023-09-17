@@ -2,8 +2,6 @@ package domain
 
 import (
 	"time"
-
-	"golang.org/x/crypto/bcrypt"
 )
 
 type (
@@ -38,11 +36,6 @@ type User struct {
 	CreatedAt time.Time    `json:"createdAt"`
 	Role      UserRole     `json:"role"`
 	Position  UserPosition `json:"position"`
-}
-
-func (u User) CheckPassword(password string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
-	return err == nil
 }
 
 func (ur UserRole) String() string {
