@@ -7,75 +7,74 @@ import (
 )
 
 type (
-	UserRole     string
-	UserPosition string
+	UserRole     int16
+	UserPosition int16
 )
 
 const (
-	UserRoleGlobalAdmin = "global admin"
-	UserRoleAdmin       = "admin"
-	UserRoleModerator   = "moderator"
-	UserRoleUser        = "user"
+	_ UserRole = iota
+	UserRoleUser
+	UserRoleModerator
+	UserRoleAdmin
+	UserRoleGlobalAdmin
 )
 
 const (
-	UserPositionFrontendDev = "frontend"
-	UserPositionBackendDev  = "backend"
-	UserPositionTeamLead    = "teamlead"
-	UserPositionManager     = "manager"
-	UserPositionMarketer    = "marketer"
+	_ UserPosition = iota
+	UserPositionFrontend
+	UserPositionBackend
+	UserPositionTeamLead
+	UserPositionManager
+	UserPositionMarketer
+	UserPositionDevOps
 )
 
-type (
-	User struct {
-		Id        int16        `json:"id"`
-		Name      string       `json:"name"`
-		Surname   string       `json:"surname"`
-		Login     string       `json:"-"`
-		Password  string       `json:"-"`
-		CreatedAt time.Time    `json:"createdAt"`
-		Role      UserRole     `json:"role"`
-		Position  UserPosition `json:"position"`
-	}
+type User struct {
+	Id        int16        `json:"id"`
+	Name      string       `json:"name"`
+	Surname   string       `json:"surname"`
+	Login     string       `json:"-"`
+	Password  string       `json:"-"`
+	CreatedAt time.Time    `json:"createdAt"`
+	Role      UserRole     `json:"role"`
+	Position  UserPosition `json:"position"`
+}
 
-	CreateUserRequest struct {
-		Id       int64        `json:"id"`
-		Name     string       `json:"name"`
-		Surname  string       `json:"surname"`
-		Login    string       `json:"login"`
-		Password string       `json:"password"`
-		Role     UserRole     `json:"role"`
-		Position UserPosition `json:"position"`
-	}
-	CreateUserResponse struct {
-		User *User `json:"data"`
-	}
-
-	GetUserRequest struct {
-		UserId int16 `json:"-"`
-	}
-	GetUserResponse struct {
-		User *User `json:"data"`
-	}
-
-	UpdateUserRequest struct {
-		UserId   int16        `json:"-"`
-		Name     string       `json:"name"`
-		Surname  string       `json:"surname"`
-		Role     UserRole     `json:"role"`
-		Position UserPosition `json:"position"`
-	}
-	UpdateUserResponse struct {
-		User *User `json:"data"`
-	}
-
-	DeleteUserRequest struct {
-		UserId int16 `json:"-"`
-	}
-	DeleteUserResponse struct{}
-)
-
-func (u *User) CheckPassword(password string) bool {
+func (u User) CheckPassword(password string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
 	return err == nil
+}
+
+func (ur UserRole) String() string {
+	switch ur {
+	case UserRoleUser:
+		return "User"
+	case UserRoleModerator:
+		return "Moderator"
+	case UserRoleAdmin:
+		return "Admin"
+	case UserRoleGlobalAdmin:
+		return "Global admin"
+	default:
+		return "None"
+	}
+}
+
+func (up UserPosition) String() string {
+	switch up {
+	case UserPositionFrontend:
+		return "Frontend"
+	case UserPositionBackend:
+		return "Backend"
+	case UserPositionTeamLead:
+		return "Team lead"
+	case UserPositionManager:
+		return "Manager"
+	case UserPositionMarketer:
+		return "Marketer"
+	case UserPositionDevOps:
+		return "DevOps"
+	default:
+		return "None"
+	}
 }

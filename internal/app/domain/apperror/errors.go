@@ -1,6 +1,8 @@
-package errcore
+package apperror
 
-import "web-studio-backend/internal/app/infrastructure/logger"
+import (
+	"log/slog"
+)
 
 type CoreError struct {
 	Message string        `json:"message"`
@@ -15,7 +17,7 @@ func (e CoreError) Error() string {
 }
 
 func NewInternalError(err error) *CoreError {
-	logger.Logger.Err(err)
+	slog.Error(err.Error())
 	return &CoreError{
 		Message: err.Error(),
 		Type:    InternalType,
