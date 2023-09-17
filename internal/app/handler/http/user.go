@@ -1,11 +1,29 @@
 package http
 
 import (
+	"context"
 	"net/http"
+
 	"web-studio-backend/internal/app/domain"
+	"web-studio-backend/internal/app/handler/http/httphelp"
 )
 
-// GetUser godoc
+type UserService interface {
+	GetUser(ctx context.Context, id int16) (*domain.User, error)
+	CreateUser(ctx context.Context, user *domain.User) (*domain.User, error)
+	UpdateUser(ctx context.Context, user *domain.User) (*domain.User, error)
+	RemoveUser(ctx context.Context, id int16) error
+}
+
+type userHandler struct {
+	userService UserService
+}
+
+func newUserHandler(us UserService) *userHandler {
+	return &userHandler{us}
+}
+
+// getUser godoc
 // @Summary      Get user by identifier.
 // @Description  Returns information about single user.
 // @Tags         Users
@@ -15,19 +33,19 @@ import (
 // @Failure      400  {object}  errcore.CoreError
 // @Failure      500  {object}  errcore.CoreError
 // @Router       /api/v1/users/{user_id} [get]
-func (s *server) GetUser(w http.ResponseWriter, r *http.Request) {
-	userId := s.parseParamInt16("user_id", r)
+func (h *userHandler) getUser(w http.ResponseWriter, r *http.Request) {
+	userID := httphelp.ParseParamInt16("user_id", r)
 
-	response, err := s.core.GetUser(r.Context(), &domain.GetUserRequest{UserId: userId})
+	response, err := h.userService.GetUser(r.Context(), userID)
 	if err != nil {
-		s.sendError(err, w)
+		httphelp.SendError(err, w)
 		return
 	}
 
-	s.sendJSON(http.StatusOK, response, w)
+	httphelp.SendJSON(http.StatusOK, response, w)
 }
 
-// CreateUser godoc
+// createUser godoc
 // @Summary      Create user.
 // @Description  Creates a new user. Returns an object with information about created user.
 // @Tags         Users
@@ -38,23 +56,23 @@ func (s *server) GetUser(w http.ResponseWriter, r *http.Request) {
 // @Failure      400  {object}  errcore.CoreError
 // @Failure      500  {object}  errcore.CoreError
 // @Router       /api/v1/users [post]
-func (s *server) CreateUser(w http.ResponseWriter, r *http.Request) {
-	var req domain.CreateUserRequest
-	if err := s.readJSON(&req, r); err != nil {
-		s.sendError(err, w)
+func (h *userHandler) createUser(w http.ResponseWriter, r *http.Request) {
+	var req domain.User
+	if err := httphelp.ReadJSON(&req, r); err != nil {
+		httphelp.SendError(err, w)
 		return
 	}
 
-	response, err := s.core.CreateUser(r.Context(), &req)
+	response, err := h.userService.CreateUser(r.Context(), &req)
 	if err != nil {
-		s.sendError(err, w)
+		httphelp.SendError(err, w)
 		return
 	}
 
-	s.sendJSON(http.StatusOK, response, w)
+	httphelp.SendJSON(http.StatusOK, response, w)
 }
 
-// UpdateUser godoc
+// updateUser godoc
 // @Summary      Update user.
 // @Description  Updates a user. The request body must contain all required fields.
 // @Tags         Users
@@ -66,28 +84,28 @@ func (s *server) CreateUser(w http.ResponseWriter, r *http.Request) {
 // @Failure      404  {object}  errcore.CoreError
 // @Failure      500  {object}  errcore.CoreError
 // @Router       /api/v1/users/{user_id} [put]
-func (s *server) UpdateUser(w http.ResponseWriter, r *http.Request) {
-	userId := s.parseParamInt16("user_id", r)
+func (h *userHandler) updateUser(w http.ResponseWriter, r *http.Request) {
+	userID := httphelp.ParseParamInt16("user_id", r)
 
-	var req domain.UpdateUserRequest
-	if err := s.readJSON(&req, r); err != nil {
-		s.sendError(err, w)
+	var req domain.User
+	if err := httphelp.ReadJSON(&req, r); err != nil {
+		httphelp.SendError(err, w)
 		return
 	}
-	req.UserId = userId
+	req.Id = userID
 
-	response, err := s.core.UpdateUser(r.Context(), &req)
+	response, err := h.userService.UpdateUser(r.Context(), &req)
 	if err != nil {
-		s.sendError(err, w)
+		httphelp.SendError(err, w)
 		return
 	}
 
-	s.sendJSON(http.StatusOK, response, w)
+	httphelp.SendJSON(http.StatusOK, response, w)
 }
 
-// DeleteUser godoc
-// @Summary      Delete user.
-// @Description  Deletes a user.
+// removeUser godoc
+// @Summary      Remove user.
+// @Description  Marks user as inactive.
 // @Tags         Users
 // @Accept       json
 // @Produce      json
@@ -96,14 +114,14 @@ func (s *server) UpdateUser(w http.ResponseWriter, r *http.Request) {
 // @Failure      404  {object}  errcore.CoreError
 // @Failure      500  {object}  errcore.CoreError
 // @Router       /api/v1/users/{user_id} [delete]
-func (s *server) DeleteUser(w http.ResponseWriter, r *http.Request) {
-	userId := s.parseParamInt16("user_id", r)
+func (h *userHandler) removeUser(w http.ResponseWriter, r *http.Request) {
+	userID := httphelp.ParseParamInt16("user_id", r)
 
-	response, err := s.core.DeleteUser(r.Context(), &domain.DeleteUserRequest{UserId: userId})
+	err := h.userService.RemoveUser(r.Context(), userID)
 	if err != nil {
-		s.sendError(err, w)
+		httphelp.SendError(err, w)
 		return
 	}
 
-	s.sendJSON(http.StatusOK, response, w)
+	w.WriteHeader(http.StatusOK)
 }

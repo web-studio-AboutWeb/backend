@@ -1,11 +1,29 @@
 package http
 
 import (
+	"context"
 	"net/http"
+
 	"web-studio-backend/internal/app/domain"
+	"web-studio-backend/internal/app/handler/http/httphelp"
 )
 
-// GetProject godoc
+type ProjectService interface {
+	GetProject(ctx context.Context, id int16) (*domain.Project, error)
+	CreateProject(ctx context.Context, project *domain.Project) (*domain.Project, error)
+	UpdateProject(ctx context.Context, project *domain.Project) (*domain.Project, error)
+	GetProjectParticipants(ctx context.Context, projectID int16) ([]domain.User, error)
+}
+
+type projectHandler struct {
+	projectService ProjectService
+}
+
+func newProjectHandler(ps ProjectService) *projectHandler {
+	return &projectHandler{ps}
+}
+
+// getProject godoc
 // @Summary      Get project by identifier.
 // @Description  Returns information about single user.
 // @Tags         Projects
@@ -15,19 +33,19 @@ import (
 // @Failure      404  {object}  errcore.CoreError
 // @Failure      500  {object}  errcore.CoreError
 // @Router       /api/v1/projects/{project_id} [get]
-func (s *server) GetProject(w http.ResponseWriter, r *http.Request) {
-	ProjectId := s.parseParamInt16("project_id", r)
+func (h *projectHandler) getProject(w http.ResponseWriter, r *http.Request) {
+	pid := httphelp.ParseParamInt16("project_id", r)
 
-	response, err := s.core.GetProject(r.Context(), &domain.GetProjectRequest{ProjectId: ProjectId})
+	response, err := h.projectService.GetProject(r.Context(), pid)
 	if err != nil {
-		s.sendError(err, w)
+		httphelp.SendError(err, w)
 		return
 	}
 
-	s.sendJSON(http.StatusOK, response, w)
+	httphelp.SendJSON(http.StatusOK, response, w)
 }
 
-// CreateProject godoc
+// createProject godoc
 // @Summary      Created project.
 // @Description  Creates a new project. Returns an object with information about created project.
 // @Tags         Projects
@@ -38,23 +56,23 @@ func (s *server) GetProject(w http.ResponseWriter, r *http.Request) {
 // @Failure      400  {object}  errcore.CoreError
 // @Failure      500  {object}  errcore.CoreError
 // @Router       /api/v1/projects [post]
-func (s *server) CreateProject(w http.ResponseWriter, r *http.Request) {
-	var req domain.CreateProjectRequest
-	if err := s.readJSON(&req, r); err != nil {
-		s.sendError(err, w)
+func (h *projectHandler) createProject(w http.ResponseWriter, r *http.Request) {
+	var project domain.Project
+	if err := httphelp.ReadJSON(&project, r); err != nil {
+		httphelp.SendError(err, w)
 		return
 	}
 
-	response, err := s.core.CreateProject(r.Context(), &req)
+	response, err := h.projectService.CreateProject(r.Context(), &project)
 	if err != nil {
-		s.sendError(err, w)
+		httphelp.SendError(err, w)
 		return
 	}
 
-	s.sendJSON(http.StatusOK, response, w)
+	httphelp.SendJSON(http.StatusOK, response, w)
 }
 
-// UpdateProject godoc
+// updateProject godoc
 // @Summary      Update project.
 // @Description  Updates a project. The request body must contain all required fields.
 // @Tags         Projects
@@ -66,49 +84,26 @@ func (s *server) CreateProject(w http.ResponseWriter, r *http.Request) {
 // @Failure      404  {object}  errcore.CoreError
 // @Failure      500  {object}  errcore.CoreError
 // @Router       /api/v1/projects/{project_id} [put]
-func (s *server) UpdateProject(w http.ResponseWriter, r *http.Request) {
-	ProjectId := s.parseParamInt16("project_id", r)
+func (h *projectHandler) updateProject(w http.ResponseWriter, r *http.Request) {
+	projectID := httphelp.ParseParamInt16("project_id", r)
 
-	var req domain.UpdateProjectRequest
-	if err := s.readJSON(&req, r); err != nil {
-		s.sendError(err, w)
+	var req domain.Project
+	if err := httphelp.ReadJSON(&req, r); err != nil {
+		httphelp.SendError(err, w)
 		return
 	}
-	req.ProjectId = ProjectId
+	req.Id = projectID
 
-	response, err := s.core.UpdateProject(r.Context(), &req)
+	response, err := h.projectService.UpdateProject(r.Context(), &req)
 	if err != nil {
-		s.sendError(err, w)
+		httphelp.SendError(err, w)
 		return
 	}
 
-	s.sendJSON(http.StatusOK, response, w)
+	httphelp.SendJSON(http.StatusOK, response, w)
 }
 
-// DeleteProject godoc
-// @Summary      Delete project.
-// @Description  Deletes a project.
-// @Tags         Projects
-// @Accept       json
-// @Produce      json
-// @Param        project_id path int64 true "Project identifier."
-// @Success      200  {object}	nil
-// @Failure      404  {object}  errcore.CoreError
-// @Failure      500  {object}  errcore.CoreError
-// @Router       /api/v1/projects/{project_id} [delete]
-func (s *server) DeleteProject(w http.ResponseWriter, r *http.Request) {
-	ProjectId := s.parseParamInt16("project_id", r)
-
-	response, err := s.core.DeleteProject(r.Context(), &domain.DeleteProjectRequest{ProjectId: ProjectId})
-	if err != nil {
-		s.sendError(err, w)
-		return
-	}
-
-	s.sendJSON(http.StatusOK, response, w)
-}
-
-// GetProjectParticipants godoc
+// getProjectParticipants godoc
 // @Summary      Get project participants.
 // @Description  Returns a list of project participants.
 // @Tags         Projects
@@ -118,14 +113,14 @@ func (s *server) DeleteProject(w http.ResponseWriter, r *http.Request) {
 // @Failure      404  {object}  errcore.CoreError
 // @Failure      500  {object}  errcore.CoreError
 // @Router       /api/v1/projects/{project_id}/participants [get]
-func (s *server) GetProjectParticipants(w http.ResponseWriter, r *http.Request) {
-	ProjectId := s.parseParamInt16("project_id", r)
+func (h *projectHandler) getProjectParticipants(w http.ResponseWriter, r *http.Request) {
+	projectID := httphelp.ParseParamInt16("project_id", r)
 
-	response, err := s.core.GetProjectParticipants(r.Context(), &domain.GetProjectParticipantsRequest{ProjectId: ProjectId})
+	response, err := h.projectService.GetProjectParticipants(r.Context(), projectID)
 	if err != nil {
-		s.sendError(err, w)
+		httphelp.SendError(err, w)
 		return
 	}
 
-	s.sendJSON(http.StatusOK, response, w)
+	httphelp.SendJSON(http.StatusOK, response, w)
 }

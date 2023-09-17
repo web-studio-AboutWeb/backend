@@ -1,11 +1,12 @@
 package http
 
 import (
-	"github.com/go-chi/cors"
 	"net/http"
+
+	"github.com/go-chi/cors"
 )
 
-func corsMiddleware() func(next http.Handler) http.Handler {
+func CorsMiddleware() func(next http.Handler) http.Handler {
 	return cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"https://*", "http://*"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
@@ -14,3 +15,5 @@ func corsMiddleware() func(next http.Handler) http.Handler {
 		AllowCredentials: false,
 	})
 }
+
+// TODO: auth middleware
