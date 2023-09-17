@@ -24,14 +24,14 @@ func newUserHandler(us UserService) *userHandler {
 }
 
 // getUser godoc
-// @Summary      Get user by identifier.
+// @Summary      Get user by identifier
 // @Description  Returns information about single user.
 // @Tags         Users
 // @Produce      json
 // @Param        user_id path int64 true "User identifier."
-// @Success      200  {object}  domain.GetUserResponse
-// @Failure      400  {object}  errcore.CoreError
-// @Failure      500  {object}  errcore.CoreError
+// @Success      200  {object}  domain.User
+// @Failure      400  {object}  apperror.CoreError
+// @Failure      500  {object}  apperror.CoreError
 // @Router       /api/v1/users/{user_id} [get]
 func (h *userHandler) getUser(w http.ResponseWriter, r *http.Request) {
 	userID := httphelp.ParseParamInt16("user_id", r)
@@ -46,15 +46,15 @@ func (h *userHandler) getUser(w http.ResponseWriter, r *http.Request) {
 }
 
 // createUser godoc
-// @Summary      Create user.
+// @Summary      Create user
 // @Description  Creates a new user. Returns an object with information about created user.
 // @Tags         Users
 // @Accept       json
 // @Produce      json
-// @Param        request body domain.CreateUserRequest true "Request body."
-// @Success      200  {object}	domain.CreateUserResponse
-// @Failure      400  {object}  errcore.CoreError
-// @Failure      500  {object}  errcore.CoreError
+// @Param        request body domain.User true "Request body."
+// @Success      200  {object}	domain.User
+// @Failure      400  {object}  apperror.CoreError
+// @Failure      500  {object}  apperror.CoreError
 // @Router       /api/v1/users [post]
 func (h *userHandler) createUser(w http.ResponseWriter, r *http.Request) {
 	var req domain.User
@@ -73,16 +73,16 @@ func (h *userHandler) createUser(w http.ResponseWriter, r *http.Request) {
 }
 
 // updateUser godoc
-// @Summary      Update user.
+// @Summary      Update user
 // @Description  Updates a user. The request body must contain all required fields.
 // @Tags         Users
 // @Accept       json
 // @Produce      json
 // @Param        user_id path int64 true "User identifier."
-// @Param        request body domain.UpdateUserRequest true "Request body."
-// @Success      200  {object}	domain.UpdateUserResponse
-// @Failure      404  {object}  errcore.CoreError
-// @Failure      500  {object}  errcore.CoreError
+// @Param        request body domain.User true "Request body."
+// @Success      200  {object}	domain.User
+// @Failure      404  {object}  apperror.CoreError
+// @Failure      500  {object}  apperror.CoreError
 // @Router       /api/v1/users/{user_id} [put]
 func (h *userHandler) updateUser(w http.ResponseWriter, r *http.Request) {
 	userID := httphelp.ParseParamInt16("user_id", r)
@@ -104,15 +104,15 @@ func (h *userHandler) updateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 // removeUser godoc
-// @Summary      Remove user.
+// @Summary      Remove user
 // @Description  Marks user as inactive.
 // @Tags         Users
 // @Accept       json
 // @Produce      json
 // @Param        user_id path int64 true "User identifier."
 // @Success      200  {object}	nil
-// @Failure      404  {object}  errcore.CoreError
-// @Failure      500  {object}  errcore.CoreError
+// @Failure      404  {object}  apperror.CoreError
+// @Failure      500  {object}  apperror.CoreError
 // @Router       /api/v1/users/{user_id} [delete]
 func (h *userHandler) removeUser(w http.ResponseWriter, r *http.Request) {
 	userID := httphelp.ParseParamInt16("user_id", r)

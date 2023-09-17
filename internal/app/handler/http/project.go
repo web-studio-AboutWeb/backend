@@ -24,14 +24,14 @@ func newProjectHandler(ps ProjectService) *projectHandler {
 }
 
 // getProject godoc
-// @Summary      Get project by identifier.
+// @Summary      Get project by identifier
 // @Description  Returns information about single user.
 // @Tags         Projects
 // @Produce      json
 // @Param        project_id path int64 true "Project identifier."
-// @Success      200  {object}  domain.GetProjectResponse
-// @Failure      404  {object}  errcore.CoreError
-// @Failure      500  {object}  errcore.CoreError
+// @Success      200  {object}  domain.Project
+// @Failure      404  {object}  apperror.CoreError
+// @Failure      500  {object}  apperror.CoreError
 // @Router       /api/v1/projects/{project_id} [get]
 func (h *projectHandler) getProject(w http.ResponseWriter, r *http.Request) {
 	pid := httphelp.ParseParamInt16("project_id", r)
@@ -46,15 +46,15 @@ func (h *projectHandler) getProject(w http.ResponseWriter, r *http.Request) {
 }
 
 // createProject godoc
-// @Summary      Created project.
+// @Summary      Created project
 // @Description  Creates a new project. Returns an object with information about created project.
 // @Tags         Projects
 // @Accept       json
 // @Produce      json
-// @Param        request body domain.CreateProjectRequest true "Request body."
-// @Success      200  {object}	domain.CreateProjectResponse
-// @Failure      400  {object}  errcore.CoreError
-// @Failure      500  {object}  errcore.CoreError
+// @Param        request body domain.Project true "Request body."
+// @Success      200  {object}	domain.Project
+// @Failure      400  {object}  apperror.CoreError
+// @Failure      500  {object}  apperror.CoreError
 // @Router       /api/v1/projects [post]
 func (h *projectHandler) createProject(w http.ResponseWriter, r *http.Request) {
 	var project domain.Project
@@ -73,16 +73,16 @@ func (h *projectHandler) createProject(w http.ResponseWriter, r *http.Request) {
 }
 
 // updateProject godoc
-// @Summary      Update project.
+// @Summary      Update project
 // @Description  Updates a project. The request body must contain all required fields.
 // @Tags         Projects
 // @Accept       json
 // @Produce      json
 // @Param        project_id path int64 true "Project identifier."
-// @Param        request body domain.UpdateProjectRequest true "Request body."
-// @Success      200  {object}	domain.UpdateProjectResponse
-// @Failure      404  {object}  errcore.CoreError
-// @Failure      500  {object}  errcore.CoreError
+// @Param        request body domain.Project true "Request body."
+// @Success      200  {object}	domain.Project
+// @Failure      404  {object}  apperror.CoreError
+// @Failure      500  {object}  apperror.CoreError
 // @Router       /api/v1/projects/{project_id} [put]
 func (h *projectHandler) updateProject(w http.ResponseWriter, r *http.Request) {
 	projectID := httphelp.ParseParamInt16("project_id", r)
@@ -104,14 +104,14 @@ func (h *projectHandler) updateProject(w http.ResponseWriter, r *http.Request) {
 }
 
 // getProjectParticipants godoc
-// @Summary      Get project participants.
+// @Summary      Get project participants
 // @Description  Returns a list of project participants.
 // @Tags         Projects
 // @Produce      json
 // @Param        project_id path int64 true "Project identifier."
-// @Success      200  {object}  domain.GetProjectResponse
-// @Failure      404  {object}  errcore.CoreError
-// @Failure      500  {object}  errcore.CoreError
+// @Success      200  {array}   domain.User
+// @Failure      404  {object}  apperror.CoreError
+// @Failure      500  {object}  apperror.CoreError
 // @Router       /api/v1/projects/{project_id}/participants [get]
 func (h *projectHandler) getProjectParticipants(w http.ResponseWriter, r *http.Request) {
 	projectID := httphelp.ParseParamInt16("project_id", r)
