@@ -92,7 +92,7 @@ func (h *projectHandler) updateProject(w http.ResponseWriter, r *http.Request) {
 		httphelp.SendError(err, w)
 		return
 	}
-	req.Id = projectID
+	req.ID = projectID
 
 	response, err := h.projectService.UpdateProject(r.Context(), &req)
 	if err != nil {

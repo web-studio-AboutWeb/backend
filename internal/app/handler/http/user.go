@@ -92,7 +92,7 @@ func (h *userHandler) updateUser(w http.ResponseWriter, r *http.Request) {
 		httphelp.SendError(err, w)
 		return
 	}
-	req.Id = userID
+	req.ID = userID
 
 	response, err := h.userService.UpdateUser(r.Context(), &req)
 	if err != nil {

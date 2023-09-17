@@ -30,7 +30,7 @@ const (
 )
 
 type User struct {
-	Id        int16        `json:"id"`
+	ID        int16        `json:"id"`
 	Name      string       `json:"name"`
 	Surname   string       `json:"surname"`
 	Login     string       `json:"-"`

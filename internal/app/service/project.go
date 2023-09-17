@@ -56,22 +56,22 @@ func (s *ProjectService) CreateProject(ctx context.Context, project *domain.Proj
 func (s *ProjectService) UpdateProject(ctx context.Context, project *domain.Project) (*domain.Project, error) {
 	// TODO: validate fields
 
-	project, err := s.repo.GetProject(ctx, project.Id)
+	project, err := s.repo.GetProject(ctx, project.ID)
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
 			return nil, apperror.ProjectNotFoundError
 		}
-		return nil, fmt.Errorf("getting project %d before update: %w", project.Id, err)
+		return nil, fmt.Errorf("getting project %d before update: %w", project.ID, err)
 	}
 
 	err = s.repo.UpdateProject(ctx, project)
 	if err != nil {
-		return nil, fmt.Errorf("updating project %d: %w", project.Id, err)
+		return nil, fmt.Errorf("updating project %d: %w", project.ID, err)
 	}
 
-	project, err = s.repo.GetProject(ctx, project.Id)
+	project, err = s.repo.GetProject(ctx, project.ID)
 	if err != nil {
-		return nil, fmt.Errorf("getting project %d after update: %w", project.Id, err)
+		return nil, fmt.Errorf("getting project %d after update: %w", project.ID, err)
 	}
 
 	return project, nil
@@ -83,7 +83,7 @@ func (s *ProjectService) GetProjectParticipants(ctx context.Context, projectID i
 		if errors.Is(err, repository.ErrObjectNotFound) {
 			return nil, apperror.ProjectNotFoundError
 		}
-		return nil, fmt.Errorf("getting project %d: %w", project.Id, err)
+		return nil, fmt.Errorf("getting project %d: %w", project.ID, err)
 	}
 
 	participants, err := s.repo.GetProjectParticipants(ctx, projectID)

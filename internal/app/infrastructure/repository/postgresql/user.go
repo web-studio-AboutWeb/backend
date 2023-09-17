@@ -28,7 +28,7 @@ func (r *UserRepository) GetUser(ctx context.Context, id int16) (*domain.User, e
 
 	var user domain.User
 	if err := row.Scan(
-		&user.Id,
+		&user.ID,
 		&user.Name,
 		&user.Surname,
 		&user.CreatedAt,
@@ -70,14 +70,14 @@ func (r *UserRepository) UpdateUser(ctx context.Context, user *domain.User) erro
 		UPDATE users 
 		SET name=$2, surname=$3, role=$4, position=$5
 		WHERE id = $1`,
-		user.Id,
+		user.ID,
 		user.Name,
 		user.Surname,
 		user.Role,
 		user.Position,
 	)
 	if err != nil {
-		return fmt.Errorf("updating user %d: %w", user.Id, err)
+		return fmt.Errorf("updating user %d: %w", user.ID, err)
 	}
 
 	return nil
@@ -97,7 +97,7 @@ func (r *UserRepository) GetUserByLogin(ctx context.Context, login string) (*dom
 	err := r.pool.QueryRow(ctx, `SELECT id, name, surname, login, password, created_at, role, position
                                  FROM users
                                  WHERE lower(login) = lower($1)`, login).Scan(
-		&user.Id,
+		&user.ID,
 		&user.Name,
 		&user.Surname,
 		&user.Login,

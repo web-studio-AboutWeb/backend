@@ -61,22 +61,22 @@ func (s *UserService) CreateUser(ctx context.Context, user *domain.User) (*domai
 }
 
 func (s *UserService) UpdateUser(ctx context.Context, user *domain.User) (*domain.User, error) {
-	_, err := s.repo.GetUser(ctx, user.Id)
+	_, err := s.repo.GetUser(ctx, user.ID)
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
 			return nil, apperror.UserNotFoundError
 		}
-		return nil, fmt.Errorf("getting user %d: %w", user.Id, err)
+		return nil, fmt.Errorf("getting user %d: %w", user.ID, err)
 	}
 
 	err = s.repo.UpdateUser(ctx, user)
 	if err != nil {
-		return nil, fmt.Errorf("updating user %d: %w", user.Id, err)
+		return nil, fmt.Errorf("updating user %d: %w", user.ID, err)
 	}
 
-	updatedUser, err := s.repo.GetUser(ctx, user.Id)
+	updatedUser, err := s.repo.GetUser(ctx, user.ID)
 	if err != nil {
-		return nil, fmt.Errorf("updating user %d: %w", user.Id, err)
+		return nil, fmt.Errorf("updating user %d: %w", user.ID, err)
 	}
 
 	return updatedUser, nil

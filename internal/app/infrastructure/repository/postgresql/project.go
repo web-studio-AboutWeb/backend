@@ -28,7 +28,7 @@ func (r *ProjectRepository) GetProject(ctx context.Context, id int16) (*domain.P
 
 	var project domain.Project
 	if err := row.Scan(
-		&project.Id,
+		&project.ID,
 		&project.Title,
 		&project.Description,
 		&project.CoverId,
@@ -67,7 +67,7 @@ func (r *ProjectRepository) CreateProject(ctx context.Context, project *domain.P
 
 func (r *ProjectRepository) UpdateProject(ctx context.Context, project *domain.Project) error {
 	_, err := r.pool.Exec(ctx, `UPDATE projects SET title=$2, description=$3, started_at=$4, ended_at=$5, link=$6 WHERE id = $1`,
-		project.Id,
+		project.ID,
 		project.Title,
 		project.Description,
 		project.StartedAt,
@@ -75,7 +75,7 @@ func (r *ProjectRepository) UpdateProject(ctx context.Context, project *domain.P
 		project.Link,
 	)
 	if err != nil {
-		return fmt.Errorf("updating project %d: %w", project.Id, err)
+		return fmt.Errorf("updating project %d: %w", project.ID, err)
 	}
 
 	return nil
@@ -108,7 +108,7 @@ func (r *ProjectRepository) GetProjectParticipants(ctx context.Context, projectI
 	)
 	for rows.Next() {
 		if err := rows.Scan(
-			&participant.Id,
+			&participant.ID,
 			&participant.Name,
 			&participant.Surname,
 			&participant.CreatedAt,
