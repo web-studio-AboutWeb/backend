@@ -10,8 +10,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/golang-migrate/migrate/v4"
-
 	"web-studio-backend/internal/app/handler/http"
 	"web-studio-backend/internal/app/infrastructure/repository/postgresql"
 	"web-studio-backend/internal/app/service"
@@ -57,11 +55,6 @@ func Run(configPath string) error {
 	}
 
 	slog.Info("Connected to database")
-
-	err = applyMigrations(dbConnString)
-	if err != nil {
-		return fmt.Errorf("applying migrations: %w", err)
-	}
 
 	// Repositories initialization
 	userRepo := postgresql.NewUserRepository(pg.Pool)
@@ -109,20 +102,6 @@ func Run(configPath string) error {
 	slog.Info("Server has been shut down successfully")
 
 	pg.Close()
-
-	return nil
-}
-
-// applyMigrations applies migrations to database.
-func applyMigrations(connString string) error {
-	m, err := migrate.New("file://migrations", connString)
-	if err != nil {
-		return fmt.Errorf("creating migration: %w", err)
-	}
-
-	if err = m.Up(); err != nil {
-		return fmt.Errorf("applying up: %w", err)
-	}
 
 	return nil
 }
