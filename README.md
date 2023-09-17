@@ -10,7 +10,7 @@
 
     Пример использования:
     ```shell
-    $ swag init -o api/docs --ot json -q -g cmd/main.go
+    $ swag init -o web/static/apidocs --ot json -q -g cmd/app/main.go
     ```
 
 2. CLI для создания миграций базы данных:
@@ -22,11 +22,20 @@
     $ migrate create -dir migrations -seq -ext sql <migration_name> # Создает два файлика в папке migrations
     ```
 
-3. База данных
+   Также можно запустить скрипт, для применения миграций:
+   ```shell
+   $ go run cmd/migrate/migrate.go
+   ```
+
+3. База данных:
 
     Мы используем PostgreSQL, поэтому для работы приложения необходима запущенная бд.
 
-4. TODO: mock
+
+4. (Опционально) Make для использования скриптов из `Makefile`.
+
+
+5. TODO: mock
 
 ### Немного о криптографии приложения
 Мы используем ключи для шифрования важных данных. Для того, чтобы шифрование работало, необходимо указать ключ в конфиге.
@@ -41,10 +50,10 @@ $ go run scripts/key_and_db_creds.go
 
 ## Запуск приложения
 ```shell
-$ go run cmd/main.go
+$ make run
 ```
 
 Посмотреть флаги приложения:
 ```shell
-$ go run cmd/main.go -help
+$ make run -help
 ```
