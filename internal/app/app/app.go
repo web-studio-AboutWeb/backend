@@ -2,79 +2,127 @@ package app
 
 import (
 	"context"
+	"fmt"
+	"log/slog"
+	stdhttp "net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
-	"web-studio-backend/internal/app"
-	"web-studio-backend/internal/app/core"
-	"web-studio-backend/internal/app/infrastructure/config"
-	"web-studio-backend/internal/app/infrastructure/logger"
-	"web-studio-backend/internal/app/interfaces/http"
+
+	"github.com/golang-migrate/migrate/v4"
+
+	"web-studio-backend/internal/app/handler/http"
+	"web-studio-backend/internal/app/infrastructure/repository/postgresql"
+	"web-studio-backend/internal/app/service"
+	"web-studio-backend/internal/pkg/config"
+	"web-studio-backend/internal/pkg/wcrypto"
+	"web-studio-backend/pkg/postgres"
+
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
-type application struct {
-	core core.Core
-}
+func Run(configPath string) error {
+	config.Read(configPath)
 
-func New(configPath string) (app.App, error) {
-	err := config.Init(configPath)
-	if err != nil {
-		return nil, err
+	cfg := config.Get()
+
+	// Logger initialization
+	logLevel := slog.LevelDebug
+	if cfg.App.Env == "prod" {
+		logLevel = slog.LevelInfo
 	}
 
-	loggerConfig := config.Config.Logger
+	logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
+		AddSource: false,
+		Level:     logLevel,
+	}))
+	slog.SetDefault(logger)
 
-	logger.Init(&logger.Config{
-		LogToConsole:     loggerConfig.LogToConsole,
-		EncodeLogsAsJson: loggerConfig.EncodeLogsAsJson,
-		LogToFile:        loggerConfig.LogToFile,
-		Directory:        loggerConfig.Directory,
-		Filename:         loggerConfig.Filename,
-		MaxSize:          loggerConfig.MaxSize,
-		MaxBackups:       loggerConfig.MaxBackups,
-		MaxAge:           loggerConfig.MaxAge,
-	})
-
-	c, err := core.New(context.Background())
-	if err != nil {
-		return nil, err
-	}
-
-	return &application{
-		core: c,
-	}, nil
-}
-
-func (app *application) Start() error {
-	httpServer := http.NewHttpServer(app.core)
-
-	go func() {
-		err := httpServer.Run()
-		if err != nil {
-			logger.Logger.Error().Err(err)
-		}
-	}()
-
-	quit := make(chan os.Signal, 1)
-	signals := []os.Signal{syscall.SIGABRT, syscall.SIGQUIT, syscall.SIGHUP, os.Interrupt, syscall.SIGTERM}
-	signal.Notify(quit, signals...)
-
-	<-quit
-	logger.Logger.Info().Msg("Shutting down the server...")
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	if err := httpServer.Shutdown(ctx); err != nil {
-		logger.Logger.Error().Msgf("server shutdown failed: %v", err)
+	// Database stuff
+	user, password, err := wcrypto.DecodeUserPass(cfg.Database.User, cfg.Database.Password, config.Block)
+	if err != nil {
+		return fmt.Errorf("decoding database username: %w", err)
 	}
 
-	logger.Logger.Info().Msg("Server has been shut down")
+	dbConnString := postgres.ConnectionString(user, password, cfg.Database.Host, cfg.Database.Database)
+
+	pg, err := postgres.New(ctx, dbConnString)
+	if err != nil {
+		return fmt.Errorf("creating postgres: %w", err)
+	}
+
+	slog.Info("Connected to database")
+
+	err = applyMigrations(dbConnString)
+	if err != nil {
+		return fmt.Errorf("applying migrations: %w", err)
+	}
+
+	// Repositories initialization
+	userRepo := postgresql.NewUserRepository(pg.Pool)
+	projectRepo := postgresql.NewProjectRepository(pg.Pool)
+
+	// Services initialization
+	userService := service.NewUserService(userRepo)
+	projectService := service.NewProjectService(projectRepo)
+
+	// Handler initialization
+	handler := http.NewHandler(
+		userService,
+		projectService,
+	)
+
+	httpServer := &stdhttp.Server{
+		Addr:    fmt.Sprintf("%s:%d", cfg.Http.Host, cfg.Http.Port),
+		Handler: handler,
+	}
+
+	slog.Info("Server is started", slog.String("addr", httpServer.Addr))
+
+	httpServerCh := make(chan error)
+	if cfg.Http.HttpsEnabled {
+		httpServerCh <- httpServer.ListenAndServeTLS(cfg.Http.CertFilePath, cfg.Http.KeyFilePath)
+	} else {
+		httpServerCh <- httpServer.ListenAndServe()
+	}
+
+	interrupt := make(chan os.Signal, 1)
+	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
+
+	select {
+	case s := <-interrupt:
+		slog.Info("Interrupt signal: " + s.String())
+	case err = <-httpServerCh:
+		slog.Error("Server stop signal: " + err.Error())
+	}
+
+	// Shutdown
+	err = httpServer.Shutdown(ctx)
+	if err != nil {
+		slog.Error("failed to shutdown the server", err)
+	}
+	slog.Info("Server has been shut down successfully")
+
+	pg.Close()
 
 	return nil
 }
 
-func (app *application) Stop(ctx context.Context) error {
+// applyMigrations applies migrations to database.
+func applyMigrations(connString string) error {
+	m, err := migrate.New("file://migrations", connString)
+	if err != nil {
+		return fmt.Errorf("creating migration: %w", err)
+	}
+
+	if err = m.Up(); err != nil {
+		return fmt.Errorf("applying up: %w", err)
+	}
+
 	return nil
 }
