@@ -2,11 +2,11 @@ package http
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-
-	"web-studio-backend/internal/pkg/config"
+	"github.com/go-chi/httprate"
 )
 
 func NewHandler(
@@ -20,15 +20,14 @@ func NewHandler(
 
 	r := chi.NewRouter()
 
-	if config.Get().App.Env != "prod" {
-		r.Use(middleware.Logger)
-	}
+	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
+	r.Use(httprate.LimitByIP(69, time.Minute))
 	r.Use(corsMiddleware())
 
 	r.Get("/static/*", getStatic)
 
-	// TODO: use auth middleware here to keep API private
+	// TODO: move to auth middleware handlers to keep API private
 	r.Get(`/api/v1/docs`, getApiDocs)
 	r.Get(`/api/v1/docs/swagger.json`, getApiDocsSwagger)
 
@@ -36,7 +35,7 @@ func NewHandler(
 	r.Post(`/api/v1/auth/sign-out`, ah.signOut)
 
 	r.Group(func(r chi.Router) {
-		// TODO: auth middleware
+		r.Use(ah.authMiddleware)
 
 		r.Get(`/api/v1/users/{user_id}`, uh.getUser)
 		r.Post(`/api/v1/users`, uh.createUser)

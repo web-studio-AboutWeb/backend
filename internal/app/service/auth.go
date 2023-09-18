@@ -13,6 +13,7 @@ import (
 
 type AuthRepository interface {
 	GetUserByLogin(ctx context.Context, login string) (*domain.User, error)
+	CheckUserExists(ctx context.Context, id int16) error
 }
 
 type AuthService struct {
@@ -49,4 +50,8 @@ func (s *AuthService) SignIn(ctx context.Context, req *domain.SignInRequest) (*d
 
 func (s *AuthService) SignOut(_ context.Context, sessionID string) {
 	session.Delete(sessionID)
+}
+
+func (s *AuthService) CheckUserExists(ctx context.Context, id int16) error {
+	return s.CheckUserExists(ctx, id)
 }

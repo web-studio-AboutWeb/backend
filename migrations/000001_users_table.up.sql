@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS users
     surname          TEXT        NOT NULL,
     login            TEXT        NOT NULL UNIQUE,
     encoded_password TEXT        NOT NULL,
+    salt             TEXT        NOT NULL,
     role             int2        NOT NULL,
     position         int2        NOT NULL,
     created_at       timestamptz NOT NULL DEFAULT now(),
