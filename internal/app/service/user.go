@@ -52,6 +52,8 @@ func (s *UserService) CreateUser(ctx context.Context, user *domain.User) (*domai
 		return nil, apperror.NewDuplicate("Login already taken.", "login")
 	}
 
+	// TODO: encode user password
+
 	userId, err := s.repo.CreateUser(ctx, user)
 	if err != nil {
 		return nil, fmt.Errorf("creating user: %w", err)
