@@ -18,11 +18,11 @@ swag init -o web/static/apidocs --ot json -q -g cmd/app/main.go
 
 echo "Enter password several times if asked, that's ok."
 
-scp -r ./web ./app ./cmd/scripts/update.sh "$TARGET:/opt/ws/"
+scp -r ./web ./app ./cmd/scripts/update.sh "$TARGET:/opt/ws"
 
 ssh -t "$TARGET" "cd /opt/ws &&
-    (tmux kill-session -t about-web || pkill tmux);
+    (sudo tmux kill-session -t about-web || pkill tmux);
     chmod +x ./update.sh && sudo ./update.sh &&
-    tmux new-session -s about-web -d \"cd /opt/ws && sudo ./app \""
+    sudo tmux new-session -s about-web -d \"sudo /opt/ws/app -config-path /opt/ws/config.yml \""
 
 rm ./app
