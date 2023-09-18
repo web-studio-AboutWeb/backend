@@ -9,6 +9,7 @@ import (
 	"web-studio-backend/internal/app/handler/http/httphelp"
 )
 
+//go:generate mockgen -source=user.go -destination=./mocks/user.go -package=mocks
 type UserService interface {
 	GetUser(ctx context.Context, id int16) (*domain.User, error)
 	CreateUser(ctx context.Context, user *domain.User) (*domain.User, error)
@@ -64,14 +65,7 @@ func (h *userHandler) createUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response, err := h.userService.CreateUser(r.Context(), &domain.User{
-		Name:     req.Name,
-		Surname:  req.Surname,
-		Login:    req.Login,
-		Password: req.Password,
-		Role:     req.Role,
-		Position: req.Position,
-	})
+	response, err := h.userService.CreateUser(r.Context(), req.ToDomain())
 	if err != nil {
 		httphelp.SendError(err, w)
 		return

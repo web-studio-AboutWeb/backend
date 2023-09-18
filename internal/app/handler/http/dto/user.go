@@ -1,6 +1,8 @@
 package dto
 
-import "web-studio-backend/internal/app/domain"
+import (
+	"web-studio-backend/internal/app/domain"
+)
 
 type (
 	CreateUserIn struct {
@@ -19,3 +21,18 @@ type (
 		Position domain.UserPosition `json:"position"`
 	}
 )
+
+func (in *CreateUserIn) ToDomain() *domain.User {
+	if in == nil {
+		return nil
+	}
+
+	return &domain.User{
+		Name:     in.Name,
+		Surname:  in.Surname,
+		Login:    in.Login,
+		Password: in.Password,
+		Role:     in.Role,
+		Position: in.Position,
+	}
+}
