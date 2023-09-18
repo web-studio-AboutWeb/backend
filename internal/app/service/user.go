@@ -41,10 +41,10 @@ func (s *UserService) GetUser(ctx context.Context, id int16) (*domain.User, erro
 func (s *UserService) CreateUser(ctx context.Context, user *domain.User) (*domain.User, error) {
 	foundUser, err := s.repo.GetUserByLogin(ctx, user.Login)
 	if err != nil && !errors.Is(err, repository.ErrObjectNotFound) {
-		return nil, fmt.Errorf("getting user by login %s: %w", err)
+		return nil, fmt.Errorf("getting user by login: %w", err)
 	}
 	if foundUser != nil {
-		return nil, apperror.NewDuplicate("Email already taken.", "email")
+		return nil, apperror.NewDuplicate("Login already taken.", "login")
 	}
 
 	userId, err := s.repo.CreateUser(ctx, user)

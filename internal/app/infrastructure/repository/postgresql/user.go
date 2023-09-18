@@ -22,7 +22,7 @@ func NewUserRepository(pool *pgxpool.Pool) *UserRepository {
 }
 
 func (r *UserRepository) GetUser(ctx context.Context, id int16) (*domain.User, error) {
-	row := r.pool.QueryRow(ctx, `SELECT id, name, surname, created_at, role, position
+	row := r.pool.QueryRow(ctx, `SELECT id, name, surname, login, created_at, role, position
                                  FROM users
                                  WHERE id = $1`, id)
 
@@ -31,6 +31,7 @@ func (r *UserRepository) GetUser(ctx context.Context, id int16) (*domain.User, e
 		&user.ID,
 		&user.Name,
 		&user.Surname,
+		&user.Login,
 		&user.CreatedAt,
 		&user.Role,
 		&user.Position,
@@ -40,6 +41,9 @@ func (r *UserRepository) GetUser(ctx context.Context, id int16) (*domain.User, e
 		}
 		return nil, fmt.Errorf("getting user %d: %w", id, err)
 	}
+
+	user.RoleName = user.Role.String()
+	user.PositionName = user.Position.String()
 
 	return &user, nil
 }

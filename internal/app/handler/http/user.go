@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"web-studio-backend/internal/app/domain"
+	"web-studio-backend/internal/app/handler/http/dto"
 	"web-studio-backend/internal/app/handler/http/httphelp"
 )
 
@@ -51,19 +52,26 @@ func (h *userHandler) getUser(w http.ResponseWriter, r *http.Request) {
 // @Tags         Users
 // @Accept       json
 // @Produce      json
-// @Param        request body domain.User true "Request body."
+// @Param        request body dto.CreateUserIn true "Request body."
 // @Success      200  {object}	domain.User
 // @Failure      400  {object}  apperror.Error
 // @Failure      500  {object}  apperror.Error
 // @Router       /api/v1/users [post]
 func (h *userHandler) createUser(w http.ResponseWriter, r *http.Request) {
-	var req domain.User
+	var req dto.CreateUserIn
 	if err := httphelp.ReadJSON(&req, r); err != nil {
 		httphelp.SendError(err, w)
 		return
 	}
 
-	response, err := h.userService.CreateUser(r.Context(), &req)
+	response, err := h.userService.CreateUser(r.Context(), &domain.User{
+		Name:     req.Name,
+		Surname:  req.Surname,
+		Login:    req.Login,
+		Password: req.Password,
+		Role:     req.Role,
+		Position: req.Position,
+	})
 	if err != nil {
 		httphelp.SendError(err, w)
 		return
@@ -78,8 +86,8 @@ func (h *userHandler) createUser(w http.ResponseWriter, r *http.Request) {
 // @Tags         Users
 // @Accept       json
 // @Produce      json
-// @Param        user_id path int64 true "User identifier."
-// @Param        request body domain.User true "Request body."
+// @Param        user_id path int16 true "User identifier."
+// @Param        request body dto.UpdateUserIn true "Request body."
 // @Success      200  {object}	domain.User
 // @Failure      404  {object}  apperror.Error
 // @Failure      500  {object}  apperror.Error
@@ -87,14 +95,19 @@ func (h *userHandler) createUser(w http.ResponseWriter, r *http.Request) {
 func (h *userHandler) updateUser(w http.ResponseWriter, r *http.Request) {
 	userID := httphelp.ParseParamInt16("user_id", r)
 
-	var req domain.User
+	var req dto.UpdateUserIn
 	if err := httphelp.ReadJSON(&req, r); err != nil {
 		httphelp.SendError(err, w)
 		return
 	}
-	req.ID = userID
 
-	response, err := h.userService.UpdateUser(r.Context(), &req)
+	response, err := h.userService.UpdateUser(r.Context(), &domain.User{
+		ID:       userID,
+		Name:     req.Name,
+		Surname:  req.Surname,
+		Role:     req.Role,
+		Position: req.Position,
+	})
 	if err != nil {
 		httphelp.SendError(err, w)
 		return

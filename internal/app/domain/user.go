@@ -1,7 +1,10 @@
 package domain
 
 import (
+	"fmt"
 	"time"
+
+	"web-studio-backend/internal/app/domain/apperror"
 )
 
 type (
@@ -10,16 +13,14 @@ type (
 )
 
 const (
-	_ UserRole = iota
-	UserRoleUser
+	UserRoleUser UserRole = iota + 1
 	UserRoleModerator
 	UserRoleAdmin
 	UserRoleGlobalAdmin
 )
 
 const (
-	_ UserPosition = iota
-	UserPositionFrontend
+	UserPositionFrontend UserPosition = iota + 1
 	UserPositionBackend
 	UserPositionTeamLead
 	UserPositionManager
@@ -28,14 +29,62 @@ const (
 )
 
 type User struct {
-	ID        int16        `json:"id"`
-	Name      string       `json:"name"`
-	Surname   string       `json:"surname"`
-	Login     string       `json:"-"`
-	Password  string       `json:"-"`
-	CreatedAt time.Time    `json:"createdAt"`
-	Role      UserRole     `json:"role"`
-	Position  UserPosition `json:"position"`
+	ID           int16        `json:"id"`
+	Name         string       `json:"name"`
+	Surname      string       `json:"surname"`
+	Login        string       `json:"login"`
+	Password     string       `json:"-"`
+	CreatedAt    time.Time    `json:"createdAt"`
+	Role         UserRole     `json:"role"`
+	RoleName     string       `json:"roleName"`
+	Position     UserPosition `json:"position"`
+	PositionName string       `json:"positionName"`
+}
+
+func (u User) Validate() error {
+	if u.Name == "" || len(u.Name) > 30 {
+		return apperror.NewInvalidRequest(
+			fmt.Sprintf("Name cannot be empty and must not exceed %d characters.", 30),
+			"name",
+		)
+	}
+
+	if u.Surname == "" || len(u.Surname) > 50 {
+		return apperror.NewInvalidRequest(
+			fmt.Sprintf("Surname cannot be empty and must not exceed %d characters.", 50),
+			"surname",
+		)
+	}
+
+	if u.Login == "" || len(u.Login) > 20 {
+		return apperror.NewInvalidRequest(
+			fmt.Sprintf("Login cannot be empty and must not exceed %d characters.", 20),
+			"login",
+		)
+	}
+
+	if u.Password == "" || len(u.Password) > 20 {
+		return apperror.NewInvalidRequest(
+			fmt.Sprintf("Password cannot be empty and must not exceed %d characters.", 20),
+			"login",
+		)
+	}
+
+	if u.Role.String() == "" {
+		return apperror.NewInvalidRequest(
+			fmt.Sprintf("Unknown role %d.", u.Role),
+			"role",
+		)
+	}
+
+	if u.Position.String() == "" {
+		return apperror.NewInvalidRequest(
+			fmt.Sprintf("Unknown position %d.", u.Position),
+			"position",
+		)
+	}
+
+	return nil
 }
 
 func (ur UserRole) String() string {
@@ -49,7 +98,7 @@ func (ur UserRole) String() string {
 	case UserRoleGlobalAdmin:
 		return "Global admin"
 	default:
-		return "None"
+		return ""
 	}
 }
 
@@ -68,6 +117,6 @@ func (up UserPosition) String() string {
 	case UserPositionDevOps:
 		return "DevOps"
 	default:
-		return "None"
+		return ""
 	}
 }
