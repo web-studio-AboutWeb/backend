@@ -40,6 +40,10 @@ func (s *UserService) GetUser(ctx context.Context, id int16) (*domain.User, erro
 }
 
 func (s *UserService) CreateUser(ctx context.Context, user *domain.User) (*domain.User, error) {
+	if err := user.Validate(); err != nil {
+		return nil, fmt.Errorf("validating user: %w", err)
+	}
+
 	foundUser, err := s.repo.GetUserByLogin(ctx, user.Login)
 	if err != nil && !errors.Is(err, repository.ErrObjectNotFound) {
 		return nil, fmt.Errorf("getting user by login: %w", err)
@@ -62,6 +66,10 @@ func (s *UserService) CreateUser(ctx context.Context, user *domain.User) (*domai
 }
 
 func (s *UserService) UpdateUser(ctx context.Context, user *domain.User) (*domain.User, error) {
+	if err := user.Validate(); err != nil {
+		return nil, fmt.Errorf("validating user: %w", err)
+	}
+
 	_, err := s.repo.GetUser(ctx, user.ID)
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {

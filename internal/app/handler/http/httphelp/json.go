@@ -46,12 +46,10 @@ func ReadJSON(to any, r *http.Request) error {
 func SendError(err error, w http.ResponseWriter) {
 	slog.Error(err.Error())
 
-	var coreError *apperror.Error
-
-	if errors.As(err, &coreError) {
+	if appError := unwrapAppError(err); appError != nil {
 		var code int
 
-		switch coreError.Type {
+		switch appError.Type {
 		case apperror.NotFoundType:
 			code = http.StatusNotFound
 		case apperror.InvalidRequestType:
@@ -66,9 +64,28 @@ func SendError(err error, w http.ResponseWriter) {
 			code = http.StatusInternalServerError
 		}
 
-		SendJSON(code, coreError, w)
+		SendJSON(code, appError, w)
 		return
 	}
 
 	SendJSON(http.StatusInternalServerError, apperror.Error{Message: err.Error(), Type: apperror.InternalType}, w)
+}
+
+func unwrapAppError(err error) *apperror.Error {
+	var (
+		ae   *apperror.Error
+		temp = err
+	)
+
+	for {
+		if temp == nil {
+			return nil
+		}
+
+		if errors.As(temp, &ae) {
+			return ae
+		}
+
+		temp = errors.Unwrap(temp)
+	}
 }
