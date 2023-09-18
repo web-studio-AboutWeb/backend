@@ -25,7 +25,7 @@ func SendJSON(code int, data any, w http.ResponseWriter) {
 
 	_, err = w.Write(buf)
 	if err != nil {
-		panic(err)
+		slog.Error("Responding JSON data", slog.String("error", err.Error()))
 	}
 }
 

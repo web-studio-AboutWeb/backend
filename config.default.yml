@@ -1,6 +1,5 @@
 app:
   env: dev
-  key: bd53b9d5f1d53318e322f0a4cbb225972781ef66fb840b309e2a1951edc3abfb
   jwt:
     access_expiration_minutes: 15
     refresh_expiration_days: 7

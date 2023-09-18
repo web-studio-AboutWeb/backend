@@ -26,6 +26,21 @@ func newAuthHandler(authService AuthService) *authHandler {
 	return &authHandler{authService: authService}
 }
 
+// signIn godoc
+// @Summary      Sign in
+// @Description  On success returns CSRF token and sets HTTP cookie.
+// @Description
+// @Description  All the following requests must contain the X-CSRF-token header for successful authorization.
+// @Description
+// @Description  Example: `X-CSRF-token: <token>`.
+// @Description
+// @Description  If authorization will fail, `401 Unauthorized` status code will be returned without any additional data.
+// @Tags         Auth
+// @Param        request body domain.SignInRequest true "Request body."
+// @Success      200  {object}	domain.SignInResponse
+// @Failure      401  {object}  apperror.Error
+// @Failure      500  {object}  apperror.Error
+// @Router       /api/v1/auth/sign-in [post]
 func (h *authHandler) signIn(w http.ResponseWriter, r *http.Request) {
 	var req domain.SignInRequest
 	if err := httphelp.ReadJSON(&req, r); err != nil {
@@ -49,6 +64,14 @@ func (h *authHandler) signIn(w http.ResponseWriter, r *http.Request) {
 	httphelp.SendJSON(http.StatusOK, response, w)
 }
 
+// signOut godoc
+// @Summary      Sign out
+// @Description  Drops HTTP cookie and logs out the user.
+// @Tags         Auth
+// @Success      200
+// @Failure      401  {object}  apperror.Error
+// @Failure      500  {object}  apperror.Error
+// @Router       /api/v1/auth/sign-out [post]
 func (h *authHandler) signOut(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session_id")
 	if err != nil {
@@ -64,6 +87,8 @@ func (h *authHandler) signOut(w http.ResponseWriter, r *http.Request) {
 		Path:   "/",
 		MaxAge: -1, // delete cookie
 	})
+
+	w.WriteHeader(http.StatusOK)
 }
 
 func (h *authHandler) authMiddleware(next http.Handler) http.Handler {
