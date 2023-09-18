@@ -18,6 +18,8 @@ swag init -o web/static/apidocs --ot json -q -g cmd/app/main.go
 
 echo "Enter password several times if asked, that's ok."
 
+ssh -t "$TARGET" "sudo rm /opt/ws/app"
+
 scp -r ./web ./app ./cmd/scripts/update.sh "$TARGET:/opt/ws"
 
 ssh -t "$TARGET" "cd /opt/ws &&
