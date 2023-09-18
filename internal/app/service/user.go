@@ -10,6 +10,7 @@ import (
 	"web-studio-backend/internal/app/infrastructure/repository"
 )
 
+//go:generate mockgen -source=user.go -destination=./mocks/user.go -package=mocks
 type UserRepository interface {
 	GetUser(ctx context.Context, id int16) (*domain.User, error)
 	CreateUser(ctx context.Context, user *domain.User) (int16, error)
