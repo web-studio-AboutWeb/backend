@@ -59,15 +59,18 @@ func Run(configPath string) error {
 	// Repositories initialization
 	userRepo := postgresql.NewUserRepository(pg.Pool)
 	projectRepo := postgresql.NewProjectRepository(pg.Pool)
+	authRepo := postgresql.NewAuthRepository(pg.Pool)
 
 	// Services initialization
 	userService := service.NewUserService(userRepo)
 	projectService := service.NewProjectService(projectRepo)
+	authService := service.NewAuthService(authRepo)
 
 	// Handler initialization
 	handler := http.NewHandler(
 		userService,
 		projectService,
+		authService,
 	)
 
 	httpServer := &stdhttp.Server{
