@@ -3,6 +3,7 @@ package domain
 import (
 	"crypto/sha512"
 	"fmt"
+	"log/slog"
 	"time"
 
 	"web-studio-backend/internal/app/domain/apperror"
@@ -34,10 +35,13 @@ type User struct {
 	ID              int16        `json:"id"`
 	Name            string       `json:"name"`
 	Surname         string       `json:"surname"`
-	Login           string       `json:"login"`
+	Username        string       `json:"username"`
+	Email           string       `json:"email"`
 	EncodedPassword string       `json:"-"`
 	Salt            string       `json:"-"`
 	CreatedAt       time.Time    `json:"createdAt"`
+	UpdatedAt       *time.Time   `json:"updatedAt"`
+	DisabledAt      *time.Time   `json:"disabledAt"`
 	Role            UserRole     `json:"role"`
 	RoleName        string       `json:"roleName"`
 	Position        UserPosition `json:"position"`
@@ -59,11 +63,15 @@ func (u *User) Validate() error {
 		)
 	}
 
-	if u.Login == "" || len(u.Login) > 20 {
+	if u.Username == "" || len(u.Username) > 20 {
 		return apperror.NewInvalidRequest(
-			fmt.Sprintf("Login cannot be empty and must not exceed %d characters.", 20),
-			"login",
+			fmt.Sprintf("Username cannot be empty and must not exceed %d characters.", 20),
+			"username",
 		)
+	}
+
+	if !strhelp.ValidateEmail(u.Email) {
+		return apperror.NewInvalidRequest("Email has invalid format.", "email")
 	}
 
 	if u.EncodedPassword == "" || len(u.EncodedPassword) > 20 {
@@ -100,6 +108,7 @@ func (u *User) EncodePassword() error {
 		return fmt.Errorf("generating random string: %w", err)
 	}
 	u.Salt = salt
+	slog.Debug("salt:", u.Salt)
 
 	u.EncodedPassword = fmt.Sprintf("%x", sha512.Sum512([]byte(u.EncodedPassword+u.Salt)))
 

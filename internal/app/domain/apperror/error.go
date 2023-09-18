@@ -3,8 +3,7 @@ package apperror
 type ErrorType int8
 
 const (
-	_ ErrorType = iota
-	NotFoundType
+	NotFoundType ErrorType = iota + 1
 	InternalType
 	UnauthorizedType
 	ForbiddenType
@@ -28,6 +27,7 @@ func (e Error) Error() string {
 func New(t ErrorType, msg, field string) *Error {
 	return &Error{
 		Message: msg,
+		Field:   field,
 		Type:    t,
 	}
 }
@@ -51,7 +51,7 @@ func NewNotFound(field string) error {
 func NewUnauthorized(msg string) error {
 	return &Error{
 		Message: msg,
-		Type:    NotFoundType,
+		Type:    UnauthorizedType,
 	}
 }
 
@@ -72,6 +72,7 @@ func NewDisabled(msg string) error {
 func NewDuplicate(msg, field string) error {
 	return &Error{
 		Message: msg,
-		Type:    DisabledType,
+		Field:   field,
+		Type:    DuplicateType,
 	}
 }
