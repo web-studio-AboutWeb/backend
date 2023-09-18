@@ -5,8 +5,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/jackc/pgx/v5/pgxpool"
-
 	"web-studio-backend/internal/app/domain"
 	"web-studio-backend/internal/app/infrastructure/repository"
 
@@ -14,11 +12,11 @@ import (
 )
 
 type ProjectRepository struct {
-	pool *pgxpool.Pool
+	pool Driver
 }
 
-func NewProjectRepository(pool *pgxpool.Pool) *ProjectRepository {
-	return &ProjectRepository{pool}
+func NewProjectRepository(dr Driver) *ProjectRepository {
+	return &ProjectRepository{dr}
 }
 
 func (r *ProjectRepository) GetProject(ctx context.Context, id int16) (*domain.Project, error) {

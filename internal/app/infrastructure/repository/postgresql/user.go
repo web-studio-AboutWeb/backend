@@ -5,8 +5,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/jackc/pgx/v5/pgxpool"
-
 	"web-studio-backend/internal/app/domain"
 	"web-studio-backend/internal/app/infrastructure/repository"
 
@@ -14,10 +12,10 @@ import (
 )
 
 type UserRepository struct {
-	pool *pgxpool.Pool
+	pool Driver
 }
 
-func NewUserRepository(pool *pgxpool.Pool) *UserRepository {
+func NewUserRepository(pool Driver) *UserRepository {
 	return &UserRepository{pool}
 }
 
