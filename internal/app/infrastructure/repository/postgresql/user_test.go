@@ -34,7 +34,7 @@ func TestUserRepository_CreateUser(t *testing.T) {
 			in: &domain.User{
 				Name:            "name",
 				Surname:         "surname",
-				Login:           "login",
+				Username:        "login",
 				EncodedPassword: "password",
 				Role:            1,
 				Position:        1,
@@ -50,7 +50,7 @@ func TestUserRepository_CreateUser(t *testing.T) {
 					WithArgs(
 						user.Name,
 						user.Surname,
-						user.Login,
+						user.Username,
 						user.EncodedPassword,
 						user.Role,
 						user.Position,
@@ -62,7 +62,7 @@ func TestUserRepository_CreateUser(t *testing.T) {
 			in: &domain.User{
 				Name:            "name",
 				Surname:         "surname",
-				Login:           "login",
+				Username:        "login",
 				EncodedPassword: "password",
 				Role:            1,
 				Position:        1,
@@ -75,7 +75,7 @@ func TestUserRepository_CreateUser(t *testing.T) {
 					WithArgs(
 						user.Name,
 						user.Surname,
-						user.Login,
+						user.Username,
 						user.EncodedPassword,
 						user.Role,
 						user.Position,

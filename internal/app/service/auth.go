@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 
 	"web-studio-backend/internal/app/domain"
 	"web-studio-backend/internal/app/domain/apperror"
@@ -13,7 +14,7 @@ import (
 
 type AuthRepository interface {
 	GetUserByLogin(ctx context.Context, login string) (*domain.User, error)
-	CheckUserExists(ctx context.Context, id int16) error
+	GetActiveUser(ctx context.Context, id int16) (*domain.User, error)
 }
 
 type AuthService struct {
@@ -34,6 +35,7 @@ func (s *AuthService) SignIn(ctx context.Context, req *domain.SignInRequest) (*d
 	}
 
 	if !user.ComparePassword(req.Password) {
+		slog.Debug("Invalid password")
 		return nil, apperror.NewInvalidRequest("Invalid credentials.", "")
 	}
 
@@ -53,5 +55,9 @@ func (s *AuthService) SignOut(_ context.Context, sessionID string) {
 }
 
 func (s *AuthService) CheckUserExists(ctx context.Context, id int16) error {
-	return s.CheckUserExists(ctx, id)
+	_, err := s.repo.GetActiveUser(ctx, id)
+	if err != nil {
+		return fmt.Errorf("getting active user: %w", err)
+	}
+	return nil
 }

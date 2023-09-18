@@ -51,7 +51,7 @@ func TestUserService_CreateUser(t *testing.T) {
 					ID:              1,
 					Name:            "name",
 					Surname:         "surname",
-					Login:           "login",
+					Username:        "login",
 					EncodedPassword: "",
 					Role:            1,
 					Position:        1,
@@ -63,19 +63,19 @@ func TestUserService_CreateUser(t *testing.T) {
 				ID:              1,
 				Name:            "name",
 				Surname:         "surname",
-				Login:           "login",
+				Username:        "login",
 				EncodedPassword: "",
 				Role:            1,
 				Position:        1,
 			},
 			mock: func(user *domain.User) {
-				repo.EXPECT().GetUserByLogin(ctx, user.Login).Return(nil, nil)
+				repo.EXPECT().GetUserByLogin(ctx, user.Username).Return(nil, nil)
 				repo.EXPECT().CreateUser(ctx, user).Return(int16(1), nil)
 				repo.EXPECT().GetUser(ctx, int16(1)).Return(&domain.User{
 					ID:              1,
 					Name:            user.Name,
 					Surname:         user.Surname,
-					Login:           user.Login,
+					Username:        user.Username,
 					EncodedPassword: "",
 					Role:            user.Role,
 					Position:        user.Position,
@@ -93,13 +93,13 @@ func TestUserService_CreateUser(t *testing.T) {
 				ID:              1,
 				Name:            "name",
 				Surname:         "surname",
-				Login:           "login",
+				Username:        "login",
 				EncodedPassword: "",
 				Role:            1,
 				Position:        1,
 			},
 			mock: func(user *domain.User) {
-				repo.EXPECT().GetUserByLogin(ctx, user.Login).Return(&domain.User{}, nil)
+				repo.EXPECT().GetUserByLogin(ctx, user.Username).Return(&domain.User{}, nil)
 			},
 		},
 		{
@@ -113,13 +113,13 @@ func TestUserService_CreateUser(t *testing.T) {
 				ID:              1,
 				Name:            "name",
 				Surname:         "surname",
-				Login:           "login",
+				Username:        "login",
 				EncodedPassword: "",
 				Role:            1,
 				Position:        1,
 			},
 			mock: func(user *domain.User) {
-				repo.EXPECT().GetUserByLogin(ctx, user.Login).Return(nil, nil)
+				repo.EXPECT().GetUserByLogin(ctx, user.Username).Return(nil, nil)
 				repo.EXPECT().CreateUser(ctx, user).Return(int16(0), fmt.Errorf("create user error"))
 			},
 		},
@@ -134,13 +134,13 @@ func TestUserService_CreateUser(t *testing.T) {
 				ID:              1,
 				Name:            "name",
 				Surname:         "surname",
-				Login:           "login",
+				Username:        "login",
 				EncodedPassword: "",
 				Role:            1,
 				Position:        1,
 			},
 			mock: func(user *domain.User) {
-				repo.EXPECT().GetUserByLogin(ctx, user.Login).Return(nil, nil)
+				repo.EXPECT().GetUserByLogin(ctx, user.Username).Return(nil, nil)
 				repo.EXPECT().CreateUser(ctx, user).Return(int16(1), nil)
 				repo.EXPECT().GetUser(ctx, int16(1)).Return(nil, fmt.Errorf("get user error"))
 			},

@@ -20,20 +20,52 @@ func NewUserRepository(pool Driver) *UserRepository {
 }
 
 func (r *UserRepository) GetUser(ctx context.Context, id int16) (*domain.User, error) {
-	row := r.pool.QueryRow(ctx, `SELECT id, name, surname, login, created_at, role, position
-                                 FROM users
-                                 WHERE id = $1`, id)
-
 	var user domain.User
-	if err := row.Scan(
+
+	err := r.pool.QueryRow(ctx, `
+		SELECT id, name, surname, username, created_at, updated_at, disabled_at, role, position
+        FROM users
+        WHERE id = $1`, id).Scan(
 		&user.ID,
 		&user.Name,
 		&user.Surname,
-		&user.Login,
+		&user.Username,
 		&user.CreatedAt,
+		&user.UpdatedAt,
+		&user.DisabledAt,
 		&user.Role,
 		&user.Position,
-	); err != nil {
+	)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, repository.ErrObjectNotFound
+		}
+		return nil, fmt.Errorf("scanning user: %w", err)
+	}
+
+	user.RoleName = user.Role.String()
+	user.PositionName = user.Position.String()
+
+	return &user, nil
+}
+
+func (r *UserRepository) GetActiveUser(ctx context.Context, id int16) (*domain.User, error) {
+	var user domain.User
+	err := r.pool.QueryRow(ctx, `
+		SELECT id, name, surname, username, email, created_at, updated_at, role, position
+        FROM users
+        WHERE id = $1 AND disabled_at IS NULL`, id).Scan(
+		&user.ID,
+		&user.Name,
+		&user.Surname,
+		&user.Username,
+		&user.Email,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+		&user.Role,
+		&user.Position,
+	)
+	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, repository.ErrObjectNotFound
 		}
@@ -50,13 +82,15 @@ func (r *UserRepository) CreateUser(ctx context.Context, user *domain.User) (int
 	var userId int16
 
 	err := r.pool.QueryRow(ctx,
-		`INSERT INTO users(name, surname, login, password, role, position)
-             VALUES($1, $2, $3, $4, $5, $6)
-             RETURNING  id`,
+		`INSERT INTO users(name, surname, username, email, encoded_password, salt, role, position)
+		 VALUES($1, $2, $3, $4, $5, $6, $7, $8)
+		 RETURNING  id`,
 		user.Name,
 		user.Surname,
-		user.Login,
+		user.Username,
+		user.Email,
 		user.EncodedPassword,
+		user.Salt,
 		user.Role,
 		user.Position,
 	).Scan(&userId)
@@ -70,7 +104,7 @@ func (r *UserRepository) CreateUser(ctx context.Context, user *domain.User) (int
 func (r *UserRepository) UpdateUser(ctx context.Context, user *domain.User) error {
 	_, err := r.pool.Exec(ctx, `
 		UPDATE users 
-		SET name=$2, surname=$3, role=$4, position=$5
+		SET name=$2, surname=$3, role=$4, position=$5, updated_at=now()
 		WHERE id = $1`,
 		user.ID,
 		user.Name,
@@ -85,8 +119,8 @@ func (r *UserRepository) UpdateUser(ctx context.Context, user *domain.User) erro
 	return nil
 }
 
-func (r *UserRepository) MarkUserDisabled(ctx context.Context, id int16) error {
-	_, err := r.pool.Exec(ctx, `UPDATE users SET disabled_at=now() WHERE id = $1`, id)
+func (r *UserRepository) DisableUser(ctx context.Context, id int16) error {
+	_, err := r.pool.Exec(ctx, `UPDATE users SET disabled_at=now() WHERE id=$1`, id)
 	if err != nil {
 		return fmt.Errorf("deleting user %d: %w", id, err)
 	}
@@ -96,17 +130,45 @@ func (r *UserRepository) MarkUserDisabled(ctx context.Context, id int16) error {
 
 func (r *UserRepository) GetUserByLogin(ctx context.Context, login string) (*domain.User, error) {
 	var user domain.User
-	err := r.pool.QueryRow(ctx, `SELECT id, login
-                                 FROM users
-                                 WHERE lower(login) = lower($1)`, login).Scan(
+
+	err := r.pool.QueryRow(ctx, `
+		SELECT id, username, email, encoded_password, salt
+        FROM users
+        WHERE (lower(username)=lower($1) OR lower(email)=lower($1)) AND disabled_at IS NULL`,
+		login).Scan(
 		&user.ID,
-		&user.Login,
+		&user.Username,
+		&user.Email,
+		&user.EncodedPassword,
+		&user.Salt,
 	)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, repository.ErrObjectNotFound
 		}
-		return nil, fmt.Errorf("getting user by login: %w", err)
+		return nil, fmt.Errorf("scanning user: %w", err)
+	}
+
+	return &user, nil
+}
+
+func (r *UserRepository) CheckUsernameUniqueness(ctx context.Context, username, email string) (*domain.User, error) {
+	var user domain.User
+
+	err := r.pool.QueryRow(ctx, `
+		SELECT id, username, email
+        FROM users
+        WHERE (lower(username)=lower($1) OR lower(email)=lower($2)) AND disabled_at IS NULL`,
+		username, email).Scan(
+		&user.ID,
+		&user.Username,
+		&user.Email,
+	)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, repository.ErrObjectNotFound
+		}
+		return nil, fmt.Errorf("scanning user: %w", err)
 	}
 
 	return &user, nil

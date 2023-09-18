@@ -15,8 +15,9 @@ type UserRepository interface {
 	GetUser(ctx context.Context, id int16) (*domain.User, error)
 	CreateUser(ctx context.Context, user *domain.User) (int16, error)
 	UpdateUser(ctx context.Context, user *domain.User) error
-	MarkUserDisabled(ctx context.Context, id int16) error
+	DisableUser(ctx context.Context, id int16) error
 	GetUserByLogin(ctx context.Context, login string) (*domain.User, error)
+	CheckUsernameUniqueness(ctx context.Context, username, email string) (*domain.User, error)
 }
 
 type UserService struct {
@@ -44,12 +45,24 @@ func (s *UserService) CreateUser(ctx context.Context, user *domain.User) (*domai
 		return nil, fmt.Errorf("validating user: %w", err)
 	}
 
-	foundUser, err := s.repo.GetUserByLogin(ctx, user.Login)
+	foundUser, err := s.repo.CheckUsernameUniqueness(ctx, user.Username, user.Email)
 	if err != nil && !errors.Is(err, repository.ErrObjectNotFound) {
 		return nil, fmt.Errorf("getting user by login: %w", err)
 	}
 	if foundUser != nil {
-		return nil, apperror.NewDuplicate("Login already taken.", "login")
+		var field, msgField string
+		if foundUser.Email == user.Email {
+			field = "email"
+			msgField = "Email"
+		} else {
+			field = "username"
+			msgField = "Username"
+		}
+
+		return nil, apperror.NewDuplicate(
+			fmt.Sprintf("%s already taken.", msgField),
+			field,
+		)
 	}
 
 	err = user.EncodePassword()
@@ -108,7 +121,7 @@ func (s *UserService) RemoveUser(ctx context.Context, id int16) error {
 
 	// TODO: compare user role
 
-	err = s.repo.MarkUserDisabled(ctx, id)
+	err = s.repo.DisableUser(ctx, id)
 	if err != nil {
 		return fmt.Errorf("marking user %d disabled: %w", id, err)
 	}

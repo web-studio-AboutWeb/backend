@@ -58,7 +58,7 @@ func TestUserHandler_CreateUser(t *testing.T) {
 					ID:              1,
 					Name:            "name",
 					Surname:         "surname",
-					Login:           "login",
+					Username:        "login",
 					EncodedPassword: "",
 					Role:            1,
 					RoleName:        "User",
@@ -80,7 +80,7 @@ func TestUserHandler_CreateUser(t *testing.T) {
 					ID:              1,
 					Name:            user.Name,
 					Surname:         user.Surname,
-					Login:           user.Login,
+					Username:        user.Login,
 					EncodedPassword: "",
 					Role:            user.Role,
 					RoleName:        user.Role.String(),
@@ -115,7 +115,7 @@ func TestUserHandler_CreateUser(t *testing.T) {
 			code: http.StatusBadRequest,
 			mock: func(user *dto.CreateUserIn) {
 				serv.EXPECT().CreateUser(ctx, user.ToDomain()).Return(nil, &apperror.Error{
-					Message: "Login already taken.",
+					Message: "Username already taken.",
 					Field:   "login",
 					Type:    apperror.InvalidRequestType,
 				})

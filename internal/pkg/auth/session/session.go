@@ -9,7 +9,7 @@ import (
 	"web-studio-backend/internal/pkg/strhelp"
 )
 
-const Timeout = 24 * time.Hour
+const TTL = 24 * time.Hour
 
 var ErrSessionNotFound = errors.New("session not found")
 
@@ -43,7 +43,7 @@ func New(userID int16) (string, string, error) {
 		CSRFToken: csrfToken,
 	}
 
-	time.AfterFunc(Timeout, func() {
+	time.AfterFunc(TTL, func() {
 		Delete(sessionID)
 	})
 

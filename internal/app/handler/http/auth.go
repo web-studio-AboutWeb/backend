@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"web-studio-backend/internal/app/domain"
-	"web-studio-backend/internal/app/domain/apperror"
 	"web-studio-backend/internal/app/handler/http/httphelp"
 	"web-studio-backend/internal/pkg/auth"
 	"web-studio-backend/internal/pkg/auth/session"
@@ -58,7 +57,7 @@ func (h *authHandler) signIn(w http.ResponseWriter, r *http.Request) {
 		Name:    "session_id",
 		Value:   response.SessionID,
 		Path:    "/",
-		Expires: time.Now().Add(session.Timeout),
+		Expires: time.Now().Add(session.TTL),
 	})
 
 	httphelp.SendJSON(http.StatusOK, response, w)
@@ -66,7 +65,7 @@ func (h *authHandler) signIn(w http.ResponseWriter, r *http.Request) {
 
 // signOut godoc
 // @Summary      Sign out
-// @Description  Drops HTTP cookie and logs out the user.
+// @Description  Deletes HTTP cookie and logs out the user.
 // @Tags         Auth
 // @Success      200
 // @Failure      401  {object}  apperror.Error
@@ -75,7 +74,8 @@ func (h *authHandler) signIn(w http.ResponseWriter, r *http.Request) {
 func (h *authHandler) signOut(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session_id")
 	if err != nil {
-		httphelp.SendError(apperror.NewUnauthorized("Cookie is not provided."), w)
+		// Cookie is not provided, just skip.
+		w.WriteHeader(http.StatusOK)
 		return
 	}
 
