@@ -12,9 +12,11 @@ import (
 func NewHandler(
 	userService UserService,
 	projectService ProjectService,
+	authService AuthService,
 ) http.Handler {
 	uh := newUserHandler(userService)
 	ph := newProjectHandler(projectService)
+	ah := newAuthHandler(authService)
 
 	r := chi.NewRouter()
 
@@ -22,8 +24,16 @@ func NewHandler(
 		r.Use(middleware.Logger)
 	}
 	r.Use(middleware.Recoverer)
-
 	r.Use(corsMiddleware())
+
+	r.Get("/static/*", getStatic)
+
+	// TODO: use auth middleware here to keep API private
+	r.Get(`/api/v1/docs`, getApiDocs)
+	r.Get(`/api/v1/docs/swagger.json`, getApiDocsSwagger)
+
+	r.Post(`/api/v1/auth/sign-in`, ah.signIn)
+	r.Post(`/api/v1/auth/sign-out`, ah.signOut)
 
 	r.Group(func(r chi.Router) {
 		// TODO: auth middleware
@@ -38,12 +48,6 @@ func NewHandler(
 		r.Put(`/api/v1/projects/{project_id}`, ph.updateProject)
 		r.Get(`/api/v1/projects/{project_id}/participants`, ph.getProjectParticipants)
 	})
-
-	r.Get("/static/*", getStatic)
-
-	// TODO: use auth middleware here to keep API private
-	r.Get(`/api/v1/docs`, getApiDocs)
-	r.Get(`/api/v1/docs/swagger.json`, getApiDocsSwagger)
 
 	return r
 }

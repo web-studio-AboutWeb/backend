@@ -1,22 +1,12 @@
 package domain
 
 type (
-	AccessTokenMetadata struct {
-		Id       int64    `json:"id"`
-		Username string   `json:"username"`
-		Email    string   `json:"email"`
-		Role     UserRole `json:"role"`
-	}
-	RefreshTokenMetadata struct {
-		Id int64 `json:"id"`
-	}
-
 	SignInRequest struct {
 		Login    string `json:"login"`
 		Password string `json:"password"`
 	}
 	SignInResponse struct {
-		AccessToken  string `json:"accessToken"`
-		RefreshToken string `json:"refreshToken"`
+		SessionID string `json:"-"`
+		CSRFToken string `json:"csrfToken"`
 	}
 )
