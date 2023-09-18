@@ -56,7 +56,7 @@ func (r *UserRepository) CreateUser(ctx context.Context, user *domain.User) (int
 		user.Name,
 		user.Surname,
 		user.Login,
-		user.Password,
+		user.EncodedPassword,
 		user.Role,
 		user.Position,
 	).Scan(&userId)

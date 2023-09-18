@@ -28,11 +28,11 @@ func (in *CreateUserIn) ToDomain() *domain.User {
 	}
 
 	return &domain.User{
-		Name:     in.Name,
-		Surname:  in.Surname,
-		Login:    in.Login,
-		Password: in.Password,
-		Role:     in.Role,
-		Position: in.Position,
+		Name:            in.Name,
+		Surname:         in.Surname,
+		Login:           in.Login,
+		EncodedPassword: in.Password,
+		Role:            in.Role,
+		Position:        in.Position,
 	}
 }

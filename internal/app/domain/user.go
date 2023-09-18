@@ -31,17 +31,17 @@ const (
 )
 
 type User struct {
-	ID           int16        `json:"id"`
-	Name         string       `json:"name"`
-	Surname      string       `json:"surname"`
-	Login        string       `json:"login"`
-	Password     string       `json:"-"`
-	Salt         string       `json:"-"`
-	CreatedAt    time.Time    `json:"createdAt"`
-	Role         UserRole     `json:"role"`
-	RoleName     string       `json:"roleName"`
-	Position     UserPosition `json:"position"`
-	PositionName string       `json:"positionName"`
+	ID              int16        `json:"id"`
+	Name            string       `json:"name"`
+	Surname         string       `json:"surname"`
+	Login           string       `json:"login"`
+	EncodedPassword string       `json:"-"`
+	Salt            string       `json:"-"`
+	CreatedAt       time.Time    `json:"createdAt"`
+	Role            UserRole     `json:"role"`
+	RoleName        string       `json:"roleName"`
+	Position        UserPosition `json:"position"`
+	PositionName    string       `json:"positionName"`
 }
 
 func (u *User) Validate() error {
@@ -66,7 +66,7 @@ func (u *User) Validate() error {
 		)
 	}
 
-	if u.Password == "" || len(u.Password) > 20 {
+	if u.EncodedPassword == "" || len(u.EncodedPassword) > 20 {
 		return apperror.NewInvalidRequest(
 			fmt.Sprintf("Password cannot be empty and must not exceed %d characters.", 20),
 			"login",
@@ -91,12 +91,8 @@ func (u *User) Validate() error {
 }
 
 func (u *User) EncodePassword() error {
-	if u.Password == "" {
+	if u.EncodedPassword == "" {
 		return fmt.Errorf("empty password")
-	}
-
-	if u.Salt == "" {
-		return fmt.Errorf("empty salt")
 	}
 
 	salt, err := strhelp.GenerateRandomString(32)
@@ -105,9 +101,20 @@ func (u *User) EncodePassword() error {
 	}
 	u.Salt = salt
 
-	u.Password = fmt.Sprintf("%x", sha512.Sum512([]byte(u.Password+u.Salt)))
+	u.EncodedPassword = fmt.Sprintf("%x", sha512.Sum512([]byte(u.EncodedPassword+u.Salt)))
 
 	return nil
+}
+
+func (u *User) ComparePassword(password string) bool {
+	if password == "" || u.Salt == "" || u.EncodedPassword == "" {
+		return false
+	}
+
+	passwordHashBytes := sha512.Sum512(append([]byte(password), u.Salt...))
+	passwordHash := fmt.Sprintf("%x", passwordHashBytes)
+
+	return passwordHash == u.EncodedPassword
 }
 
 func (ur UserRole) String() string {
