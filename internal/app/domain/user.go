@@ -1,10 +1,12 @@
 package domain
 
 import (
+	"crypto/sha512"
 	"fmt"
 	"time"
 
 	"web-studio-backend/internal/app/domain/apperror"
+	"web-studio-backend/internal/pkg/strhelp"
 )
 
 type (
@@ -34,6 +36,7 @@ type User struct {
 	Surname      string       `json:"surname"`
 	Login        string       `json:"login"`
 	Password     string       `json:"-"`
+	Salt         string       `json:"-"`
 	CreatedAt    time.Time    `json:"createdAt"`
 	Role         UserRole     `json:"role"`
 	RoleName     string       `json:"roleName"`
@@ -41,7 +44,7 @@ type User struct {
 	PositionName string       `json:"positionName"`
 }
 
-func (u User) Validate() error {
+func (u *User) Validate() error {
 	if u.Name == "" || len(u.Name) > 30 {
 		return apperror.NewInvalidRequest(
 			fmt.Sprintf("Name cannot be empty and must not exceed %d characters.", 30),
@@ -83,6 +86,26 @@ func (u User) Validate() error {
 			"position",
 		)
 	}
+
+	return nil
+}
+
+func (u *User) EncodePassword() error {
+	if u.Password == "" {
+		return fmt.Errorf("empty password")
+	}
+
+	if u.Salt == "" {
+		return fmt.Errorf("empty salt")
+	}
+
+	salt, err := strhelp.GenerateRandomString(32)
+	if err != nil {
+		return fmt.Errorf("generating random string: %w", err)
+	}
+	u.Salt = salt
+
+	u.Password = fmt.Sprintf("%x", sha512.Sum512([]byte(u.Password+u.Salt)))
 
 	return nil
 }
