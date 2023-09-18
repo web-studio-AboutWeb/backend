@@ -13,7 +13,6 @@ import (
 type Config struct {
 	App struct {
 		Env string `yaml:"env" env-default:"dev"`
-		Key string `yaml:"key" env-required:"true"`
 		Jwt struct {
 			AccessTokenExpMinutes int16  `yaml:"access_token_exp_minutes"`
 			RefreshTokenExpDays   int16  `yaml:"refresh_token_exp_days"`
@@ -40,8 +39,8 @@ var (
 	cfg  Config
 	once sync.Once
 
-	// Block is needed to encode/decode sensitive data.
-	Block cipher.Block
+	k     = "bd53b9d5f1d53318e322f0a4cbb225972781ef66fb840b309e2a1951edc3abfb"
+	Block cipher.Block // Block is needed to encode/decode sensitive data.
 )
 
 func Read(configPath string) {
@@ -51,12 +50,12 @@ func Read(configPath string) {
 			log.Fatalf("Failed to read config: %v", err)
 		}
 
-		key, err := hex.DecodeString(cfg.App.Key)
+		decodedKey, err := hex.DecodeString(k)
 		if err != nil {
 			log.Fatalf("Failed to decode app key: %v", err)
 		}
 
-		Block, err = aes.NewCipher(key)
+		Block, err = aes.NewCipher(decodedKey)
 		if err != nil {
 			log.Fatalf("Failed to create cipher block: %v", err)
 		}
