@@ -96,17 +96,11 @@ func (r *UserRepository) MarkUserDisabled(ctx context.Context, id int16) error {
 
 func (r *UserRepository) GetUserByLogin(ctx context.Context, login string) (*domain.User, error) {
 	var user domain.User
-	err := r.pool.QueryRow(ctx, `SELECT id, name, surname, login, password, created_at, role, position
+	err := r.pool.QueryRow(ctx, `SELECT id, login
                                  FROM users
                                  WHERE lower(login) = lower($1)`, login).Scan(
 		&user.ID,
-		&user.Name,
-		&user.Surname,
 		&user.Login,
-		&user.Password,
-		&user.CreatedAt,
-		&user.Role,
-		&user.Position,
 	)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
