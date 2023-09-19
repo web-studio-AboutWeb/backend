@@ -8,11 +8,12 @@ import (
 	"web-studio-backend/internal/app/handler/http/httphelp"
 )
 
+//go:generate mockgen -source=project.go -destination=./mocks/project.go -package=mocks
 type ProjectService interface {
 	GetProject(ctx context.Context, id int32) (*domain.Project, error)
 	CreateProject(ctx context.Context, project *domain.Project) (*domain.Project, error)
 	UpdateProject(ctx context.Context, project *domain.Project) (*domain.Project, error)
-	GetProjectParticipants(ctx context.Context, projectID int32) ([]domain.User, error)
+	GetProjectParticipants(ctx context.Context, projectID int32) ([]domain.ProjectParticipant, error)
 }
 
 type projectHandler struct {
@@ -109,7 +110,7 @@ func (h *projectHandler) updateProject(w http.ResponseWriter, r *http.Request) {
 // @Tags         Projects
 // @Produce      json
 // @Param        project_id path int64 true "Project identifier."
-// @Success      200  {array}   domain.User
+// @Success      200  {array}   domain.ProjectParticipant
 // @Failure      404  {object}  apperror.Error
 // @Failure      500  {object}  apperror.Error
 // @Router       /api/v1/projects/{project_id}/participants [get]

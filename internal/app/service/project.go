@@ -10,11 +10,13 @@ import (
 	"web-studio-backend/internal/app/infrastructure/repository"
 )
 
+//go:generate mockgen -source=project.go -destination=./mocks/project.go -package=mocks
 type ProjectRepository interface {
 	GetProject(ctx context.Context, id int32) (*domain.Project, error)
+	GetActiveProject(ctx context.Context, id int32) (*domain.Project, error)
 	CreateProject(ctx context.Context, project *domain.Project) (int32, error)
 	UpdateProject(ctx context.Context, project *domain.Project) error
-	GetProjectParticipants(ctx context.Context, id int32) ([]domain.User, error)
+	GetProjectParticipants(ctx context.Context, id int32) ([]domain.ProjectParticipant, error)
 }
 
 type ProjectService struct {
@@ -77,7 +79,7 @@ func (s *ProjectService) UpdateProject(ctx context.Context, project *domain.Proj
 	return project, nil
 }
 
-func (s *ProjectService) GetProjectParticipants(ctx context.Context, projectID int32) ([]domain.User, error) {
+func (s *ProjectService) GetProjectParticipants(ctx context.Context, projectID int32) ([]domain.ProjectParticipant, error) {
 	project, err := s.repo.GetProject(ctx, projectID)
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {

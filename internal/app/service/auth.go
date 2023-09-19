@@ -12,6 +12,7 @@ import (
 	"web-studio-backend/internal/pkg/auth/session"
 )
 
+//go:generate mockgen -source=auth.go -destination=./mocks/auth.go -package=mocks
 type AuthRepository interface {
 	GetUserByLogin(ctx context.Context, login string) (*domain.User, error)
 	GetActiveUser(ctx context.Context, id int32) (*domain.User, error)

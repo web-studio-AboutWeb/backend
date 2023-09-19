@@ -136,7 +136,8 @@ func (r *UserRepository) GetUserByLogin(ctx context.Context, login string) (*dom
 	err := r.pool.QueryRow(ctx, `
 		SELECT id, username, email, encoded_password, salt
         FROM users
-        WHERE (lower(username)=lower($1) OR lower(email)=lower($1)) AND disabled_at IS NULL`,
+        WHERE (lower(username)=lower($1) OR lower(email)=lower($1))
+          		AND disabled_at IS NULL`,
 		login).Scan(
 		&user.ID,
 		&user.Username,
@@ -160,7 +161,8 @@ func (r *UserRepository) CheckUsernameUniqueness(ctx context.Context, username, 
 	err := r.pool.QueryRow(ctx, `
 		SELECT id, username, email
         FROM users
-        WHERE (lower(username)=lower($1) OR lower(email)=lower($2)) AND disabled_at IS NULL`,
+        WHERE (lower(username)=lower($1) OR lower(email)=lower($2))
+          		AND disabled_at IS NULL`,
 		username, email).Scan(
 		&user.ID,
 		&user.Username,

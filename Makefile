@@ -18,5 +18,3 @@ migrate-drop:
 
 test:
 	go test -v ./internal/...
-
-mockgen:

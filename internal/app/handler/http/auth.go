@@ -11,6 +11,7 @@ import (
 	"web-studio-backend/internal/pkg/auth/session"
 )
 
+//go:generate mockgen -source=auth.go -destination=./mocks/auth.go -package=mocks
 type AuthService interface {
 	SignIn(ctx context.Context, req *domain.SignInRequest) (*domain.SignInResponse, error)
 	SignOut(ctx context.Context, sessionID string)
