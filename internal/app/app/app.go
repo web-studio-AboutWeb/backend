@@ -62,7 +62,7 @@ func Run(configPath string) error {
 
 	// Services initialization
 	userService := service.NewUserService(userRepo)
-	projectService := service.NewProjectService(projectRepo)
+	projectService := service.NewProjectService(projectRepo, userRepo)
 	authService := service.NewAuthService(userRepo)
 
 	// Handler initialization

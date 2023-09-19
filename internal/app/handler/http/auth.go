@@ -15,15 +15,15 @@ import (
 type AuthService interface {
 	SignIn(ctx context.Context, req *domain.SignInRequest) (*domain.SignInResponse, error)
 	SignOut(ctx context.Context, sessionID string)
-	CheckUserExists(ctx context.Context, id int32) error
 }
 
 type authHandler struct {
 	authService AuthService
+	userService UserService
 }
 
-func newAuthHandler(authService AuthService) *authHandler {
-	return &authHandler{authService: authService}
+func newAuthHandler(authService AuthService, userService UserService) *authHandler {
+	return &authHandler{authService: authService, userService: userService}
 }
 
 // signIn godoc
@@ -112,13 +112,19 @@ func (h *authHandler) authMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		err = h.authService.CheckUserExists(r.Context(), sess.UserID)
+		user, err := h.userService.GetUser(r.Context(), sess.UserID)
 		if err != nil {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 
-		ctx := auth.NewContext(r.Context(), sess.UserID)
+		ctx := auth.NewContext(r.Context(), &domain.AuthContext{
+			UserID:   user.ID,
+			Username: user.Username,
+			Email:    user.Email,
+			Role:     user.Role,
+		})
+
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

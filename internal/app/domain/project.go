@@ -16,7 +16,8 @@ type (
 		CoverId     string    `json:"coverId,omitempty"`
 		Link        string    `json:"link,omitempty"`
 		IsActive    bool      `json:"isActive"`
-		StartedAt   time.Time `json:"startedAt"`
+		CreatedAt   time.Time `json:"createdAt"`
+		UpdatedAt   time.Time `json:"updatedAt,omitempty"`
 
 		TeamID  *int32     `json:"teamID,omitempty"`
 		EndedAt *time.Time `json:"endedAt,omitempty"`
@@ -30,6 +31,8 @@ type (
 		Username  string       `json:"username"`
 		Role      UserRole     `json:"role"`
 		Position  UserPosition `json:"position"`
+		CreatedAt time.Time    `json:"createdAt"`
+		UpdatedAt time.Time    `json:"updatedAt"`
 	}
 )
 

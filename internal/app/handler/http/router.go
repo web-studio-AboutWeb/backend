@@ -16,7 +16,7 @@ func NewHandler(
 ) http.Handler {
 	uh := newUserHandler(userService)
 	ph := newProjectHandler(projectService)
-	ah := newAuthHandler(authService)
+	ah := newAuthHandler(authService, userService)
 
 	r := chi.NewRouter()
 
@@ -46,6 +46,10 @@ func NewHandler(
 		r.Post(`/api/v1/projects`, ph.createProject)
 		r.Put(`/api/v1/projects/{project_id}`, ph.updateProject)
 		r.Get(`/api/v1/projects/{project_id}/participants`, ph.getParticipants)
+		r.Post(`/api/v1/projects/{project_id}/participants`, ph.addParticipant)
+		r.Get(`/api/v1/projects/{project_id}/participants/{user_id}`, ph.getParticipant)
+		r.Put(`/api/v1/projects/{project_id}/participants/{user_id}`, ph.updateParticipant)
+		r.Delete(`/api/v1/projects/{project_id}/participants/{user_id}`, ph.removeParticipant)
 	})
 
 	return r

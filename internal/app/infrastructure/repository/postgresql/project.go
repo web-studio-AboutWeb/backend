@@ -23,14 +23,16 @@ func (r *ProjectRepository) GetProject(ctx context.Context, id int32) (*domain.P
 	var project domain.Project
 
 	err := r.pool.QueryRow(ctx, `
-		SELECT id, title, description, cover_id, started_at, ended_at, link, isactive
+		SELECT 
+		    id, title, description, cover_id, created_at, updated_at, ended_at, link, isactive
         FROM projects
         WHERE id = $1`, id).Scan(
 		&project.ID,
 		&project.Title,
 		&project.Description,
 		&project.CoverId,
-		&project.StartedAt,
+		&project.CreatedAt,
+		&project.UpdatedAt,
 		&project.EndedAt,
 		&project.Link,
 		&project.IsActive,
@@ -49,14 +51,16 @@ func (r *ProjectRepository) GetActiveProject(ctx context.Context, id int32) (*do
 	var project domain.Project
 
 	err := r.pool.QueryRow(ctx, `
-		SELECT id, title, description, cover_id, started_at, ended_at, link, isactive
+		SELECT 
+		    id, title, description, cover_id, created_at, updated_at, ended_at, link, isactive
         FROM projects
         WHERE id=$1 AND isactive`, id).Scan(
 		&project.ID,
 		&project.Title,
 		&project.Description,
 		&project.CoverId,
-		&project.StartedAt,
+		&project.CreatedAt,
+		&project.UpdatedAt,
 		&project.EndedAt,
 		&project.Link,
 		&project.IsActive,
@@ -75,12 +79,14 @@ func (r *ProjectRepository) CreateProject(ctx context.Context, project *domain.P
 	var projectId int32
 
 	err := r.pool.QueryRow(ctx,
-		`INSERT INTO projects(title, description, started_at, link)
-		 VALUES($1, $2, $3, $4)
+		`INSERT INTO projects(title, description, team_id, cover_id, isactive, link)
+		 VALUES($1, $2, $3, $4, TRUE, $6)
 		 RETURNING  id`,
 		project.Title,
 		project.Description,
-		project.StartedAt,
+		project.CreatedAt,
+		project.TeamID,
+		project.CoverId,
 		project.Link,
 	).Scan(&projectId)
 	if err != nil {
@@ -93,12 +99,11 @@ func (r *ProjectRepository) CreateProject(ctx context.Context, project *domain.P
 func (r *ProjectRepository) UpdateProject(ctx context.Context, project *domain.Project) error {
 	_, err := r.pool.Exec(ctx, `
 		UPDATE projects
-		SET title=$2, description=$3, started_at=$4, link=$5
+		SET title=$2, description=$3, link=$4, updated_at=now()
 		WHERE id = $1`,
 		project.ID,
 		project.Title,
 		project.Description,
-		project.StartedAt,
 		project.Link,
 	)
 	if err != nil {
@@ -108,8 +113,8 @@ func (r *ProjectRepository) UpdateProject(ctx context.Context, project *domain.P
 	return nil
 }
 
-func (r *ProjectRepository) DeleteProject(ctx context.Context, id int32) error {
-	_, err := r.pool.Exec(ctx, `DELETE FROM projects WHERE id = $1`, id)
+func (r *ProjectRepository) DisableProject(ctx context.Context, id int32) error {
+	_, err := r.pool.Exec(ctx, `UPDATE projects SET isactive=FALSE WHERE id = $1`, id)
 	if err != nil {
 		return fmt.Errorf("deleting project: %w", err)
 	}
@@ -120,7 +125,7 @@ func (r *ProjectRepository) DeleteProject(ctx context.Context, id int32) error {
 func (r *ProjectRepository) GetParticipants(ctx context.Context, projectID int32) ([]domain.ProjectParticipant, error) {
 	rows, err := r.pool.Query(ctx, `
 		SELECT
-		    pp.user_id, pp.project_id, pp.role, pp.position, u.name, u.surname, u.username
+		    pp.user_id, pp.project_id, pp.role, pp.position, pp.created_at, pp.updated_at, u.name, u.surname, u.username
 	 	FROM project_participants pp
 			JOIN users u ON u.id = pp.user_id
 	 	WHERE pp.project_id = $1`, projectID)
@@ -139,6 +144,8 @@ func (r *ProjectRepository) GetParticipants(ctx context.Context, projectID int32
 			&p.ProjectID,
 			&p.Role,
 			&p.Position,
+			&p.CreatedAt,
+			&p.UpdatedAt,
 			&p.Name,
 			&p.Surname,
 			&p.Username,
@@ -157,7 +164,7 @@ func (r *ProjectRepository) GetParticipant(ctx context.Context, participantID, p
 
 	err := r.pool.QueryRow(ctx, `
 		SELECT 
-		    pp.user_id, pp.project_id, pp.role, pp.position, u.name, u.surname, u.username
+		    pp.user_id, pp.project_id, pp.role, pp.position, pp.created_at, pp.updated_at, u.name, u.surname, u.username
 		FROM project_participants pp
 			JOIN users u ON u.id=pp.user_id
 		WHERE pp.user_id=$1 AND pp.project_id=$2`, participantID, projectID).Scan(
@@ -165,6 +172,8 @@ func (r *ProjectRepository) GetParticipant(ctx context.Context, participantID, p
 		&p.ProjectID,
 		&p.Role,
 		&p.Position,
+		&p.CreatedAt,
+		&p.UpdatedAt,
 		&p.Name,
 		&p.Surname,
 		&p.Username,
@@ -198,7 +207,7 @@ func (r *ProjectRepository) AddParticipant(ctx context.Context, participant *dom
 func (r *ProjectRepository) UpdateParticipant(ctx context.Context, participant *domain.ProjectParticipant) error {
 	_, err := r.pool.Exec(ctx, `
 		UPDATE project_participants
-		SET role=$3, position=$4
+		SET role=$3, position=$4, updated_at=now()
 		WHERE user_id=$1 AND project_id=$2`,
 		participant.UserID,
 		participant.ProjectID,
