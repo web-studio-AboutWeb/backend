@@ -62,8 +62,6 @@ func TestUserHandler_CreateUser(t *testing.T) {
 					EncodedPassword: "",
 					Role:            1,
 					RoleName:        "User",
-					Position:        1,
-					PositionName:    "Frontend",
 				},
 			},
 			in: &dto.CreateUserIn{
@@ -84,8 +82,6 @@ func TestUserHandler_CreateUser(t *testing.T) {
 					EncodedPassword: "",
 					Role:            user.Role,
 					RoleName:        user.Role.String(),
-					Position:        user.Position,
-					PositionName:    user.Position.String(),
 				}, nil)
 			},
 		},

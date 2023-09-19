@@ -55,7 +55,7 @@ func (mr *MockUserServiceMockRecorder) CreateUser(ctx, user any) *gomock.Call {
 }
 
 // GetUser mocks base method.
-func (m *MockUserService) GetUser(ctx context.Context, id int16) (*domain.User, error) {
+func (m *MockUserService) GetUser(ctx context.Context, id int32) (*domain.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetUser", ctx, id)
 	ret0, _ := ret[0].(*domain.User)
@@ -70,7 +70,7 @@ func (mr *MockUserServiceMockRecorder) GetUser(ctx, id any) *gomock.Call {
 }
 
 // RemoveUser mocks base method.
-func (m *MockUserService) RemoveUser(ctx context.Context, id int16) error {
+func (m *MockUserService) RemoveUser(ctx context.Context, id int32) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "RemoveUser", ctx, id)
 	ret0, _ := ret[0].(error)

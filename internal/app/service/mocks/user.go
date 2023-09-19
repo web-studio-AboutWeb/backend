@@ -55,10 +55,10 @@ func (mr *MockUserRepositoryMockRecorder) CheckUsernameUniqueness(ctx, username,
 }
 
 // CreateUser mocks base method.
-func (m *MockUserRepository) CreateUser(ctx context.Context, user *domain.User) (int16, error) {
+func (m *MockUserRepository) CreateUser(ctx context.Context, user *domain.User) (int32, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateUser", ctx, user)
-	ret0, _ := ret[0].(int16)
+	ret0, _ := ret[0].(int32)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -70,7 +70,7 @@ func (mr *MockUserRepositoryMockRecorder) CreateUser(ctx, user any) *gomock.Call
 }
 
 // DisableUser mocks base method.
-func (m *MockUserRepository) DisableUser(ctx context.Context, id int16) error {
+func (m *MockUserRepository) DisableUser(ctx context.Context, id int32) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DisableUser", ctx, id)
 	ret0, _ := ret[0].(error)
@@ -84,7 +84,7 @@ func (mr *MockUserRepositoryMockRecorder) DisableUser(ctx, id any) *gomock.Call 
 }
 
 // GetUser mocks base method.
-func (m *MockUserRepository) GetUser(ctx context.Context, id int16) (*domain.User, error) {
+func (m *MockUserRepository) GetUser(ctx context.Context, id int32) (*domain.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetUser", ctx, id)
 	ret0, _ := ret[0].(*domain.User)

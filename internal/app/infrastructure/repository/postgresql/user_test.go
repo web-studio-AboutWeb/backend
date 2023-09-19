@@ -25,9 +25,9 @@ func TestUserRepository_CreateUser(t *testing.T) {
 	tests := []struct {
 		name     string
 		in       *domain.User
-		response int16
+		response int32
 		wantErr  bool
-		mock     func(user *domain.User, id int16)
+		mock     func(user *domain.User, id int32)
 	}{
 		{
 			name: "should pass",
@@ -37,11 +37,10 @@ func TestUserRepository_CreateUser(t *testing.T) {
 				Username:        "login",
 				EncodedPassword: "password",
 				Role:            1,
-				Position:        1,
 			},
 			response: 1,
 			wantErr:  false,
-			mock: func(user *domain.User, id int16) {
+			mock: func(user *domain.User, id int32) {
 				rows := pgxmock.NewRows([]string{"id"}).
 					AddRow(id)
 
@@ -51,9 +50,12 @@ func TestUserRepository_CreateUser(t *testing.T) {
 						user.Name,
 						user.Surname,
 						user.Username,
+						user.Email,
 						user.EncodedPassword,
+						user.Salt,
 						user.Role,
-						user.Position,
+						user.IsTeamLead,
+						user.ImageID,
 					).WillReturnRows(rows)
 			},
 		},
@@ -65,20 +67,22 @@ func TestUserRepository_CreateUser(t *testing.T) {
 				Username:        "login",
 				EncodedPassword: "password",
 				Role:            1,
-				Position:        1,
 			},
 			response: 0,
 			wantErr:  true,
-			mock: func(user *domain.User, id int16) {
+			mock: func(user *domain.User, id int32) {
 				mock.
 					ExpectQuery(q).
 					WithArgs(
 						user.Name,
 						user.Surname,
 						user.Username,
+						user.Email,
 						user.EncodedPassword,
+						user.Salt,
 						user.Role,
-						user.Position,
+						user.IsTeamLead,
+						user.ImageID,
 					).WillReturnError(fmt.Errorf("some error"))
 			},
 		},
