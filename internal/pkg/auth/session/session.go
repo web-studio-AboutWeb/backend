@@ -80,3 +80,17 @@ func Delete(sessionID string) {
 
 	delete(sessions, sessionID)
 }
+
+// DeleteUserSession deletes session for given user.
+func DeleteUserSession(userID int32) {
+	var sessionID string
+
+	for sid, sess := range sessions {
+		if sess.UserID == userID {
+			sessionID = sid
+			break
+		}
+	}
+
+	Delete(sessionID)
+}
