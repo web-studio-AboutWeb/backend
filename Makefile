@@ -18,3 +18,6 @@ migrate-drop:
 
 test:
 	go test -v ./internal/...
+
+test-s:
+	go test ./internal/...

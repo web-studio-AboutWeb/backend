@@ -40,7 +40,9 @@ func (s *ProjectService) GetProject(ctx context.Context, id int32) (*domain.Proj
 }
 
 func (s *ProjectService) CreateProject(ctx context.Context, project *domain.Project) (*domain.Project, error) {
-	// TODO: validate fields
+	if err := project.Validate(); err != nil {
+		return nil, fmt.Errorf("validating project: %w", err)
+	}
 
 	projectId, err := s.repo.CreateProject(ctx, project)
 	if err != nil {
@@ -56,7 +58,9 @@ func (s *ProjectService) CreateProject(ctx context.Context, project *domain.Proj
 }
 
 func (s *ProjectService) UpdateProject(ctx context.Context, project *domain.Project) (*domain.Project, error) {
-	// TODO: validate fields
+	if err := project.Validate(); err != nil {
+		return nil, fmt.Errorf("validating project: %w", err)
+	}
 
 	project, err := s.repo.GetProject(ctx, project.ID)
 	if err != nil {
