@@ -35,7 +35,8 @@ func NewHandler(
 	r.Post(`/api/v1/auth/sign-out`, ah.signOut)
 
 	r.Group(func(r chi.Router) {
-		r.Use(ah.authMiddleware)
+		//r.Use(ah.authMiddleware)
+		// TODO: role middlewares
 
 		r.Get(`/api/v1/users/{user_id}`, uh.getUser)
 		r.Post(`/api/v1/users`, uh.createUser)

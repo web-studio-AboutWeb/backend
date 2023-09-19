@@ -24,13 +24,14 @@ func (r *UserRepository) GetUser(ctx context.Context, id int32) (*domain.User, e
 
 	err := r.pool.QueryRow(ctx, `
 		SELECT 
-		    id, name, surname, username, created_at, updated_at, disabled_at, role, is_teamlead, image_id
+		    id, name, surname, username, email, created_at, updated_at, disabled_at, role, is_teamlead, image_id
         FROM users
         WHERE id = $1`, id).Scan(
 		&user.ID,
 		&user.Name,
 		&user.Surname,
 		&user.Username,
+		&user.Email,
 		&user.CreatedAt,
 		&user.UpdatedAt,
 		&user.DisabledAt,
@@ -54,7 +55,7 @@ func (r *UserRepository) GetActiveUser(ctx context.Context, id int32) (*domain.U
 	var user domain.User
 	err := r.pool.QueryRow(ctx, `
 		SELECT
-		    id, name, surname, username, created_at, updated_at, disabled_at, role, is_teamlead, image_id
+		    id, name, surname, username, email, created_at, updated_at, disabled_at, role, is_teamlead, image_id
         FROM users
         WHERE id = $1 AND disabled_at IS NULL`, id).Scan(
 		&user.ID,
@@ -64,6 +65,7 @@ func (r *UserRepository) GetActiveUser(ctx context.Context, id int32) (*domain.U
 		&user.Email,
 		&user.CreatedAt,
 		&user.UpdatedAt,
+		&user.DisabledAt,
 		&user.Role,
 		&user.IsTeamLead,
 		&user.ImageID,

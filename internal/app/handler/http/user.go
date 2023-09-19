@@ -95,12 +95,7 @@ func (h *userHandler) updateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response, err := h.userService.UpdateUser(r.Context(), &domain.User{
-		ID:      userID,
-		Name:    req.Name,
-		Surname: req.Surname,
-		Role:    req.Role,
-	})
+	response, err := h.userService.UpdateUser(r.Context(), req.ToDomain(userID))
 	if err != nil {
 		httphelp.SendError(err, w)
 		return

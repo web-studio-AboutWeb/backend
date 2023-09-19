@@ -69,7 +69,7 @@ func (s *ProjectService) UpdateProject(ctx context.Context, project *domain.Proj
 		return nil, fmt.Errorf("validating project: %w", err)
 	}
 
-	project, err := s.projectRepo.GetProject(ctx, project.ID)
+	_, err := s.projectRepo.GetProject(ctx, project.ID)
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
 			return nil, apperror.NewNotFound("project_id")
@@ -82,12 +82,12 @@ func (s *ProjectService) UpdateProject(ctx context.Context, project *domain.Proj
 		return nil, fmt.Errorf("updating project %d: %w", project.ID, err)
 	}
 
-	project, err = s.projectRepo.GetProject(ctx, project.ID)
+	updatedProject, err := s.projectRepo.GetProject(ctx, project.ID)
 	if err != nil {
 		return nil, fmt.Errorf("getting project %d after update: %w", project.ID, err)
 	}
 
-	return project, nil
+	return updatedProject, nil
 }
 
 func (s *ProjectService) GetParticipants(ctx context.Context, projectID int32) ([]domain.ProjectParticipant, error) {
@@ -111,7 +111,7 @@ func (s *ProjectService) GetParticipant(ctx context.Context, participantID, proj
 	participant, err := s.projectRepo.GetParticipant(ctx, participantID, projectID)
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
-			return nil, apperror.NewNotFound("participant_id")
+			return nil, apperror.NewNotFound("user_id")
 		}
 		return nil, fmt.Errorf("getting participant: %w", err)
 	}
@@ -138,6 +138,14 @@ func (s *ProjectService) AddParticipant(ctx context.Context, participant *domain
 			return nil, apperror.NewNotFound("project_id")
 		}
 		return nil, fmt.Errorf("getting project: %w", err)
+	}
+
+	_, err = s.projectRepo.GetParticipant(ctx, participant.UserID, participant.ProjectID)
+	if err != nil && !errors.Is(err, repository.ErrObjectNotFound) {
+		return nil, fmt.Errorf("getting project participant: %w", err)
+	}
+	if err == nil {
+		return nil, apperror.NewDuplicate("User already in participants list.", "user_id")
 	}
 
 	err = s.projectRepo.AddParticipant(ctx, participant)
@@ -183,7 +191,7 @@ func (s *ProjectService) RemoveParticipant(ctx context.Context, participantID, p
 	_, err := s.projectRepo.GetParticipant(ctx, participantID, projectID)
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
-			return apperror.NewNotFound("participant_id")
+			return apperror.NewNotFound("user_id")
 		}
 		return fmt.Errorf("getting participant: %w", err)
 	}

@@ -41,7 +41,6 @@ func main() {
 		Email:           "test@mail.com",
 		EncodedPassword: "password123",
 		Role:            domain.UserRoleGlobalAdmin,
-		Position:        domain.UserPositionTeamLead,
 	})
 	if err != nil {
 		log.Fatalf("Creating user: %v", err)

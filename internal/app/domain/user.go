@@ -43,7 +43,7 @@ type User struct {
 	Salt            string     `json:"-"`
 	CreatedAt       time.Time  `json:"createdAt"`
 	UpdatedAt       time.Time  `json:"updatedAt"`
-	DisabledAt      *time.Time `json:"disabledAt"`
+	DisabledAt      *time.Time `json:"disabledAt,omitempty"`
 	Role            UserRole   `json:"role"`
 	RoleName        string     `json:"roleName"`
 	ImageID         string     `json:"imageID,omitempty"`
@@ -62,24 +62,6 @@ func (u *User) Validate() error {
 		return apperror.NewInvalidRequest(
 			fmt.Sprintf("Surname cannot be empty and must not exceed %d characters.", 50),
 			"surname",
-		)
-	}
-
-	if u.Username == "" || len(u.Username) > 20 {
-		return apperror.NewInvalidRequest(
-			fmt.Sprintf("Username cannot be empty and must not exceed %d characters.", 20),
-			"username",
-		)
-	}
-
-	if !strhelp.ValidateEmail(u.Email) {
-		return apperror.NewInvalidRequest("Email has invalid format.", "email")
-	}
-
-	if u.EncodedPassword == "" || len(u.EncodedPassword) > 20 {
-		return apperror.NewInvalidRequest(
-			fmt.Sprintf("Password cannot be empty and must not exceed %d characters.", 20),
-			"login",
 		)
 	}
 

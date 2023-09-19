@@ -8,6 +8,7 @@ import (
 	"web-studio-backend/internal/app/domain"
 	"web-studio-backend/internal/app/domain/apperror"
 	"web-studio-backend/internal/app/infrastructure/repository"
+	"web-studio-backend/internal/pkg/strhelp"
 )
 
 //go:generate mockgen -source=user.go -destination=./mocks/user.go -package=mocks
@@ -44,6 +45,24 @@ func (s *UserService) GetUser(ctx context.Context, id int32) (*domain.User, erro
 func (s *UserService) CreateUser(ctx context.Context, user *domain.User) (*domain.User, error) {
 	if err := user.Validate(); err != nil {
 		return nil, fmt.Errorf("validating user: %w", err)
+	}
+
+	if user.Username == "" || len(user.Username) > 20 {
+		return nil, apperror.NewInvalidRequest(
+			fmt.Sprintf("Username cannot be empty and must not exceed %d characters.", 20),
+			"username",
+		)
+	}
+
+	if !strhelp.ValidateEmail(user.Email) {
+		return nil, apperror.NewInvalidRequest("Email has invalid format.", "email")
+	}
+
+	if user.EncodedPassword == "" || len(user.EncodedPassword) > 20 {
+		return nil, apperror.NewInvalidRequest(
+			fmt.Sprintf("Password cannot be empty and must not exceed %d characters.", 20),
+			"login",
+		)
 	}
 
 	foundUser, err := s.repo.CheckUsernameUniqueness(ctx, user.Username, user.Email)

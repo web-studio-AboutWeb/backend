@@ -13,8 +13,8 @@ type (
 		ID          int32     `json:"id"`
 		Title       string    `json:"title"`
 		Description string    `json:"description"`
-		CoverId     string    `json:"coverId,omitempty"`
-		Link        string    `json:"link,omitempty"`
+		CoverId     *string   `json:"coverId,omitempty"`
+		Link        *string   `json:"link,omitempty"`
 		IsActive    bool      `json:"isActive"`
 		CreatedAt   time.Time `json:"createdAt"`
 		UpdatedAt   time.Time `json:"updatedAt,omitempty"`
@@ -54,8 +54,8 @@ func (p *Project) Validate() error {
 		)
 	}
 
-	if p.Link != "" {
-		_, err := url.ParseRequestURI(p.Link)
+	if p.Link != nil {
+		_, err := url.ParseRequestURI(*p.Link)
 		if err != nil {
 			return apperror.NewInvalidRequest("Link has invalid format.", "link")
 		}

@@ -79,14 +79,12 @@ func (r *ProjectRepository) CreateProject(ctx context.Context, project *domain.P
 	var projectId int32
 
 	err := r.pool.QueryRow(ctx,
-		`INSERT INTO projects(title, description, team_id, cover_id, isactive, link)
-		 VALUES($1, $2, $3, $4, TRUE, $6)
+		`INSERT INTO projects(title, description, team_id, isactive, link)
+		 VALUES($1, $2, $3, TRUE, $4)
 		 RETURNING  id`,
 		project.Title,
 		project.Description,
-		project.CreatedAt,
 		project.TeamID,
-		project.CoverId,
 		project.Link,
 	).Scan(&projectId)
 	if err != nil {
@@ -160,7 +158,7 @@ func (r *ProjectRepository) GetParticipants(ctx context.Context, projectID int32
 }
 
 func (r *ProjectRepository) GetParticipant(ctx context.Context, participantID, projectID int32) (*domain.ProjectParticipant, error) {
-	var p *domain.ProjectParticipant
+	var p domain.ProjectParticipant
 
 	err := r.pool.QueryRow(ctx, `
 		SELECT 
@@ -185,7 +183,7 @@ func (r *ProjectRepository) GetParticipant(ctx context.Context, participantID, p
 		return nil, fmt.Errorf("scanning participant: %w", err)
 	}
 
-	return p, nil
+	return &p, nil
 }
 
 func (r *ProjectRepository) AddParticipant(ctx context.Context, participant *domain.ProjectParticipant) error {
@@ -193,7 +191,7 @@ func (r *ProjectRepository) AddParticipant(ctx context.Context, participant *dom
 		INSERT INTO project_participants(project_id, user_id, role, position) 
 		VALUES ($1,$2,$3,$4)`,
 		participant.ProjectID,
-		participant.Username,
+		participant.UserID,
 		participant.Role,
 		participant.Position,
 	)

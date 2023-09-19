@@ -53,24 +53,24 @@ func (h *projectHandler) getProject(w http.ResponseWriter, r *http.Request) {
 }
 
 // createProject godoc
-// @Summary      Created project
+// @Summary      Create project
 // @Description  Creates a new project. Returns an object with information about created project.
 // @Tags         Projects
 // @Accept       json
 // @Produce      json
-// @Param        request body domain.Project true "Request body."
+// @Param        request body dto.CreateProjectRequest true "Request body."
 // @Success      200  {object}	domain.Project
 // @Failure      400  {object}  apperror.Error
 // @Failure      500  {object}  apperror.Error
 // @Router       /api/v1/projects [post]
 func (h *projectHandler) createProject(w http.ResponseWriter, r *http.Request) {
-	var project domain.Project
-	if err := httphelp.ReadJSON(&project, r); err != nil {
+	var req dto.CreateProjectRequest
+	if err := httphelp.ReadJSON(&req, r); err != nil {
 		httphelp.SendError(err, w)
 		return
 	}
 
-	response, err := h.projectService.CreateProject(r.Context(), &project)
+	response, err := h.projectService.CreateProject(r.Context(), req.ToDomain())
 	if err != nil {
 		httphelp.SendError(err, w)
 		return
@@ -86,7 +86,7 @@ func (h *projectHandler) createProject(w http.ResponseWriter, r *http.Request) {
 // @Accept       json
 // @Produce      json
 // @Param        project_id path int64 true "Project identifier."
-// @Param        request body domain.Project true "Request body."
+// @Param        request body dto.UpdateProjectRequest true "Request body."
 // @Success      200  {object}	domain.Project
 // @Failure      404  {object}  apperror.Error
 // @Failure      500  {object}  apperror.Error
@@ -94,14 +94,13 @@ func (h *projectHandler) createProject(w http.ResponseWriter, r *http.Request) {
 func (h *projectHandler) updateProject(w http.ResponseWriter, r *http.Request) {
 	projectID := httphelp.ParseParamInt32("project_id", r)
 
-	var req domain.Project
+	var req dto.UpdateProjectRequest
 	if err := httphelp.ReadJSON(&req, r); err != nil {
 		httphelp.SendError(err, w)
 		return
 	}
-	req.ID = projectID
 
-	response, err := h.projectService.UpdateProject(r.Context(), &req)
+	response, err := h.projectService.UpdateProject(r.Context(), req.ToDomain(projectID))
 	if err != nil {
 		httphelp.SendError(err, w)
 		return
@@ -211,7 +210,7 @@ func (h *projectHandler) updateParticipant(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	response, err := h.projectService.AddParticipant(r.Context(), req.ToDomain(projectID, userID))
+	response, err := h.projectService.UpdateParticipant(r.Context(), req.ToDomain(projectID, userID))
 	if err != nil {
 		httphelp.SendError(err, w)
 		return
@@ -221,7 +220,7 @@ func (h *projectHandler) updateParticipant(w http.ResponseWriter, r *http.Reques
 }
 
 // removeParticipant godoc
-// @Summary      Update project participant
+// @Summary      Remove project participant
 // @Description  Deletes the user from project participants list.
 // @Tags         Projects
 // @Param        project_id path int64 true "Project identifier."
