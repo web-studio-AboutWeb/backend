@@ -97,3 +97,46 @@ func TestProject_Validate(t *testing.T) {
 		})
 	}
 }
+
+func TestProjectParticipant_Validate(t *testing.T) {
+	tests := []struct {
+		name      string
+		wantError bool
+		p         *ProjectParticipant
+	}{
+		{
+			name:      "empty structure",
+			wantError: true,
+			p:         &ProjectParticipant{},
+		},
+		{
+			name:      "unknown role",
+			wantError: true,
+			p:         &ProjectParticipant{Role: 0, Position: UserPositionBackend},
+		},
+		{
+			name:      "unknown position",
+			wantError: true,
+			p:         &ProjectParticipant{Role: UserRoleGlobalAdmin, Position: 0},
+		},
+		{
+			name:      "should pass",
+			wantError: false,
+			p: &ProjectParticipant{
+				Role:     UserRoleUser,
+				Position: UserPositionMarketer,
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(tt *testing.T) {
+			err := tc.p.Validate()
+			if tc.wantError {
+				require.Error(tt, err)
+				return
+			}
+			require.NoError(tt, err)
+		})
+	}
+}

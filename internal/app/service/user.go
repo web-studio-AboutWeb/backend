@@ -13,6 +13,7 @@ import (
 //go:generate mockgen -source=user.go -destination=./mocks/user.go -package=mocks
 type UserRepository interface {
 	GetUser(ctx context.Context, id int32) (*domain.User, error)
+	GetActiveUser(ctx context.Context, id int32) (*domain.User, error)
 	CreateUser(ctx context.Context, user *domain.User) (int32, error)
 	UpdateUser(ctx context.Context, user *domain.User) error
 	DisableUser(ctx context.Context, id int32) error

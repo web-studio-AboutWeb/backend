@@ -60,3 +60,15 @@ func (p *Project) Validate() error {
 
 	return nil
 }
+
+func (pp *ProjectParticipant) Validate() error {
+	if pp.Role.String() == "" {
+		return apperror.NewInvalidRequest("Unknown participant role.", "role")
+	}
+
+	if pp.Position.String() == "" {
+		return apperror.NewInvalidRequest("Unknown participant position.", "position")
+	}
+
+	return nil
+}

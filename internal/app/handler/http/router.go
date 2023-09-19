@@ -45,7 +45,7 @@ func NewHandler(
 		r.Get(`/api/v1/projects/{project_id}`, ph.getProject)
 		r.Post(`/api/v1/projects`, ph.createProject)
 		r.Put(`/api/v1/projects/{project_id}`, ph.updateProject)
-		r.Get(`/api/v1/projects/{project_id}/participants`, ph.getProjectParticipants)
+		r.Get(`/api/v1/projects/{project_id}/participants`, ph.getParticipants)
 	})
 
 	return r
