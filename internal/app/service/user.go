@@ -14,6 +14,7 @@ import (
 //go:generate mockgen -source=user.go -destination=./mocks/user.go -package=mocks
 type UserRepository interface {
 	GetUser(ctx context.Context, id int32) (*domain.User, error)
+	GetUsers(ctx context.Context) ([]domain.User, error)
 	GetActiveUser(ctx context.Context, id int32) (*domain.User, error)
 	CreateUser(ctx context.Context, user *domain.User) (int32, error)
 	UpdateUser(ctx context.Context, user *domain.User) error
@@ -40,6 +41,15 @@ func (s *UserService) GetUser(ctx context.Context, id int32) (*domain.User, erro
 	}
 
 	return user, nil
+}
+
+func (s *UserService) GetUsers(ctx context.Context) ([]domain.User, error) {
+	users, err := s.repo.GetUsers(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("getting users: %w", err)
+	}
+
+	return users, nil
 }
 
 func (s *UserService) CreateUser(ctx context.Context, user *domain.User) (*domain.User, error) {

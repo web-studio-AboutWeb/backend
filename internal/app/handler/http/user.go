@@ -12,6 +12,7 @@ import (
 //go:generate mockgen -source=user.go -destination=./mocks/user.go -package=mocks
 type UserService interface {
 	GetUser(ctx context.Context, id int32) (*domain.User, error)
+	GetUsers(ctx context.Context) ([]domain.User, error)
 	CreateUser(ctx context.Context, user *domain.User) (*domain.User, error)
 	UpdateUser(ctx context.Context, user *domain.User) (*domain.User, error)
 	RemoveUser(ctx context.Context, id int32) error
@@ -39,6 +40,25 @@ func (h *userHandler) getUser(w http.ResponseWriter, r *http.Request) {
 	userID := httphelp.ParseParamInt32("user_id", r)
 
 	response, err := h.userService.GetUser(r.Context(), userID)
+	if err != nil {
+		httphelp.SendError(err, w)
+		return
+	}
+
+	httphelp.SendJSON(http.StatusOK, response, w)
+}
+
+// getUsers godoc
+// @Summary      Get users
+// @Description  Returns a list of users.
+// @Tags         Users
+// @Produce      json
+// @Success      200  {array}  domain.User
+// @Failure      400  {object}  apperror.Error
+// @Failure      500  {object}  apperror.Error
+// @Router       /api/v1/users [get]
+func (h *userHandler) getUsers(w http.ResponseWriter, r *http.Request) {
+	response, err := h.userService.GetUsers(r.Context())
 	if err != nil {
 		httphelp.SendError(err, w)
 		return

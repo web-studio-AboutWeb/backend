@@ -39,6 +39,7 @@ func NewHandler(
 		// TODO: role middlewares
 
 		r.Get(`/api/v1/users/{user_id}`, uh.getUser)
+		r.Get(`/api/v1/users`, uh.getUsers)
 		r.Post(`/api/v1/users`, uh.createUser)
 		r.Put(`/api/v1/users/{user_id}`, uh.updateUser)
 		r.Delete(`/api/v1/users/{user_id}`, uh.removeUser)
