@@ -48,13 +48,13 @@ func TestUserService_CreateUser(t *testing.T) {
 			test: test{
 				name: "should pass",
 				res: &domain.User{
-					ID:              1,
-					Name:            "name",
-					Surname:         "surname",
-					Username:        "login",
-					EncodedPassword: "",
-					Role:            1,
-					Position:        1,
+					ID:       1,
+					Name:     "name",
+					Surname:  "surname",
+					Username: "login",
+					Email:    "email@mail.com",
+					Role:     1,
+					Position: 1,
 				},
 				err:     nil,
 				wantErr: false,
@@ -64,21 +64,22 @@ func TestUserService_CreateUser(t *testing.T) {
 				Name:            "name",
 				Surname:         "surname",
 				Username:        "login",
-				EncodedPassword: "",
+				Email:           "email@mail.com",
+				EncodedPassword: "123",
 				Role:            1,
 				Position:        1,
 			},
 			mock: func(user *domain.User) {
-				repo.EXPECT().GetUserByLogin(ctx, user.Username).Return(nil, nil)
+				repo.EXPECT().CheckUsernameUniqueness(ctx, user.Username, user.Email).Return(nil, nil)
 				repo.EXPECT().CreateUser(ctx, user).Return(int16(1), nil)
 				repo.EXPECT().GetUser(ctx, int16(1)).Return(&domain.User{
-					ID:              1,
-					Name:            user.Name,
-					Surname:         user.Surname,
-					Username:        user.Username,
-					EncodedPassword: "",
-					Role:            user.Role,
-					Position:        user.Position,
+					ID:       1,
+					Name:     user.Name,
+					Surname:  user.Surname,
+					Username: user.Username,
+					Email:    user.Email,
+					Role:     user.Role,
+					Position: user.Position,
 				}, nil)
 			},
 		},
@@ -86,7 +87,6 @@ func TestUserService_CreateUser(t *testing.T) {
 			test: test{
 				name:    "login already taken error",
 				res:     nil,
-				err:     nil,
 				wantErr: true,
 			},
 			user: &domain.User{
@@ -94,12 +94,13 @@ func TestUserService_CreateUser(t *testing.T) {
 				Name:            "name",
 				Surname:         "surname",
 				Username:        "login",
-				EncodedPassword: "",
+				Email:           "email@mail.com",
+				EncodedPassword: "123",
 				Role:            1,
 				Position:        1,
 			},
 			mock: func(user *domain.User) {
-				repo.EXPECT().GetUserByLogin(ctx, user.Username).Return(&domain.User{}, nil)
+				repo.EXPECT().CheckUsernameUniqueness(ctx, user.Username, user.Email).Return(&domain.User{Username: "123"}, nil)
 			},
 		},
 		{
@@ -109,17 +110,9 @@ func TestUserService_CreateUser(t *testing.T) {
 				err:     nil,
 				wantErr: true,
 			},
-			user: &domain.User{
-				ID:              1,
-				Name:            "name",
-				Surname:         "surname",
-				Username:        "login",
-				EncodedPassword: "",
-				Role:            1,
-				Position:        1,
-			},
+			user: &domain.User{Username: "123"},
 			mock: func(user *domain.User) {
-				repo.EXPECT().GetUserByLogin(ctx, user.Username).Return(nil, nil)
+				repo.EXPECT().CheckUsernameUniqueness(ctx, user.Username, user.Email).Return(nil, nil)
 				repo.EXPECT().CreateUser(ctx, user).Return(int16(0), fmt.Errorf("create user error"))
 			},
 		},
@@ -130,17 +123,9 @@ func TestUserService_CreateUser(t *testing.T) {
 				err:     nil,
 				wantErr: true,
 			},
-			user: &domain.User{
-				ID:              1,
-				Name:            "name",
-				Surname:         "surname",
-				Username:        "login",
-				EncodedPassword: "",
-				Role:            1,
-				Position:        1,
-			},
+			user: &domain.User{Username: "login"},
 			mock: func(user *domain.User) {
-				repo.EXPECT().GetUserByLogin(ctx, user.Username).Return(nil, nil)
+				repo.EXPECT().CheckUsernameUniqueness(ctx, user.Username, user.Email).Return(nil, nil)
 				repo.EXPECT().CreateUser(ctx, user).Return(int16(1), nil)
 				repo.EXPECT().GetUser(ctx, int16(1)).Return(nil, fmt.Errorf("get user error"))
 			},
@@ -154,17 +139,21 @@ func TestUserService_CreateUser(t *testing.T) {
 			tc.mock(tc.user)
 
 			res, err := serv.CreateUser(ctx, tc.user)
-
-			require.Equal(t, res, tc.res)
-
 			if !tc.wantErr {
 				require.NoError(t, err)
+			} else {
+				require.Error(t, err)
+			}
+
+			require.Equal(t, tc.res, res)
+
+			if !tc.wantErr {
 				return
 			}
 
 			require.Error(t, err)
 			if tc.err != nil {
-				require.ErrorIs(t, err, tc.err)
+				require.ErrorAs(t, err, tc.err)
 			}
 		})
 	}
