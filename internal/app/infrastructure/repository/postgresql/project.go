@@ -117,9 +117,10 @@ func (r *ProjectRepository) DeleteProject(ctx context.Context, id int32) error {
 	return nil
 }
 
-func (r *ProjectRepository) GetProjectParticipants(ctx context.Context, projectID int32) ([]domain.ProjectParticipant, error) {
+func (r *ProjectRepository) GetParticipants(ctx context.Context, projectID int32) ([]domain.ProjectParticipant, error) {
 	rows, err := r.pool.Query(ctx, `
-		SELECT u.id, u.name, u.surname, u.username, pp.role, pp.position
+		SELECT
+		    pp.user_id, pp.project_id, pp.role, pp.position, u.name, u.surname, u.username
 	 	FROM project_participants pp
 			JOIN users u ON u.id = pp.user_id
 	 	WHERE pp.project_id = $1`, projectID)
@@ -129,23 +130,95 @@ func (r *ProjectRepository) GetProjectParticipants(ctx context.Context, projectI
 	defer rows.Close()
 
 	var (
-		participant  domain.ProjectParticipant
+		p            domain.ProjectParticipant
 		participants []domain.ProjectParticipant
 	)
 	for rows.Next() {
-		if err := rows.Scan(
-			&participant.UserID,
-			&participant.Name,
-			&participant.Surname,
-			&participant.Username,
-			&participant.Role,
-			&participant.Position,
+		if err = rows.Scan(
+			&p.UserID,
+			&p.ProjectID,
+			&p.Role,
+			&p.Position,
+			&p.Name,
+			&p.Surname,
+			&p.Username,
 		); err != nil {
 			return nil, fmt.Errorf("scanning participant: %w", err)
 		}
 
-		participants = append(participants, participant)
+		participants = append(participants, p)
 	}
 
 	return participants, nil
+}
+
+func (r *ProjectRepository) GetParticipant(ctx context.Context, participantID, projectID int32) (*domain.ProjectParticipant, error) {
+	var p *domain.ProjectParticipant
+
+	err := r.pool.QueryRow(ctx, `
+		SELECT 
+		    pp.user_id, pp.project_id, pp.role, pp.position, u.name, u.surname, u.username
+		FROM project_participants pp
+			JOIN users u ON u.id=pp.user_id
+		WHERE pp.user_id=$1 AND pp.project_id=$2`, participantID, projectID).Scan(
+		&p.UserID,
+		&p.ProjectID,
+		&p.Role,
+		&p.Position,
+		&p.Name,
+		&p.Surname,
+		&p.Username,
+	)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, repository.ErrObjectNotFound
+		}
+		return nil, fmt.Errorf("scanning participant: %w", err)
+	}
+
+	return p, nil
+}
+
+func (r *ProjectRepository) AddParticipant(ctx context.Context, participant *domain.ProjectParticipant) error {
+	_, err := r.pool.Exec(ctx, `
+		INSERT INTO project_participants(project_id, user_id, role, position) 
+		VALUES ($1,$2,$3,$4)`,
+		participant.ProjectID,
+		participant.Username,
+		participant.Role,
+		participant.Position,
+	)
+	if err != nil {
+		return fmt.Errorf("inserting participant: %w", err)
+	}
+
+	return nil
+}
+
+func (r *ProjectRepository) UpdateParticipant(ctx context.Context, participant *domain.ProjectParticipant) error {
+	_, err := r.pool.Exec(ctx, `
+		UPDATE project_participants
+		SET role=$3, position=$4
+		WHERE user_id=$1 AND project_id=$2`,
+		participant.UserID,
+		participant.ProjectID,
+		participant.Role,
+		participant.Position,
+	)
+	if err != nil {
+		return fmt.Errorf("updating participant: %w", err)
+	}
+
+	return nil
+}
+
+func (r *ProjectRepository) RemoveParticipant(ctx context.Context, participantID, projectID int32) error {
+	_, err := r.pool.Exec(ctx, `
+		DELETE FROM project_participants
+		WHERE user_id=$1 AND project_id=$2`, participantID, projectID)
+	if err != nil {
+		return fmt.Errorf("deleting participant: %w", err)
+	}
+
+	return nil
 }

@@ -16,7 +16,13 @@ type ProjectRepository interface {
 	GetActiveProject(ctx context.Context, id int32) (*domain.Project, error)
 	CreateProject(ctx context.Context, project *domain.Project) (int32, error)
 	UpdateProject(ctx context.Context, project *domain.Project) error
-	GetProjectParticipants(ctx context.Context, id int32) ([]domain.ProjectParticipant, error)
+	DisableProject(ctx context.Context, id int32) error
+
+	GetParticipants(ctx context.Context, projectID int32) ([]domain.ProjectParticipant, error)
+	GetParticipant(ctx context.Context, participantID, projectID int32) (*domain.ProjectParticipant, error)
+	AddParticipant(ctx context.Context, participant *domain.ProjectParticipant) error
+	UpdateParticipant(ctx context.Context, participant *domain.ProjectParticipant) error
+	RemoveParticipant(ctx context.Context, participantID, projectID int32) error
 }
 
 type ProjectService struct {
@@ -92,7 +98,7 @@ func (s *ProjectService) GetProjectParticipants(ctx context.Context, projectID i
 		return nil, fmt.Errorf("getting project %d: %w", project.ID, err)
 	}
 
-	participants, err := s.repo.GetProjectParticipants(ctx, projectID)
+	participants, err := s.repo.GetParticipants(ctx, projectID)
 	if err != nil {
 		return nil, fmt.Errorf("getting project %d participants: %w", projectID, err)
 	}
