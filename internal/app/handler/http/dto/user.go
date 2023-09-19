@@ -6,12 +6,13 @@ import (
 
 type (
 	CreateUserIn struct {
-		Name     string              `json:"name"`
-		Surname  string              `json:"surname"`
-		Login    string              `json:"login"`
-		Password string              `json:"password"`
-		Role     domain.UserRole     `json:"role"`
-		Position domain.UserPosition `json:"position"`
+		Name       string          `json:"name"`
+		Surname    string          `json:"surname"`
+		Username   string          `json:"username"`
+		Email      string          `json:"email"`
+		Password   string          `json:"password"`
+		Role       domain.UserRole `json:"role"`
+		IsTeamLead bool            `json:"isTeamLead"`
 	}
 
 	UpdateUserIn struct {
@@ -29,8 +30,10 @@ func (in *CreateUserIn) ToDomain() *domain.User {
 	return &domain.User{
 		Name:            in.Name,
 		Surname:         in.Surname,
-		Username:        in.Login,
+		Username:        in.Username,
+		Email:           in.Email,
 		EncodedPassword: in.Password,
 		Role:            in.Role,
+		IsTeamLead:      in.IsTeamLead,
 	}
 }
