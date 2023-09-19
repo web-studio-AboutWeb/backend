@@ -1,5 +1,0 @@
-CREATE TABLE IF NOT EXISTS project_participants
-(
-    project_id SMALLINT NOT NULL REFERENCES projects (id) ON DELETE CASCADE,
-    user_id    SMALLINT NOT NULL REFERENCES users (id) ON DELETE CASCADE
-);
