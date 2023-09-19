@@ -75,6 +75,43 @@ func (r *ProjectRepository) GetActiveProject(ctx context.Context, id int32) (*do
 	return &project, nil
 }
 
+func (r *ProjectRepository) GetProjects(ctx context.Context) ([]domain.Project, error) {
+	rows, err := r.pool.Query(ctx, `
+		SELECT 
+		    id, title, description, cover_id, created_at, updated_at, ended_at, link, isactive
+        FROM projects
+        WHERE isactive
+        ORDER BY created_at`)
+	if err != nil {
+		return nil, fmt.Errorf("selecting projects: %w", err)
+	}
+	defer rows.Close()
+
+	var projects []domain.Project
+	for rows.Next() {
+		var project domain.Project
+
+		err = rows.Scan(
+			&project.ID,
+			&project.Title,
+			&project.Description,
+			&project.CoverId,
+			&project.CreatedAt,
+			&project.UpdatedAt,
+			&project.EndedAt,
+			&project.Link,
+			&project.IsActive,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("scanning project: %w", err)
+		}
+
+		projects = append(projects, project)
+	}
+
+	return projects, nil
+}
+
 func (r *ProjectRepository) CreateProject(ctx context.Context, project *domain.Project) (int32, error) {
 	var projectId int32
 

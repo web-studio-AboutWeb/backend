@@ -12,6 +12,7 @@ import (
 //go:generate mockgen -source=project.go -destination=./mocks/project.go -package=mocks
 type ProjectService interface {
 	GetProject(ctx context.Context, id int32) (*domain.Project, error)
+	GetProjects(ctx context.Context) ([]domain.Project, error)
 	CreateProject(ctx context.Context, project *domain.Project) (*domain.Project, error)
 	UpdateProject(ctx context.Context, project *domain.Project) (*domain.Project, error)
 
@@ -44,6 +45,25 @@ func (h *projectHandler) getProject(w http.ResponseWriter, r *http.Request) {
 	pid := httphelp.ParseParamInt32("project_id", r)
 
 	response, err := h.projectService.GetProject(r.Context(), pid)
+	if err != nil {
+		httphelp.SendError(err, w)
+		return
+	}
+
+	httphelp.SendJSON(http.StatusOK, response, w)
+}
+
+// getProjects godoc
+// @Summary      Get projects
+// @Description  Returns list of projects.
+// @Tags         Projects
+// @Produce      json
+// @Success      200  {array}  domain.Project
+// @Failure      404  {object}  apperror.Error
+// @Failure      500  {object}  apperror.Error
+// @Router       /api/v1/projects [get]
+func (h *projectHandler) getProjects(w http.ResponseWriter, r *http.Request) {
+	response, err := h.projectService.GetProjects(r.Context())
 	if err != nil {
 		httphelp.SendError(err, w)
 		return

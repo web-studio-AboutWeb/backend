@@ -13,6 +13,7 @@ import (
 //go:generate mockgen -source=project.go -destination=./mocks/project.go -package=mocks
 type ProjectRepository interface {
 	GetProject(ctx context.Context, id int32) (*domain.Project, error)
+	GetProjects(ctx context.Context) ([]domain.Project, error)
 	GetActiveProject(ctx context.Context, id int32) (*domain.Project, error)
 	CreateProject(ctx context.Context, project *domain.Project) (int32, error)
 	UpdateProject(ctx context.Context, project *domain.Project) error
@@ -44,6 +45,15 @@ func (s *ProjectService) GetProject(ctx context.Context, id int32) (*domain.Proj
 	}
 
 	return project, nil
+}
+
+func (s *ProjectService) GetProjects(ctx context.Context) ([]domain.Project, error) {
+	projects, err := s.projectRepo.GetProjects(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("getting projects: %w", err)
+	}
+
+	return projects, nil
 }
 
 func (s *ProjectService) CreateProject(ctx context.Context, project *domain.Project) (*domain.Project, error) {

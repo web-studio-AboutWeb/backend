@@ -45,6 +45,7 @@ func NewHandler(
 		r.Delete(`/api/v1/users/{user_id}`, uh.removeUser)
 
 		r.Get(`/api/v1/projects/{project_id}`, ph.getProject)
+		r.Get(`/api/v1/projects`, ph.getProjects)
 		r.Post(`/api/v1/projects`, ph.createProject)
 		r.Put(`/api/v1/projects/{project_id}`, ph.updateProject)
 		r.Get(`/api/v1/projects/{project_id}/participants`, ph.getParticipants)
