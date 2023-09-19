@@ -3,17 +3,13 @@ package domain
 import (
 	"crypto/sha512"
 	"fmt"
-	"log/slog"
 	"time"
 
 	"web-studio-backend/internal/app/domain/apperror"
 	"web-studio-backend/internal/pkg/strhelp"
 )
 
-type (
-	UserRole     int16
-	UserPosition int16
-)
+type UserRole int16
 
 const (
 	UserRoleUser UserRole = iota + 1
@@ -22,30 +18,36 @@ const (
 	UserRoleGlobalAdmin
 )
 
-const (
-	UserPositionFrontend UserPosition = iota + 1
-	UserPositionBackend
-	UserPositionTeamLead
-	UserPositionManager
-	UserPositionMarketer
-	UserPositionDevOps
-)
+func (ur UserRole) String() string {
+	switch ur {
+	case UserRoleUser:
+		return "User"
+	case UserRoleModerator:
+		return "Moderator"
+	case UserRoleAdmin:
+		return "Admin"
+	case UserRoleGlobalAdmin:
+		return "Global admin"
+	default:
+		return ""
+	}
+}
 
 type User struct {
-	ID              int16        `json:"id"`
-	Name            string       `json:"name"`
-	Surname         string       `json:"surname"`
-	Username        string       `json:"username"`
-	Email           string       `json:"email"`
-	EncodedPassword string       `json:"-"`
-	Salt            string       `json:"-"`
-	CreatedAt       time.Time    `json:"createdAt"`
-	UpdatedAt       *time.Time   `json:"updatedAt"`
-	DisabledAt      *time.Time   `json:"disabledAt"`
-	Role            UserRole     `json:"role"`
-	RoleName        string       `json:"roleName"`
-	Position        UserPosition `json:"position"`
-	PositionName    string       `json:"positionName"`
+	ID              int32      `json:"id"`
+	Name            string     `json:"name"`
+	Surname         string     `json:"surname"`
+	Username        string     `json:"username"`
+	Email           string     `json:"email"`
+	EncodedPassword string     `json:"-"`
+	Salt            string     `json:"-"`
+	CreatedAt       time.Time  `json:"createdAt"`
+	UpdatedAt       time.Time  `json:"updatedAt"`
+	DisabledAt      *time.Time `json:"disabledAt"`
+	Role            UserRole   `json:"role"`
+	RoleName        string     `json:"roleName"`
+	ImageID         string     `json:"imageID,omitempty"`
+	IsTeamLead      bool       `json:"isTeamLead"`
 }
 
 func (u *User) Validate() error {
@@ -88,13 +90,6 @@ func (u *User) Validate() error {
 		)
 	}
 
-	if u.Position.String() == "" {
-		return apperror.NewInvalidRequest(
-			fmt.Sprintf("Unknown position %d.", u.Position),
-			"position",
-		)
-	}
-
 	return nil
 }
 
@@ -108,7 +103,6 @@ func (u *User) EncodePassword() error {
 		return fmt.Errorf("generating random string: %w", err)
 	}
 	u.Salt = salt
-	slog.Debug("salt:", u.Salt)
 
 	u.EncodedPassword = fmt.Sprintf("%x", sha512.Sum512([]byte(u.EncodedPassword+u.Salt)))
 
@@ -124,38 +118,4 @@ func (u *User) ComparePassword(password string) bool {
 	passwordHash := fmt.Sprintf("%x", passwordHashBytes)
 
 	return passwordHash == u.EncodedPassword
-}
-
-func (ur UserRole) String() string {
-	switch ur {
-	case UserRoleUser:
-		return "User"
-	case UserRoleModerator:
-		return "Moderator"
-	case UserRoleAdmin:
-		return "Admin"
-	case UserRoleGlobalAdmin:
-		return "Global admin"
-	default:
-		return ""
-	}
-}
-
-func (up UserPosition) String() string {
-	switch up {
-	case UserPositionFrontend:
-		return "Frontend"
-	case UserPositionBackend:
-		return "Backend"
-	case UserPositionTeamLead:
-		return "Team lead"
-	case UserPositionManager:
-		return "Manager"
-	case UserPositionMarketer:
-		return "Marketer"
-	case UserPositionDevOps:
-		return "DevOps"
-	default:
-		return ""
-	}
 }

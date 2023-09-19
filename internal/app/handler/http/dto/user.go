@@ -15,10 +15,9 @@ type (
 	}
 
 	UpdateUserIn struct {
-		Name     string              `json:"name"`
-		Surname  string              `json:"surname"`
-		Role     domain.UserRole     `json:"role"`
-		Position domain.UserPosition `json:"position"`
+		Name    string          `json:"name"`
+		Surname string          `json:"surname"`
+		Role    domain.UserRole `json:"role"`
 	}
 )
 
@@ -33,6 +32,5 @@ func (in *CreateUserIn) ToDomain() *domain.User {
 		Username:        in.Login,
 		EncodedPassword: in.Password,
 		Role:            in.Role,
-		Position:        in.Position,
 	}
 }

@@ -12,10 +12,10 @@ import (
 
 //go:generate mockgen -source=user.go -destination=./mocks/user.go -package=mocks
 type UserRepository interface {
-	GetUser(ctx context.Context, id int16) (*domain.User, error)
-	CreateUser(ctx context.Context, user *domain.User) (int16, error)
+	GetUser(ctx context.Context, id int32) (*domain.User, error)
+	CreateUser(ctx context.Context, user *domain.User) (int32, error)
 	UpdateUser(ctx context.Context, user *domain.User) error
-	DisableUser(ctx context.Context, id int16) error
+	DisableUser(ctx context.Context, id int32) error
 	GetUserByLogin(ctx context.Context, login string) (*domain.User, error)
 	CheckUsernameUniqueness(ctx context.Context, username, email string) (*domain.User, error)
 }
@@ -28,7 +28,7 @@ func NewUserService(repo UserRepository) *UserService {
 	return &UserService{repo}
 }
 
-func (s *UserService) GetUser(ctx context.Context, id int16) (*domain.User, error) {
+func (s *UserService) GetUser(ctx context.Context, id int32) (*domain.User, error) {
 	user, err := s.repo.GetUser(ctx, id)
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
@@ -109,7 +109,7 @@ func (s *UserService) UpdateUser(ctx context.Context, user *domain.User) (*domai
 	return updatedUser, nil
 }
 
-func (s *UserService) RemoveUser(ctx context.Context, id int16) error {
+func (s *UserService) RemoveUser(ctx context.Context, id int32) error {
 	user, err := s.repo.GetUser(ctx, id)
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {

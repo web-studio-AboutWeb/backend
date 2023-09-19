@@ -11,10 +11,10 @@ import (
 )
 
 type ProjectRepository interface {
-	GetProject(ctx context.Context, id int16) (*domain.Project, error)
-	CreateProject(ctx context.Context, project *domain.Project) (int16, error)
+	GetProject(ctx context.Context, id int32) (*domain.Project, error)
+	CreateProject(ctx context.Context, project *domain.Project) (int32, error)
 	UpdateProject(ctx context.Context, project *domain.Project) error
-	GetProjectParticipants(ctx context.Context, id int16) ([]domain.User, error)
+	GetProjectParticipants(ctx context.Context, id int32) ([]domain.User, error)
 }
 
 type ProjectService struct {
@@ -25,7 +25,7 @@ func NewProjectService(repo ProjectRepository) *ProjectService {
 	return &ProjectService{repo}
 }
 
-func (s *ProjectService) GetProject(ctx context.Context, id int16) (*domain.Project, error) {
+func (s *ProjectService) GetProject(ctx context.Context, id int32) (*domain.Project, error) {
 	project, err := s.repo.GetProject(ctx, id)
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
@@ -77,7 +77,7 @@ func (s *ProjectService) UpdateProject(ctx context.Context, project *domain.Proj
 	return project, nil
 }
 
-func (s *ProjectService) GetProjectParticipants(ctx context.Context, projectID int16) ([]domain.User, error) {
+func (s *ProjectService) GetProjectParticipants(ctx context.Context, projectID int32) ([]domain.User, error) {
 	project, err := s.repo.GetProject(ctx, projectID)
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {

@@ -11,10 +11,10 @@ import (
 
 //go:generate mockgen -source=user.go -destination=./mocks/user.go -package=mocks
 type UserService interface {
-	GetUser(ctx context.Context, id int16) (*domain.User, error)
+	GetUser(ctx context.Context, id int32) (*domain.User, error)
 	CreateUser(ctx context.Context, user *domain.User) (*domain.User, error)
 	UpdateUser(ctx context.Context, user *domain.User) (*domain.User, error)
-	RemoveUser(ctx context.Context, id int16) error
+	RemoveUser(ctx context.Context, id int32) error
 }
 
 type userHandler struct {
@@ -36,7 +36,7 @@ func newUserHandler(us UserService) *userHandler {
 // @Failure      500  {object}  apperror.Error
 // @Router       /api/v1/users/{user_id} [get]
 func (h *userHandler) getUser(w http.ResponseWriter, r *http.Request) {
-	userID := httphelp.ParseParamInt16("user_id", r)
+	userID := httphelp.ParseParamInt32("user_id", r)
 
 	response, err := h.userService.GetUser(r.Context(), userID)
 	if err != nil {
@@ -87,7 +87,7 @@ func (h *userHandler) createUser(w http.ResponseWriter, r *http.Request) {
 // @Failure      500  {object}  apperror.Error
 // @Router       /api/v1/users/{user_id} [put]
 func (h *userHandler) updateUser(w http.ResponseWriter, r *http.Request) {
-	userID := httphelp.ParseParamInt16("user_id", r)
+	userID := httphelp.ParseParamInt32("user_id", r)
 
 	var req dto.UpdateUserIn
 	if err := httphelp.ReadJSON(&req, r); err != nil {
@@ -96,11 +96,10 @@ func (h *userHandler) updateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response, err := h.userService.UpdateUser(r.Context(), &domain.User{
-		ID:       userID,
-		Name:     req.Name,
-		Surname:  req.Surname,
-		Role:     req.Role,
-		Position: req.Position,
+		ID:      userID,
+		Name:    req.Name,
+		Surname: req.Surname,
+		Role:    req.Role,
 	})
 	if err != nil {
 		httphelp.SendError(err, w)
@@ -122,7 +121,7 @@ func (h *userHandler) updateUser(w http.ResponseWriter, r *http.Request) {
 // @Failure      500  {object}  apperror.Error
 // @Router       /api/v1/users/{user_id} [delete]
 func (h *userHandler) removeUser(w http.ResponseWriter, r *http.Request) {
-	userID := httphelp.ParseParamInt16("user_id", r)
+	userID := httphelp.ParseParamInt32("user_id", r)
 
 	err := h.userService.RemoveUser(r.Context(), userID)
 	if err != nil {

@@ -14,7 +14,7 @@ import (
 type AuthService interface {
 	SignIn(ctx context.Context, req *domain.SignInRequest) (*domain.SignInResponse, error)
 	SignOut(ctx context.Context, sessionID string)
-	CheckUserExists(ctx context.Context, id int16) error
+	CheckUserExists(ctx context.Context, id int32) error
 }
 
 type authHandler struct {

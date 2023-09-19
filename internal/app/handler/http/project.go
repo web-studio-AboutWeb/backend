@@ -9,10 +9,10 @@ import (
 )
 
 type ProjectService interface {
-	GetProject(ctx context.Context, id int16) (*domain.Project, error)
+	GetProject(ctx context.Context, id int32) (*domain.Project, error)
 	CreateProject(ctx context.Context, project *domain.Project) (*domain.Project, error)
 	UpdateProject(ctx context.Context, project *domain.Project) (*domain.Project, error)
-	GetProjectParticipants(ctx context.Context, projectID int16) ([]domain.User, error)
+	GetProjectParticipants(ctx context.Context, projectID int32) ([]domain.User, error)
 }
 
 type projectHandler struct {
@@ -34,7 +34,7 @@ func newProjectHandler(ps ProjectService) *projectHandler {
 // @Failure      500  {object}  apperror.Error
 // @Router       /api/v1/projects/{project_id} [get]
 func (h *projectHandler) getProject(w http.ResponseWriter, r *http.Request) {
-	pid := httphelp.ParseParamInt16("project_id", r)
+	pid := httphelp.ParseParamInt32("project_id", r)
 
 	response, err := h.projectService.GetProject(r.Context(), pid)
 	if err != nil {
@@ -85,7 +85,7 @@ func (h *projectHandler) createProject(w http.ResponseWriter, r *http.Request) {
 // @Failure      500  {object}  apperror.Error
 // @Router       /api/v1/projects/{project_id} [put]
 func (h *projectHandler) updateProject(w http.ResponseWriter, r *http.Request) {
-	projectID := httphelp.ParseParamInt16("project_id", r)
+	projectID := httphelp.ParseParamInt32("project_id", r)
 
 	var req domain.Project
 	if err := httphelp.ReadJSON(&req, r); err != nil {
@@ -114,7 +114,7 @@ func (h *projectHandler) updateProject(w http.ResponseWriter, r *http.Request) {
 // @Failure      500  {object}  apperror.Error
 // @Router       /api/v1/projects/{project_id}/participants [get]
 func (h *projectHandler) getProjectParticipants(w http.ResponseWriter, r *http.Request) {
-	projectID := httphelp.ParseParamInt16("project_id", r)
+	projectID := httphelp.ParseParamInt32("project_id", r)
 
 	response, err := h.projectService.GetProjectParticipants(r.Context(), projectID)
 	if err != nil {

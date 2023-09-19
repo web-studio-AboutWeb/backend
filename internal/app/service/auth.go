@@ -14,7 +14,7 @@ import (
 
 type AuthRepository interface {
 	GetUserByLogin(ctx context.Context, login string) (*domain.User, error)
-	GetActiveUser(ctx context.Context, id int16) (*domain.User, error)
+	GetActiveUser(ctx context.Context, id int32) (*domain.User, error)
 }
 
 type AuthService struct {
@@ -54,7 +54,7 @@ func (s *AuthService) SignOut(_ context.Context, sessionID string) {
 	session.Delete(sessionID)
 }
 
-func (s *AuthService) CheckUserExists(ctx context.Context, id int16) error {
+func (s *AuthService) CheckUserExists(ctx context.Context, id int32) error {
 	_, err := s.repo.GetActiveUser(ctx, id)
 	if err != nil {
 		return fmt.Errorf("getting active user: %w", err)

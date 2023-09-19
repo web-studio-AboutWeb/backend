@@ -19,11 +19,12 @@ func NewUserRepository(pool Driver) *UserRepository {
 	return &UserRepository{pool}
 }
 
-func (r *UserRepository) GetUser(ctx context.Context, id int16) (*domain.User, error) {
+func (r *UserRepository) GetUser(ctx context.Context, id int32) (*domain.User, error) {
 	var user domain.User
 
 	err := r.pool.QueryRow(ctx, `
-		SELECT id, name, surname, username, created_at, updated_at, disabled_at, role, position
+		SELECT 
+		    id, name, surname, username, created_at, updated_at, disabled_at, role, is_teamlead, image_id
         FROM users
         WHERE id = $1`, id).Scan(
 		&user.ID,
@@ -34,7 +35,8 @@ func (r *UserRepository) GetUser(ctx context.Context, id int16) (*domain.User, e
 		&user.UpdatedAt,
 		&user.DisabledAt,
 		&user.Role,
-		&user.Position,
+		&user.IsTeamLead,
+		&user.ImageID,
 	)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
@@ -44,15 +46,15 @@ func (r *UserRepository) GetUser(ctx context.Context, id int16) (*domain.User, e
 	}
 
 	user.RoleName = user.Role.String()
-	user.PositionName = user.Position.String()
 
 	return &user, nil
 }
 
-func (r *UserRepository) GetActiveUser(ctx context.Context, id int16) (*domain.User, error) {
+func (r *UserRepository) GetActiveUser(ctx context.Context, id int32) (*domain.User, error) {
 	var user domain.User
 	err := r.pool.QueryRow(ctx, `
-		SELECT id, name, surname, username, email, created_at, updated_at, role, position
+		SELECT
+		    id, name, surname, username, created_at, updated_at, disabled_at, role, is_teamlead, image_id
         FROM users
         WHERE id = $1 AND disabled_at IS NULL`, id).Scan(
 		&user.ID,
@@ -63,7 +65,8 @@ func (r *UserRepository) GetActiveUser(ctx context.Context, id int16) (*domain.U
 		&user.CreatedAt,
 		&user.UpdatedAt,
 		&user.Role,
-		&user.Position,
+		&user.IsTeamLead,
+		&user.ImageID,
 	)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
@@ -73,17 +76,16 @@ func (r *UserRepository) GetActiveUser(ctx context.Context, id int16) (*domain.U
 	}
 
 	user.RoleName = user.Role.String()
-	user.PositionName = user.Position.String()
 
 	return &user, nil
 }
 
-func (r *UserRepository) CreateUser(ctx context.Context, user *domain.User) (int16, error) {
-	var userId int16
+func (r *UserRepository) CreateUser(ctx context.Context, user *domain.User) (int32, error) {
+	var userId int32
 
 	err := r.pool.QueryRow(ctx,
-		`INSERT INTO users(name, surname, username, email, encoded_password, salt, role, position)
-		 VALUES($1, $2, $3, $4, $5, $6, $7, $8)
+		`INSERT INTO users(name, surname, username, email, encoded_password, salt, role, is_teamlead, image_id)
+		 VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)
 		 RETURNING  id`,
 		user.Name,
 		user.Surname,
@@ -92,7 +94,8 @@ func (r *UserRepository) CreateUser(ctx context.Context, user *domain.User) (int
 		user.EncodedPassword,
 		user.Salt,
 		user.Role,
-		user.Position,
+		user.IsTeamLead,
+		user.ImageID,
 	).Scan(&userId)
 	if err != nil {
 		return 0, fmt.Errorf("scanning user id: %w", err)
@@ -104,13 +107,12 @@ func (r *UserRepository) CreateUser(ctx context.Context, user *domain.User) (int
 func (r *UserRepository) UpdateUser(ctx context.Context, user *domain.User) error {
 	_, err := r.pool.Exec(ctx, `
 		UPDATE users 
-		SET name=$2, surname=$3, role=$4, position=$5, updated_at=now()
+		SET name=$2, surname=$3, role=$4, updated_at=now()
 		WHERE id = $1`,
 		user.ID,
 		user.Name,
 		user.Surname,
 		user.Role,
-		user.Position,
 	)
 	if err != nil {
 		return fmt.Errorf("updating user %d: %w", user.ID, err)
@@ -119,7 +121,7 @@ func (r *UserRepository) UpdateUser(ctx context.Context, user *domain.User) erro
 	return nil
 }
 
-func (r *UserRepository) DisableUser(ctx context.Context, id int16) error {
+func (r *UserRepository) DisableUser(ctx context.Context, id int32) error {
 	_, err := r.pool.Exec(ctx, `UPDATE users SET disabled_at=now() WHERE id=$1`, id)
 	if err != nil {
 		return fmt.Errorf("deleting user %d: %w", id, err)

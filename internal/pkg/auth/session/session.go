@@ -15,7 +15,7 @@ var ErrSessionNotFound = errors.New("session not found")
 
 type Session struct {
 	ID        string
-	UserID    int16
+	UserID    int32
 	CSRFToken string
 }
 
@@ -25,7 +25,7 @@ var (
 	m        sync.RWMutex
 )
 
-func New(userID int16) (string, string, error) {
+func New(userID int32) (string, string, error) {
 	sessionID, err := generateSessionID()
 	if err != nil {
 		return "", "", fmt.Errorf("generating session id: %w", err)

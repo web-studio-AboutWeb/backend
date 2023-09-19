@@ -19,7 +19,7 @@ func NewProjectRepository(dr Driver) *ProjectRepository {
 	return &ProjectRepository{dr}
 }
 
-func (r *ProjectRepository) GetProject(ctx context.Context, id int16) (*domain.Project, error) {
+func (r *ProjectRepository) GetProject(ctx context.Context, id int32) (*domain.Project, error) {
 	row := r.pool.QueryRow(ctx, `SELECT id, title, description, cover_id, started_at, ended_at, link
                                  FROM projects
                                  WHERE id = $1`, id)
@@ -43,7 +43,7 @@ func (r *ProjectRepository) GetProject(ctx context.Context, id int16) (*domain.P
 	return &project, nil
 }
 
-func (r *ProjectRepository) CreateProject(ctx context.Context, project *domain.Project) (int16, error) {
+func (r *ProjectRepository) CreateProject(ctx context.Context, project *domain.Project) (int32, error) {
 	row := r.pool.QueryRow(ctx,
 		`INSERT INTO projects(title, description, started_at, ended_at, link)
              VALUES($1, $2, $3, $4, $5)
@@ -55,7 +55,7 @@ func (r *ProjectRepository) CreateProject(ctx context.Context, project *domain.P
 		project.Link,
 	)
 
-	var projectId int16
+	var projectId int32
 	if err := row.Scan(&projectId); err != nil {
 		return 0, fmt.Errorf("scanning project id: %w", err)
 	}
@@ -79,7 +79,7 @@ func (r *ProjectRepository) UpdateProject(ctx context.Context, project *domain.P
 	return nil
 }
 
-func (r *ProjectRepository) DeleteProject(ctx context.Context, id int16) error {
+func (r *ProjectRepository) DeleteProject(ctx context.Context, id int32) error {
 	_, err := r.pool.Exec(ctx, `DELETE FROM projects WHERE id = $1`, id)
 	if err != nil {
 		return fmt.Errorf("deleting project %d: %w", id, err)
@@ -88,7 +88,7 @@ func (r *ProjectRepository) DeleteProject(ctx context.Context, id int16) error {
 	return nil
 }
 
-func (r *ProjectRepository) GetProjectParticipants(ctx context.Context, projectID int16) ([]domain.User, error) {
+func (r *ProjectRepository) GetProjectParticipants(ctx context.Context, projectID int32) ([]domain.User, error) {
 	rows, err := r.pool.Query(ctx, `
 		SELECT u.id, u.name, u.surname, u.created_at, u.role, u.position
 	 	FROM projects p
@@ -111,7 +111,6 @@ func (r *ProjectRepository) GetProjectParticipants(ctx context.Context, projectI
 			&participant.Surname,
 			&participant.CreatedAt,
 			&participant.Role,
-			&participant.Position,
 		); err != nil {
 			return nil, fmt.Errorf("scanning participant: %w", err)
 		}
