@@ -18,7 +18,7 @@ import (
 
 func main() {
 	var configPath string
-	flag.StringVar(&configPath, "config-path", "config.default.yml", "Path to application config file.")
+	flag.StringVar(&configPath, "config-path", "config.yml", "Path to application config file.")
 	flag.Parse()
 
 	if len(os.Args) < 2 {
@@ -41,7 +41,9 @@ func main() {
 		log.Fatalf("creating migration: %v", err)
 	}
 
-	switch os.Args[1] {
+	action := os.Args[1]
+
+	switch action {
 	case "up":
 		err = m.Up()
 	case "down":
@@ -49,12 +51,12 @@ func main() {
 	case "drop":
 		err = m.Drop()
 	default:
-		fmt.Println("unknown action", os.Args[1])
+		fmt.Println("unknown action:", action)
 	}
 
 	if err != nil {
 		log.Fatalf("applying migration: %v", err)
 	}
 
-	fmt.Println("Done.")
+	fmt.Printf("Migrate %s done.\n", action)
 }
