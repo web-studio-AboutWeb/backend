@@ -15,3 +15,8 @@ migrate-down:
 
 migrate-drop:
 	go run cmd/migrate/migrate.go drop
+
+test:
+	go test -v ./internal/...
+
+mockgen:
