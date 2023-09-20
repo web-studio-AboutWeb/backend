@@ -12,6 +12,12 @@ import (
 // @Accept   json
 // @Produce  json
 
+// @SecurityDefinitions.apikey CSRF
+// @In                         header
+// @Name                       X-CSRF-Token
+// @Description                **Each endpoint that requires authorization MUST be used with CSRF token in header. **
+// @Description                **Example usage: `X-CSRF-Token your-token`**.
+
 func main() {
 	var configPath string
 	flag.StringVar(&configPath, "config-path", "config.yml", "Path to application config file.")
