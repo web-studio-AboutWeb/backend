@@ -5,6 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"web-studio-backend/internal/pkg/ptr"
 	"web-studio-backend/internal/pkg/strhelp"
 )
 
@@ -40,7 +41,7 @@ func TestProject_Validate(t *testing.T) {
 			wantError: true,
 			p: &Project{
 				Title: "title",
-				Link:  "qwefqwef",
+				Link:  ptr.String("qwefqwef"),
 			},
 		},
 		{
@@ -48,7 +49,7 @@ func TestProject_Validate(t *testing.T) {
 			wantError: true,
 			p: &Project{
 				Title: "title",
-				Link:  "www.mysite.com",
+				Link:  ptr.String("www.mysite.com"),
 			},
 		},
 		{
@@ -56,7 +57,7 @@ func TestProject_Validate(t *testing.T) {
 			wantError: false,
 			p: &Project{
 				Title: "title",
-				Link:  "/relative/path/1",
+				Link:  ptr.String("/relative/path/1"),
 			},
 		},
 		{
@@ -64,7 +65,7 @@ func TestProject_Validate(t *testing.T) {
 			wantError: false,
 			p: &Project{
 				Title: "title",
-				Link:  "https://something.com/relative/path/2",
+				Link:  ptr.String("https://something.com/relative/path/2"),
 			},
 		},
 		{
@@ -72,7 +73,7 @@ func TestProject_Validate(t *testing.T) {
 			wantError: false,
 			p: &Project{
 				Title: "title",
-				Link:  "http://10.0.0.0:8443",
+				Link:  ptr.String("http://10.0.0.0:8443"),
 			},
 		},
 		{
@@ -81,7 +82,7 @@ func TestProject_Validate(t *testing.T) {
 			p: &Project{
 				Title:       "title",
 				Description: "some description",
-				Link:        "https://google.com",
+				Link:        ptr.String("https://google.com"),
 			},
 		},
 	}

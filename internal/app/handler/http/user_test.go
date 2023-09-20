@@ -67,10 +67,9 @@ func TestUserHandler_CreateUser(t *testing.T) {
 			in: &dto.CreateUserIn{
 				Name:     "name",
 				Surname:  "surname",
-				Login:    "login",
+				Username: "login",
 				Password: "password",
 				Role:     1,
-				Position: 1,
 			},
 			code: http.StatusOK,
 			mock: func(user *dto.CreateUserIn) {
@@ -78,7 +77,7 @@ func TestUserHandler_CreateUser(t *testing.T) {
 					ID:              1,
 					Name:            user.Name,
 					Surname:         user.Surname,
-					Username:        user.Login,
+					Username:        user.Username,
 					EncodedPassword: "",
 					Role:            user.Role,
 					RoleName:        user.Role.String(),
