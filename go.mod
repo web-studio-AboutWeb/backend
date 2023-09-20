@@ -3,6 +3,7 @@ module web-studio-backend
 go 1.21
 
 require (
+	github.com/gabriel-vasile/mimetype v1.4.2
 	github.com/go-chi/chi/v5 v5.0.8
 	github.com/go-chi/cors v1.2.1
 	github.com/go-chi/httprate v0.7.4
@@ -31,6 +32,7 @@ require (
 	github.com/rogpeppe/go-internal v1.9.0 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
 	golang.org/x/crypto v0.13.0 // indirect
+	golang.org/x/net v0.10.0 // indirect
 	golang.org/x/sync v0.3.0 // indirect
 	golang.org/x/text v0.13.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
