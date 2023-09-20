@@ -36,7 +36,7 @@ func newProjectHandler(ps ProjectService) *projectHandler {
 // @Description  Returns information about single user.
 // @Tags         Projects
 // @Produce      json
-// @Param        project_id path int64 true "Project identifier."
+// @Param        project_id path int true "Project identifier."
 // @Success      200  {object}  domain.Project
 // @Failure      404  {object}  apperror.Error
 // @Failure      500  {object}  apperror.Error
@@ -105,7 +105,7 @@ func (h *projectHandler) createProject(w http.ResponseWriter, r *http.Request) {
 // @Tags         Projects
 // @Accept       json
 // @Produce      json
-// @Param        project_id path int64 true "Project identifier."
+// @Param        project_id path int true "Project identifier."
 // @Param        request body dto.UpdateProjectRequest true "Request body."
 // @Success      200  {object}	domain.Project
 // @Failure      404  {object}  apperror.Error
@@ -134,7 +134,7 @@ func (h *projectHandler) updateProject(w http.ResponseWriter, r *http.Request) {
 // @Description  Returns a list of project participants.
 // @Tags         Projects
 // @Produce      json
-// @Param        project_id path int64 true "Project identifier."
+// @Param        project_id path int true "Project identifier."
 // @Success      200  {array}   domain.ProjectParticipant
 // @Failure      404  {object}  apperror.Error
 // @Failure      500  {object}  apperror.Error
@@ -156,8 +156,8 @@ func (h *projectHandler) getParticipants(w http.ResponseWriter, r *http.Request)
 // @Description  Returns information about project participant.
 // @Tags         Projects
 // @Produce      json
-// @Param        project_id path int64 true "Project identifier."
-// @Param        user_id path int64 true "Participant identifier."
+// @Param        project_id path int true "Project identifier."
+// @Param        user_id path int true "Participant identifier."
 // @Success      200  {object}  domain.ProjectParticipant
 // @Failure      404  {object}  apperror.Error
 // @Failure      500  {object}  apperror.Error
@@ -182,7 +182,7 @@ func (h *projectHandler) getParticipant(w http.ResponseWriter, r *http.Request) 
 // @Description  On success returns information about added participant.
 // @Tags         Projects
 // @Produce      json
-// @Param        project_id path int64 true "Project identifier."
+// @Param        project_id path int true "Project identifier."
 // @Param        request body dto.AddProjectParticipantRequest true "Request body."
 // @Success      200  {object}  domain.ProjectParticipant
 // @Failure      404  {object}  apperror.Error
@@ -213,8 +213,8 @@ func (h *projectHandler) addParticipant(w http.ResponseWriter, r *http.Request) 
 // @Description  On success returns information about updated participant.
 // @Tags         Projects
 // @Produce      json
-// @Param        project_id path int64 true "Project identifier."
-// @Param        user_id path int64 true "Participant identifier."
+// @Param        project_id path int true "Project identifier."
+// @Param        user_id path int true "Participant identifier."
 // @Param        request body dto.UpdateProjectParticipantRequest true "Request body."
 // @Success      200  {object}  domain.ProjectParticipant
 // @Failure      404  {object}  apperror.Error
@@ -243,8 +243,8 @@ func (h *projectHandler) updateParticipant(w http.ResponseWriter, r *http.Reques
 // @Summary      Remove project participant
 // @Description  Deletes the user from project participants list.
 // @Tags         Projects
-// @Param        project_id path int64 true "Project identifier."
-// @Param        user_id path int64 true "Participant identifier."
+// @Param        project_id path int true "Project identifier."
+// @Param        user_id path int true "Participant identifier."
 // @Success      200
 // @Failure      404  {object}  apperror.Error
 // @Failure      500  {object}  apperror.Error

@@ -31,7 +31,7 @@ func newUserHandler(us UserService) *userHandler {
 // @Description  Returns information about single user.
 // @Tags         Users
 // @Produce      json
-// @Param        user_id path int64 true "User identifier."
+// @Param        user_id path int true "User identifier."
 // @Success      200  {object}  domain.User
 // @Failure      400  {object}  apperror.Error
 // @Failure      500  {object}  apperror.Error
@@ -130,7 +130,7 @@ func (h *userHandler) updateUser(w http.ResponseWriter, r *http.Request) {
 // @Tags         Users
 // @Accept       json
 // @Produce      json
-// @Param        user_id path int64 true "User identifier."
+// @Param        user_id path int true "User identifier."
 // @Success      200  {object}	nil
 // @Failure      404  {object}  apperror.Error
 // @Failure      500  {object}  apperror.Error

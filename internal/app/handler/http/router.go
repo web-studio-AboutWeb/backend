@@ -13,10 +13,12 @@ func NewHandler(
 	userService UserService,
 	projectService ProjectService,
 	authService AuthService,
+	documentService DocumentService,
 ) http.Handler {
 	uh := newUserHandler(userService)
 	ph := newProjectHandler(projectService)
 	ah := newAuthHandler(authService, userService)
+	dh := newDocumentHandler(documentService)
 
 	r := chi.NewRouter()
 
@@ -53,6 +55,11 @@ func NewHandler(
 		r.Get(`/api/v1/projects/{project_id}/participants/{user_id}`, ph.getParticipant)
 		r.Put(`/api/v1/projects/{project_id}/participants/{user_id}`, ph.updateParticipant)
 		r.Delete(`/api/v1/projects/{project_id}/participants/{user_id}`, ph.removeParticipant)
+
+		r.Get(`/api/v1/projects/{project_id}/documents`, dh.getProjectDocuments)
+		r.Post(`/api/v1/projects/{project_id}/documents`, dh.addDocumentToProject)
+		r.Delete(`/api/v1/projects/{project_id}/documents/{document_id}`, dh.removeDocumentFromProject)
+		r.Get(`/api/v1/documents/{document_id}`, dh.downloadDocument)
 	})
 
 	return r
