@@ -6,17 +6,19 @@ import (
 
 type (
 	CreateProjectRequest struct {
-		Title       string  `json:"title"`
-		Description string  `json:"description"`
-		Link        *string `json:"link,omitempty"`
-		TeamID      *int32  `json:"teamID,omitempty"`
+		Title        string   `json:"title"`
+		Description  string   `json:"description"`
+		Link         *string  `json:"link,omitempty"`
+		TeamID       *int32   `json:"teamID,omitempty"`
+		Technologies []string `json:"technologies,omitempty"`
 	}
 
 	UpdateProjectRequest struct {
-		Title       string  `json:"title"`
-		Description string  `json:"description"`
-		Link        *string `json:"link,omitempty"`
-		TeamID      *int32  `json:"teamID,omitempty"`
+		Title        string   `json:"title"`
+		Description  string   `json:"description"`
+		Link         *string  `json:"link,omitempty"`
+		TeamID       *int32   `json:"teamID,omitempty"`
+		Technologies []string `json:"technologies,omitempty"`
 	}
 
 	AddProjectParticipantRequest struct {
@@ -37,10 +39,11 @@ func (r *CreateProjectRequest) ToDomain() *domain.Project {
 	}
 
 	return &domain.Project{
-		Title:       r.Title,
-		Description: r.Description,
-		Link:        r.Link,
-		TeamID:      r.TeamID,
+		Title:        r.Title,
+		Description:  r.Description,
+		Link:         r.Link,
+		TeamID:       r.TeamID,
+		Technologies: r.Technologies,
 	}
 }
 
@@ -50,11 +53,12 @@ func (r *UpdateProjectRequest) ToDomain(projectID int32) *domain.Project {
 	}
 
 	return &domain.Project{
-		ID:          projectID,
-		Title:       r.Title,
-		Description: r.Description,
-		Link:        r.Link,
-		TeamID:      r.TeamID,
+		ID:           projectID,
+		Title:        r.Title,
+		Description:  r.Description,
+		Link:         r.Link,
+		TeamID:       r.TeamID,
+		Technologies: r.Technologies,
 	}
 }
 

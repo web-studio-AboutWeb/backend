@@ -31,7 +31,7 @@ func TestProject_Validate(t *testing.T) {
 			p: &Project{
 				Title: "title",
 				Description: (func() string {
-					s, _ := strhelp.GenerateRandomString(2049)
+					s, _ := strhelp.GenerateRandomString(10001)
 					return s
 				})(),
 			},

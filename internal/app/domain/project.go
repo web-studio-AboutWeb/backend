@@ -10,15 +10,16 @@ import (
 
 type (
 	Project struct {
-		ID          int32     `json:"id"`
-		Title       string    `json:"title"`
-		Description string    `json:"description"`
-		CoverId     *string   `json:"coverId,omitempty"`
-		Link        *string   `json:"link,omitempty"`
-		IsActive    bool      `json:"isActive"`
-		CreatedAt   time.Time `json:"createdAt"`
-		UpdatedAt   time.Time `json:"updatedAt,omitempty"`
+		ID           int32     `json:"id"`
+		Title        string    `json:"title"`
+		Description  string    `json:"description"`
+		IsActive     bool      `json:"isActive"`
+		Technologies []string  `json:"technologies,omitempty"`
+		CreatedAt    time.Time `json:"createdAt"`
+		UpdatedAt    time.Time `json:"updatedAt"`
 
+		CoverId *string    `json:"coverId,omitempty"`
+		Link    *string    `json:"link,omitempty"`
 		TeamID  *int32     `json:"teamID,omitempty"`
 		EndedAt *time.Time `json:"endedAt,omitempty"`
 	}
@@ -47,9 +48,9 @@ func (p *Project) Validate() error {
 		)
 	}
 
-	if len(p.Description) > 2048 {
+	if len(p.Description) > 10000 {
 		return apperror.NewInvalidRequest(
-			fmt.Sprintf("Description must be less than %d characters.", 2048),
+			fmt.Sprintf("Description must be less than %d characters.", 10000),
 			"description",
 		)
 	}

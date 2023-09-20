@@ -24,7 +24,7 @@ func (r *ProjectRepository) GetProject(ctx context.Context, id int32) (*domain.P
 
 	err := r.pool.QueryRow(ctx, `
 		SELECT 
-		    id, title, description, cover_id, created_at, updated_at, ended_at, link, isactive
+		    id, title, description, cover_id, created_at, updated_at, ended_at, link, isactive, technologies
         FROM projects
         WHERE id = $1`, id).Scan(
 		&project.ID,
@@ -36,6 +36,7 @@ func (r *ProjectRepository) GetProject(ctx context.Context, id int32) (*domain.P
 		&project.EndedAt,
 		&project.Link,
 		&project.IsActive,
+		&project.Technologies,
 	)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
@@ -52,7 +53,7 @@ func (r *ProjectRepository) GetActiveProject(ctx context.Context, id int32) (*do
 
 	err := r.pool.QueryRow(ctx, `
 		SELECT 
-		    id, title, description, cover_id, created_at, updated_at, ended_at, link, isactive
+		    id, title, description, cover_id, created_at, updated_at, ended_at, link, isactive, technologies
         FROM projects
         WHERE id=$1 AND isactive`, id).Scan(
 		&project.ID,
@@ -64,6 +65,7 @@ func (r *ProjectRepository) GetActiveProject(ctx context.Context, id int32) (*do
 		&project.EndedAt,
 		&project.Link,
 		&project.IsActive,
+		&project.Technologies,
 	)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
@@ -78,7 +80,7 @@ func (r *ProjectRepository) GetActiveProject(ctx context.Context, id int32) (*do
 func (r *ProjectRepository) GetProjects(ctx context.Context) ([]domain.Project, error) {
 	rows, err := r.pool.Query(ctx, `
 		SELECT 
-		    id, title, description, cover_id, created_at, updated_at, ended_at, link, isactive
+		    id, title, description, cover_id, created_at, updated_at, ended_at, link, isactive, technologies
         FROM projects
         WHERE isactive
         ORDER BY created_at`)
@@ -101,6 +103,7 @@ func (r *ProjectRepository) GetProjects(ctx context.Context) ([]domain.Project, 
 			&project.EndedAt,
 			&project.Link,
 			&project.IsActive,
+			&project.Technologies,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("scanning project: %w", err)
@@ -116,13 +119,14 @@ func (r *ProjectRepository) CreateProject(ctx context.Context, project *domain.P
 	var projectId int32
 
 	err := r.pool.QueryRow(ctx,
-		`INSERT INTO projects(title, description, team_id, isactive, link)
-		 VALUES($1, $2, $3, TRUE, $4)
+		`INSERT INTO projects(title, description, team_id, isactive, link, technologies)
+		 VALUES($1, $2, $3, TRUE, $4, $5)
 		 RETURNING  id`,
 		project.Title,
 		project.Description,
 		project.TeamID,
 		project.Link,
+		project.Technologies,
 	).Scan(&projectId)
 	if err != nil {
 		return 0, fmt.Errorf("scanning project id: %w", err)
@@ -134,12 +138,13 @@ func (r *ProjectRepository) CreateProject(ctx context.Context, project *domain.P
 func (r *ProjectRepository) UpdateProject(ctx context.Context, project *domain.Project) error {
 	_, err := r.pool.Exec(ctx, `
 		UPDATE projects
-		SET title=$2, description=$3, link=$4, updated_at=now()
+		SET title=$2, description=$3, link=$4, technologies=$5, updated_at=now()
 		WHERE id = $1`,
 		project.ID,
 		project.Title,
 		project.Description,
 		project.Link,
+		project.Technologies,
 	)
 	if err != nil {
 		return fmt.Errorf("updating project: %w", err)
