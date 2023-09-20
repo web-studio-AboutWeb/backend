@@ -64,7 +64,7 @@ func Run(configPath string) error {
 	documentRepo := postgresql.NewDocumentRepository(pg.Pool)
 
 	// Initialize FS storage
-	fsPath := "web/documents"
+	fsPath := "documents"
 	_ = os.MkdirAll(fsPath, 0644)
 	fileSystem, err := filesystem.New(fsPath)
 	if err != nil {
