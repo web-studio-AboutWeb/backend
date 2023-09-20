@@ -53,6 +53,7 @@ func Run(configPath string) error {
 	if err != nil {
 		return fmt.Errorf("creating postgres: %w", err)
 	}
+	defer pg.Close()
 
 	slog.Info("Connected to database")
 
@@ -111,8 +112,6 @@ func Run(configPath string) error {
 		slog.Error("failed to shutdown the server: " + err.Error())
 	}
 	slog.Info("Server has been shut down successfully")
-
-	pg.Close()
 
 	return nil
 }
