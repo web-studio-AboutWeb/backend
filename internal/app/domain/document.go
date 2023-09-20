@@ -9,6 +9,6 @@ type Document struct {
 	UserID           int32     `json:"userID"`
 	CreatedAt        time.Time `json:"createdAt"`
 	MimeType         string    `json:"mimeType"`
-	Size             int32     `json:"size"` // Size in bytes
+	SizeBytes        int32     `json:"sizeBytes"` // Size in bytes
 	Content          []byte    `json:"-"`
 }

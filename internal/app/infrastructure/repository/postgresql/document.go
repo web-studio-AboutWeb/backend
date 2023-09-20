@@ -30,7 +30,7 @@ func (r *DocumentRepository) GetDocument(ctx context.Context, id int32) (*domain
 		&doc.OriginalFilename,
 		&doc.FileID,
 		&doc.MimeType,
-		&doc.Size,
+		&doc.SizeBytes,
 		&doc.UserID,
 		&doc.CreatedAt,
 	)
@@ -54,7 +54,7 @@ func (r *DocumentRepository) CreateDocument(ctx context.Context, doc *domain.Doc
 		doc.OriginalFilename,
 		doc.FileID,
 		doc.MimeType,
-		doc.Size,
+		doc.SizeBytes,
 		doc.UserID,
 	).Scan(&id)
 	if err != nil {
@@ -93,7 +93,7 @@ func (r *DocumentRepository) GetProjectDocuments(ctx context.Context, projectID 
 			&doc.OriginalFilename,
 			&doc.FileID,
 			&doc.MimeType,
-			&doc.Size,
+			&doc.SizeBytes,
 			&doc.UserID,
 			&doc.CreatedAt,
 		)

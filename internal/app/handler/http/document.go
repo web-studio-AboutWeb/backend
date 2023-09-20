@@ -111,7 +111,7 @@ func (h *documentHandler) addDocumentToProject(w http.ResponseWriter, r *http.Re
 
 	doc := &domain.Document{
 		OriginalFilename: header.Filename,
-		Size:             int32(header.Size),
+		SizeBytes:        int32(header.Size),
 		Content:          content,
 	}
 

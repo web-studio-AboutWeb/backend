@@ -80,7 +80,7 @@ func (s *DocumentService) GetProjectDocuments(ctx context.Context, id int32) ([]
 }
 
 func (s *DocumentService) AddDocumentToProject(ctx context.Context, doc *domain.Document, projectID int32) (*domain.Document, error) {
-	if doc.Size > (5 << 20) { // 5MB
+	if doc.SizeBytes > (5 << 20) { // 5MB
 		return nil, apperror.NewInvalidRequest("Document size is too big.", "")
 	}
 
