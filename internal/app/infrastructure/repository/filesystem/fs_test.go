@@ -1,6 +1,7 @@
 package filesystem
 
 import (
+	"context"
 	"os"
 	"path/filepath"
 	"testing"
@@ -80,7 +81,7 @@ func TestFileSystem_Read(t *testing.T) {
 	fs, err := New(tempDir)
 	require.NoError(t, err)
 
-	content, err := fs.Read(tempFile)
+	content, err := fs.Read(context.Background(), tempFile)
 	require.NoError(t, err)
 
 	require.Equal(t, fileContent, string(content))
@@ -97,10 +98,12 @@ func TestFileSystem_Save(t *testing.T) {
 	fs, err := New(tempDir)
 	require.NoError(t, err)
 
-	fileName, err := fs.Save([]byte(fileContent), "txt")
+	fileName := "test.txt"
+
+	err = fs.Save(context.Background(), []byte(fileContent), fileName)
 	require.NoError(t, err)
 
-	content, err := fs.Read(fileName)
+	content, err := fs.Read(context.Background(), fileName)
 	require.NoError(t, err)
 
 	require.Equal(t, fileContent, string(content))
@@ -116,10 +119,12 @@ func TestFileSystem_Delete(t *testing.T) {
 	fs, err := New(tempDir)
 	require.NoError(t, err)
 
-	fileName, err := fs.Save([]byte("123"), "txt")
+	fileName := "test.txt"
+
+	err = fs.Save(context.Background(), []byte("123"), fileName)
 	require.NoError(t, err)
 
-	err = fs.Delete(fileName)
+	err = fs.Delete(context.Background(), fileName)
 	require.NoError(t, err)
 
 	_, err = os.Stat(filepath.Join(tempDir, fileName))

@@ -1,13 +1,11 @@
 package filesystem
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
-	"strings"
-
-	"github.com/google/uuid"
 )
 
 type FileSystem struct {
@@ -24,37 +22,29 @@ func New(dirPath string) (*FileSystem, error) {
 		return nil, fmt.Errorf("%s is not a directory", dirPath)
 	}
 
-	return &FileSystem{dirPath}, nil
+	return &FileSystem{dir: dirPath}, nil
 }
 
-func (fs *FileSystem) Save(data []byte, ext string) (string, error) {
+func (fs *FileSystem) Save(_ context.Context, data []byte, fileName string) error {
 	if len(data) == 0 {
-		return "", fmt.Errorf("data is empty")
+		return fmt.Errorf("data is empty")
 	}
-
-	if ext == "" {
-		return "", fmt.Errorf("empty file extension")
-	}
-	ext = strings.TrimPrefix(ext, ".")
-
-	fileID := uuid.New().String()
-	fileName := fmt.Sprintf("%s.%s", fileID, ext)
 
 	file, err := os.OpenFile(filepath.Join(fs.dir, fileName), os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		return "", fmt.Errorf("creating file: %w", err)
+		return fmt.Errorf("creating file: %w", err)
 	}
 	defer file.Close()
 
 	_, err = file.Write(data)
 	if err != nil {
-		return "", fmt.Errorf("writing data to file: %w", err)
+		return fmt.Errorf("writing data to file: %w", err)
 	}
 
-	return fileName, nil
+	return nil
 }
 
-func (fs *FileSystem) Read(fileName string) ([]byte, error) {
+func (fs *FileSystem) Read(_ context.Context, fileName string) ([]byte, error) {
 	filePath := filepath.Join(fs.dir, fileName)
 
 	_, err := os.Stat(filePath)
@@ -75,7 +65,7 @@ func (fs *FileSystem) Read(fileName string) ([]byte, error) {
 	return data, nil
 }
 
-func (fs *FileSystem) Delete(fileName string) error {
+func (fs *FileSystem) Delete(_ context.Context, fileName string) error {
 	filePath := filepath.Join(fs.dir, fileName)
 
 	_, err := os.Stat(filePath)
