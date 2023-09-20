@@ -69,6 +69,21 @@ func (mr *MockUserServiceMockRecorder) GetUser(ctx, id any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUser", reflect.TypeOf((*MockUserService)(nil).GetUser), ctx, id)
 }
 
+// GetUsers mocks base method.
+func (m *MockUserService) GetUsers(ctx context.Context) ([]domain.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUsers", ctx)
+	ret0, _ := ret[0].([]domain.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUsers indicates an expected call of GetUsers.
+func (mr *MockUserServiceMockRecorder) GetUsers(ctx any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUsers", reflect.TypeOf((*MockUserService)(nil).GetUsers), ctx)
+}
+
 // RemoveUser mocks base method.
 func (m *MockUserService) RemoveUser(ctx context.Context, id int32) error {
 	m.ctrl.T.Helper()

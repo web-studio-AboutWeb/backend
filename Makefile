@@ -21,3 +21,6 @@ test:
 
 test-s:
 	go test ./internal/...
+
+gen:
+	go generate ./...

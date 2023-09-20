@@ -83,6 +83,21 @@ func (mr *MockUserRepositoryMockRecorder) DisableUser(ctx, id any) *gomock.Call 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DisableUser", reflect.TypeOf((*MockUserRepository)(nil).DisableUser), ctx, id)
 }
 
+// GetActiveUser mocks base method.
+func (m *MockUserRepository) GetActiveUser(ctx context.Context, id int32) (*domain.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetActiveUser", ctx, id)
+	ret0, _ := ret[0].(*domain.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetActiveUser indicates an expected call of GetActiveUser.
+func (mr *MockUserRepositoryMockRecorder) GetActiveUser(ctx, id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetActiveUser", reflect.TypeOf((*MockUserRepository)(nil).GetActiveUser), ctx, id)
+}
+
 // GetUser mocks base method.
 func (m *MockUserRepository) GetUser(ctx context.Context, id int32) (*domain.User, error) {
 	m.ctrl.T.Helper()
@@ -111,6 +126,21 @@ func (m *MockUserRepository) GetUserByLogin(ctx context.Context, login string) (
 func (mr *MockUserRepositoryMockRecorder) GetUserByLogin(ctx, login any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByLogin", reflect.TypeOf((*MockUserRepository)(nil).GetUserByLogin), ctx, login)
+}
+
+// GetUsers mocks base method.
+func (m *MockUserRepository) GetUsers(ctx context.Context) ([]domain.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUsers", ctx)
+	ret0, _ := ret[0].([]domain.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUsers indicates an expected call of GetUsers.
+func (mr *MockUserRepositoryMockRecorder) GetUsers(ctx any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUsers", reflect.TypeOf((*MockUserRepository)(nil).GetUsers), ctx)
 }
 
 // UpdateUser mocks base method.
