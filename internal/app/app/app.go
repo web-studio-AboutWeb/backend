@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"web-studio-backend/internal/app/handler/http"
+	"web-studio-backend/internal/app/infrastructure/repository/filesystem"
 	"web-studio-backend/internal/app/infrastructure/repository/postgresql"
 	"web-studio-backend/internal/app/service"
 	"web-studio-backend/internal/pkg/config"
@@ -60,17 +61,28 @@ func Run(configPath string) error {
 	// Repositories initialization
 	userRepo := postgresql.NewUserRepository(pg.Pool)
 	projectRepo := postgresql.NewProjectRepository(pg.Pool)
+	documentRepo := postgresql.NewDocumentRepository(pg.Pool)
+
+	// Initialize FS storage
+	fsPath := "web/documents"
+	_ = os.MkdirAll(fsPath, 0644)
+	fileSystem, err := filesystem.New(fsPath)
+	if err != nil {
+		return fmt.Errorf("creating file system: %w", err)
+	}
 
 	// Services initialization
 	userService := service.NewUserService(userRepo)
 	projectService := service.NewProjectService(projectRepo, userRepo)
 	authService := service.NewAuthService(userRepo)
+	documentService := service.NewDocumentService(documentRepo, projectRepo, fileSystem)
 
 	// Handler initialization
 	handler := http.NewHandler(
 		userService,
 		projectService,
 		authService,
+		documentService,
 	)
 
 	httpServer := &stdhttp.Server{
