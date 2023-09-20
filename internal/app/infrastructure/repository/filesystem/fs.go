@@ -3,9 +3,10 @@ package filesystem
 import (
 	"context"
 	"fmt"
-	"io"
 	"os"
 	"path/filepath"
+
+	"web-studio-backend/internal/app/infrastructure/repository"
 )
 
 type FileSystem struct {
@@ -14,10 +15,9 @@ type FileSystem struct {
 
 func New(dirPath string) (*FileSystem, error) {
 	fi, err := os.Stat(dirPath)
-	if err != nil {
-		return nil, fmt.Errorf("file stat: %w", err)
+	if os.IsNotExist(err) {
+		return nil, fmt.Errorf("directory does not exist")
 	}
-
 	if !fi.IsDir() {
 		return nil, fmt.Errorf("%s is not a directory", dirPath)
 	}
@@ -48,18 +48,13 @@ func (fs *FileSystem) Read(_ context.Context, fileName string) ([]byte, error) {
 	filePath := filepath.Join(fs.dir, fileName)
 
 	_, err := os.Stat(filePath)
-	if err != nil {
-		return nil, fmt.Errorf("file stat: %w", err)
+	if os.IsNotExist(err) {
+		return nil, repository.ErrObjectNotFound
 	}
 
-	file, err := os.OpenFile(filePath, os.O_RDONLY, 0444)
+	data, err := os.ReadFile(filePath)
 	if err != nil {
-		return nil, fmt.Errorf("opening file: %w", err)
-	}
-
-	data, err := io.ReadAll(file)
-	if err != nil {
-		return nil, fmt.Errorf("reading file content: %w", err)
+		return nil, fmt.Errorf("reading file: %w", err)
 	}
 
 	return data, nil
@@ -69,8 +64,8 @@ func (fs *FileSystem) Delete(_ context.Context, fileName string) error {
 	filePath := filepath.Join(fs.dir, fileName)
 
 	_, err := os.Stat(filePath)
-	if err != nil {
-		return fmt.Errorf("file stat: %w", err)
+	if os.IsNotExist(err) {
+		return repository.ErrObjectNotFound
 	}
 
 	err = os.Remove(filePath)
