@@ -15,8 +15,8 @@ type ProjectRepository struct {
 	pool Driver
 }
 
-func NewProjectRepository(dr Driver) *ProjectRepository {
-	return &ProjectRepository{dr}
+func NewProjectRepository(pool Driver) *ProjectRepository {
+	return &ProjectRepository{pool}
 }
 
 func (r *ProjectRepository) GetProject(ctx context.Context, id int32) (*domain.Project, error) {
