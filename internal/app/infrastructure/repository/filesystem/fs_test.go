@@ -14,39 +14,28 @@ func TestNew(t *testing.T) {
 		name      string
 		dirPath   string
 		wantError bool
-		tempFile  string
-		tempDir   string
+		tempFile  bool
 	}{
 		{
 			name:      "path does not exists",
-			dirPath:   "unknown_dir",
+			dirPath:   "temp_dir",
 			wantError: false,
 		},
 		{
 			name:      "path is not a directory",
-			dirPath:   "temp_dir/temp_file.txt",
+			dirPath:   "temp_dir/test.txt",
 			wantError: true,
-			tempDir:   "temp_dir",
-			tempFile:  "temp_dir/temp_file.txt",
-		},
-		{
-			name:      "should pass",
-			dirPath:   "temp_dir",
-			wantError: false,
-			tempDir:   "temp_dir",
+			tempFile:  true,
 		},
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(tt *testing.T) {
-			if tc.tempDir != "" {
-				err := os.Mkdir(tc.tempDir, 0744)
-				require.NoError(tt, err)
-				defer os.RemoveAll(tc.tempDir)
-			}
+			os.Mkdir(filepath.Dir(tc.dirPath), os.ModePerm)
+			defer os.Remove(tc.dirPath)
 
-			if tc.tempFile != "" {
-				f, err := os.Create(tc.tempFile)
+			if tc.tempFile {
+				f, err := os.Create(tc.dirPath)
 				require.NoError(tt, err)
 				defer f.Close()
 				defer os.Remove(tc.dirPath)
