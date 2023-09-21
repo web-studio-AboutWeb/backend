@@ -16,6 +16,7 @@ import (
 	"web-studio-backend/internal/app/domain"
 	"web-studio-backend/internal/app/domain/apperror"
 	"web-studio-backend/internal/app/handler/http/dto"
+	"web-studio-backend/internal/app/handler/http/httperr"
 	smocks "web-studio-backend/internal/app/handler/http/mocks"
 )
 
@@ -39,7 +40,7 @@ func TestUserHandler_CreateUser(t *testing.T) {
 	type test struct {
 		name     string
 		response *domain.User
-		err      *apperror.Error
+		err      *httperr.Error
 		wantErr  bool
 	}
 
@@ -100,9 +101,9 @@ func TestUserHandler_CreateUser(t *testing.T) {
 			test: test{
 				name:    "login already taken error",
 				wantErr: true,
-				err: &apperror.Error{
-					Field: "login",
-					Type:  apperror.InvalidRequestType,
+				err: &httperr.Error{
+					Target: "login",
+					Type:   httperr.ErrorTypeInvalidRequest,
 				},
 				response: nil,
 			},
@@ -150,11 +151,11 @@ func TestUserHandler_CreateUser(t *testing.T) {
 				require.NotEqual(tt, http.StatusOK, result.StatusCode)
 
 				if tc.err != nil {
-					var out *apperror.Error
+					var out *httperr.Error
 					err = json.Unmarshal(data, &out)
 					require.NoError(tt, err)
 
-					require.Equal(tt, tc.err.Field, out.Field)
+					require.Equal(tt, tc.err.Target, out.Target)
 					require.Equal(tt, tc.err.Type, out.Type)
 				}
 
