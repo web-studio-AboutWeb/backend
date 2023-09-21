@@ -27,13 +27,6 @@ type DocumentRepository interface {
 	RemoveDocumentFromProject(ctx context.Context, docID int32, projectID int32) error
 }
 
-//go:generate mockgen -source=document.go -destination=./mocks/file.go -package=mocks
-type FileRepository interface {
-	Save(ctx context.Context, data []byte, fileName string) error
-	Read(ctx context.Context, fileName string) ([]byte, error)
-	Delete(ctx context.Context, fileName string) error
-}
-
 type DocumentService struct {
 	repo        DocumentRepository
 	projectRepo ProjectRepository

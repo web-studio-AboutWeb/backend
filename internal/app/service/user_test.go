@@ -20,7 +20,8 @@ func user(t *testing.T) (*service.UserService, *mocks.MockUserRepository) {
 	defer mockCtl.Finish()
 
 	userRepo := mocks.NewMockUserRepository(mockCtl)
-	userService := service.NewUserService(userRepo)
+	fileRepo := mocks.NewMockFileRepository(mockCtl)
+	userService := service.NewUserService(userRepo, fileRepo)
 
 	return userService, userRepo
 }
@@ -68,7 +69,7 @@ func TestUserService_CreateUser(t *testing.T) {
 				Role:            1,
 			},
 			mock: func(user *domain.User) {
-				repo.EXPECT().CheckUsernameUniqueness(ctx, user.Username, user.Email).Return(nil, nil)
+				repo.EXPECT().CheckUserUniqueness(ctx, user.Username, user.Email).Return(nil, nil)
 				repo.EXPECT().CreateUser(ctx, user).Return(int32(1), nil)
 				repo.EXPECT().GetUser(ctx, int32(1)).Return(&domain.User{
 					ID:       1,
@@ -96,7 +97,7 @@ func TestUserService_CreateUser(t *testing.T) {
 				Role:            1,
 			},
 			mock: func(user *domain.User) {
-				repo.EXPECT().CheckUsernameUniqueness(ctx, user.Username, user.Email).Return(&domain.User{Username: "123"}, nil)
+				repo.EXPECT().CheckUserUniqueness(ctx, user.Username, user.Email).Return(&domain.User{Username: "123"}, nil)
 			},
 		},
 		{
@@ -108,7 +109,7 @@ func TestUserService_CreateUser(t *testing.T) {
 			},
 			user: &domain.User{Username: "123"},
 			mock: func(user *domain.User) {
-				repo.EXPECT().CheckUsernameUniqueness(ctx, user.Username, user.Email).Return(nil, nil)
+				repo.EXPECT().CheckUserUniqueness(ctx, user.Username, user.Email).Return(nil, nil)
 				repo.EXPECT().CreateUser(ctx, user).Return(int32(0), fmt.Errorf("create user error"))
 			},
 		},
@@ -121,7 +122,7 @@ func TestUserService_CreateUser(t *testing.T) {
 			},
 			user: &domain.User{Username: "login"},
 			mock: func(user *domain.User) {
-				repo.EXPECT().CheckUsernameUniqueness(ctx, user.Username, user.Email).Return(nil, nil)
+				repo.EXPECT().CheckUserUniqueness(ctx, user.Username, user.Email).Return(nil, nil)
 				repo.EXPECT().CreateUser(ctx, user).Return(int32(1), nil)
 				repo.EXPECT().GetUser(ctx, int32(1)).Return(nil, fmt.Errorf("get user error"))
 			},

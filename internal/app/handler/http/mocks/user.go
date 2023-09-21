@@ -69,6 +69,21 @@ func (mr *MockUserServiceMockRecorder) GetUser(ctx, id any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUser", reflect.TypeOf((*MockUserService)(nil).GetUser), ctx, id)
 }
 
+// GetUserImage mocks base method.
+func (m *MockUserService) GetUserImage(ctx context.Context, userID int32) (*domain.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUserImage", ctx, userID)
+	ret0, _ := ret[0].(*domain.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUserImage indicates an expected call of GetUserImage.
+func (mr *MockUserServiceMockRecorder) GetUserImage(ctx, userID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserImage", reflect.TypeOf((*MockUserService)(nil).GetUserImage), ctx, userID)
+}
+
 // GetUsers mocks base method.
 func (m *MockUserService) GetUsers(ctx context.Context) ([]domain.User, error) {
 	m.ctrl.T.Helper()
@@ -96,6 +111,20 @@ func (m *MockUserService) RemoveUser(ctx context.Context, id int32) error {
 func (mr *MockUserServiceMockRecorder) RemoveUser(ctx, id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RemoveUser", reflect.TypeOf((*MockUserService)(nil).RemoveUser), ctx, id)
+}
+
+// SetUserImage mocks base method.
+func (m *MockUserService) SetUserImage(ctx context.Context, userID int32, img []byte) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SetUserImage", ctx, userID, img)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SetUserImage indicates an expected call of SetUserImage.
+func (mr *MockUserServiceMockRecorder) SetUserImage(ctx, userID, img any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetUserImage", reflect.TypeOf((*MockUserService)(nil).SetUserImage), ctx, userID, img)
 }
 
 // UpdateUser mocks base method.

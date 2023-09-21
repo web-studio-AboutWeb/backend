@@ -73,7 +73,7 @@ func Run(configPath string) error {
 	}
 
 	// Services initialization
-	userService := service.NewUserService(userRepo)
+	userService := service.NewUserService(userRepo, filesFS)
 	projectService := service.NewProjectService(projectRepo, userRepo)
 	authService := service.NewAuthService(userRepo)
 	documentService := service.NewDocumentService(documentRepo, projectRepo, filesFS)

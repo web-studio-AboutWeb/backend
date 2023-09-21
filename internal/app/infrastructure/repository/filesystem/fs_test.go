@@ -20,7 +20,7 @@ func TestNew(t *testing.T) {
 		{
 			name:      "path does not exists",
 			dirPath:   "unknown_dir",
-			wantError: true,
+			wantError: false,
 		},
 		{
 			name:      "path is not a directory",

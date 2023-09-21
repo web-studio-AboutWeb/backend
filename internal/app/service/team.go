@@ -17,6 +17,7 @@ import (
 
 const teamsDir = "teams"
 
+//go:generate mockgen -source=team.go -destination=./mocks/team.go -package=mocks
 type TeamRepository interface {
 	GetTeam(ctx context.Context, id int32) (*domain.Team, error)
 	GetTeams(ctx context.Context) ([]domain.Team, error)

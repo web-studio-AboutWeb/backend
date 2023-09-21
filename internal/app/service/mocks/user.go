@@ -143,6 +143,20 @@ func (mr *MockUserRepositoryMockRecorder) GetUsers(ctx any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUsers", reflect.TypeOf((*MockUserRepository)(nil).GetUsers), ctx)
 }
 
+// SetUserImage mocks base method.
+func (m *MockUserRepository) SetUserImage(ctx context.Context, userID int32, imageID string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SetUserImage", ctx, userID, imageID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SetUserImage indicates an expected call of SetUserImage.
+func (mr *MockUserRepositoryMockRecorder) SetUserImage(ctx, userID, imageID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetUserImage", reflect.TypeOf((*MockUserRepository)(nil).SetUserImage), ctx, userID, imageID)
+}
+
 // UpdateUser mocks base method.
 func (m *MockUserRepository) UpdateUser(ctx context.Context, user *domain.User) error {
 	m.ctrl.T.Helper()
