@@ -3,6 +3,7 @@ package filesystem
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"os"
 	"path/filepath"
 
@@ -16,9 +17,8 @@ type FileSystem struct {
 func New(dirPath string) (*FileSystem, error) {
 	fi, err := os.Stat(dirPath)
 	if os.IsNotExist(err) {
-		return nil, fmt.Errorf("directory does not exist")
-	}
-	if !fi.IsDir() {
+		_ = os.MkdirAll(dirPath, os.ModePerm)
+	} else if !fi.IsDir() {
 		return nil, fmt.Errorf("%s is not a directory", dirPath)
 	}
 
@@ -30,7 +30,14 @@ func (fs *FileSystem) Save(_ context.Context, data []byte, fileName string) erro
 		return fmt.Errorf("data is empty")
 	}
 
-	file, err := os.OpenFile(filepath.Join(fs.dir, fileName), os.O_CREATE|os.O_WRONLY, 0644)
+	dir := filepath.Dir(fileName)
+	fp := filepath.Join(fs.dir, dir)
+	err := os.MkdirAll(fp, os.ModePerm)
+	if err != nil {
+		slog.Error("error creating all dir", slog.String("error", err.Error()), slog.String("path", fp))
+	}
+
+	file, err := os.Create(filepath.Join(fs.dir, fileName))
 	if err != nil {
 		return fmt.Errorf("creating file: %w", err)
 	}
