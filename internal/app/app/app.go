@@ -22,6 +22,8 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
+const filesDir = "files"
+
 func Run(configPath string) error {
 	config.Read(configPath)
 
@@ -62,20 +64,20 @@ func Run(configPath string) error {
 	userRepo := postgresql.NewUserRepository(pg.Pool)
 	projectRepo := postgresql.NewProjectRepository(pg.Pool)
 	documentRepo := postgresql.NewDocumentRepository(pg.Pool)
+	teamRepo := postgresql.NewTeamRepository(pg.Pool)
 
-	// Initialize FS storage
-	fsPath := "documents"
-	_ = os.MkdirAll(fsPath, 0644)
-	fileSystem, err := filesystem.New(fsPath)
+	// FS storage initialization
+	filesFS, err := filesystem.New(filesDir)
 	if err != nil {
-		return fmt.Errorf("creating file system: %w", err)
+		return fmt.Errorf("creating images fs: %w", err)
 	}
 
 	// Services initialization
 	userService := service.NewUserService(userRepo)
 	projectService := service.NewProjectService(projectRepo, userRepo)
 	authService := service.NewAuthService(userRepo)
-	documentService := service.NewDocumentService(documentRepo, projectRepo, fileSystem)
+	documentService := service.NewDocumentService(documentRepo, projectRepo, filesFS)
+	teamService := service.NewTeamService(teamRepo, filesFS)
 
 	// Handler initialization
 	handler := http.NewHandler(
@@ -83,6 +85,7 @@ func Run(configPath string) error {
 		projectService,
 		authService,
 		documentService,
+		teamService,
 	)
 
 	httpServer := &stdhttp.Server{
