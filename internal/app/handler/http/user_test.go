@@ -14,7 +14,6 @@ import (
 	"go.uber.org/mock/gomock"
 
 	"web-studio-backend/internal/app/domain"
-	"web-studio-backend/internal/app/domain/apperror"
 	"web-studio-backend/internal/app/handler/http/dto"
 	"web-studio-backend/internal/app/handler/http/httperr"
 	smocks "web-studio-backend/internal/app/handler/http/mocks"
@@ -110,10 +109,10 @@ func TestUserHandler_CreateUser(t *testing.T) {
 			in:   &dto.CreateUserIn{},
 			code: http.StatusBadRequest,
 			mock: func(user *dto.CreateUserIn) {
-				serv.EXPECT().CreateUser(ctx, user.ToDomain()).Return(nil, &apperror.Error{
+				serv.EXPECT().CreateUser(ctx, user.ToDomain()).Return(nil, &apperr.Error{
 					Message: "Username already taken.",
 					Field:   "login",
-					Type:    apperror.InvalidRequestType,
+					Type:    apperr.InvalidRequestType,
 				})
 			},
 		},

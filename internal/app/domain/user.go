@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"web-studio-backend/internal/app/domain/apperror"
+	"web-studio-backend/internal/app/domain/apperr"
 	"web-studio-backend/internal/pkg/strhelp"
 )
 
@@ -54,31 +54,31 @@ type User struct {
 }
 
 func (u *User) Validate() error {
-	var validations []apperror.ValidationError
+	var validations []apperr.ValidationError
 
 	if u.Name == "" || len(u.Name) > 30 {
-		validations = append(validations, apperror.ValidationError{
+		validations = append(validations, apperr.ValidationError{
 			Message: fmt.Sprintf("Name cannot be empty and must not exceed %d characters.", 30),
 			Field:   "name",
 		})
 	}
 
 	if u.Surname == "" || len(u.Surname) > 50 {
-		validations = append(validations, apperror.ValidationError{
+		validations = append(validations, apperr.ValidationError{
 			Message: fmt.Sprintf("Surname cannot be empty and must not exceed %d characters.", 50),
 			Field:   "surname",
 		})
 	}
 
 	if u.Role.String() == "" {
-		validations = append(validations, apperror.ValidationError{
+		validations = append(validations, apperr.ValidationError{
 			Message: fmt.Sprintf("Unknown role %d.", u.Role),
 			Field:   "role",
 		})
 	}
 
 	if len(validations) > 0 {
-		return apperror.NewValidationError(validations, "")
+		return apperr.NewValidationError(validations, "")
 	}
 
 	return nil

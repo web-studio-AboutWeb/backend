@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 
-	"web-studio-backend/internal/app/domain/apperror"
+	"web-studio-backend/internal/app/domain/apperr"
 )
 
 type ErrorType string
@@ -35,7 +35,7 @@ type (
 )
 
 // ParseAppError parses apperror.Error and returns Error with appropriate fields.
-func ParseAppError(ae *apperror.Error) *Error {
+func ParseAppError(ae *apperr.Error) *Error {
 	if ae == nil {
 		return &Error{
 			HttpCode: http.StatusInternalServerError,
@@ -50,19 +50,19 @@ func ParseAppError(ae *apperror.Error) *Error {
 	}
 
 	switch ae.Type {
-	case apperror.NotFoundType:
+	case apperr.NotFoundType:
 		httpError.Type = ErrorTypeNotFound
 		httpError.HttpCode = http.StatusNotFound
-	case apperror.InvalidRequestType:
+	case apperr.InvalidRequestType:
 		httpError.Type = ErrorTypeInvalidRequest
 		httpError.HttpCode = http.StatusBadRequest
-	case apperror.UnauthorizedType:
+	case apperr.UnauthorizedType:
 		httpError.Type = ErrorTypeUnauthorized
 		httpError.HttpCode = http.StatusUnauthorized
-	case apperror.DuplicateType, apperror.DisabledType:
+	case apperr.DuplicateType, apperr.DisabledType:
 		httpError.Type = ErrorTypeConflict
 		httpError.HttpCode = http.StatusConflict
-	case apperror.ForbiddenType:
+	case apperr.ForbiddenType:
 		httpError.Type = ErrorTypeForbidden
 		httpError.HttpCode = http.StatusForbidden
 	default:
@@ -86,9 +86,9 @@ func ParseAppError(ae *apperror.Error) *Error {
 	return &httpError
 }
 
-func UnwrapAppError(err error) *apperror.Error {
+func UnwrapAppError(err error) *apperr.Error {
 	var (
-		ae   *apperror.Error
+		ae   *apperr.Error
 		temp = err
 	)
 

@@ -5,7 +5,7 @@ import (
 	"net/url"
 	"time"
 
-	"web-studio-backend/internal/app/domain/apperror"
+	"web-studio-backend/internal/app/domain/apperr"
 )
 
 type (
@@ -38,23 +38,23 @@ type (
 )
 
 func (p *Project) Validate() error {
-	var validations []apperror.ValidationError
+	var validations []apperr.ValidationError
 
 	if p.Title == "" {
-		validations = append(validations, apperror.ValidationError{
+		validations = append(validations, apperr.ValidationError{
 			Message: "Title cannot be empty.",
 			Field:   "title",
 		})
 	}
 	if len(p.Title) > 128 {
-		validations = append(validations, apperror.ValidationError{
+		validations = append(validations, apperr.ValidationError{
 			Message: fmt.Sprintf("Title must be less than %d characters.", 128),
 			Field:   "title",
 		})
 	}
 
 	if len(p.Description) > 10000 {
-		validations = append(validations, apperror.ValidationError{
+		validations = append(validations, apperr.ValidationError{
 			Message: fmt.Sprintf("Description must be less than %d characters.", 10000),
 			Field:   "description",
 		})
@@ -63,7 +63,7 @@ func (p *Project) Validate() error {
 	if p.Link != nil {
 		_, err := url.ParseRequestURI(*p.Link)
 		if err != nil {
-			validations = append(validations, apperror.ValidationError{
+			validations = append(validations, apperr.ValidationError{
 				Message: "Link has invalid format.",
 				Field:   "link",
 			})
@@ -71,7 +71,7 @@ func (p *Project) Validate() error {
 	}
 
 	if len(validations) > 0 {
-		return apperror.NewValidationError(validations, "")
+		return apperr.NewValidationError(validations, "")
 	}
 
 	return nil
@@ -79,11 +79,11 @@ func (p *Project) Validate() error {
 
 func (pp *ProjectParticipant) Validate() error {
 	if pp.Role.String() == "" {
-		return apperror.NewInvalidRequest("Unknown participant role.", "role")
+		return apperr.NewInvalidRequest("Unknown participant role.", "role")
 	}
 
 	if pp.Position.String() == "" {
-		return apperror.NewInvalidRequest("Unknown participant position.", "position")
+		return apperr.NewInvalidRequest("Unknown participant position.", "position")
 	}
 
 	return nil

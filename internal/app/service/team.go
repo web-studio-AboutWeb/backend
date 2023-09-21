@@ -11,7 +11,7 @@ import (
 	"github.com/google/uuid"
 
 	"web-studio-backend/internal/app/domain"
-	"web-studio-backend/internal/app/domain/apperror"
+	"web-studio-backend/internal/app/domain/apperr"
 	"web-studio-backend/internal/app/infrastructure/repository"
 )
 
@@ -41,7 +41,7 @@ func (s *TeamService) GetTeam(ctx context.Context, id int32) (*domain.Team, erro
 	team, err := s.repo.GetTeam(ctx, id)
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
-			return nil, apperror.NewNotFound("team_id")
+			return nil, apperr.NewNotFound("team_id")
 		}
 		return nil, fmt.Errorf("getting team %d: %w", id, err)
 	}
@@ -68,7 +68,7 @@ func (s *TeamService) CreateTeam(ctx context.Context, team *domain.Team) (*domai
 		return nil, fmt.Errorf("checking team uniqueness: %w", err)
 	}
 	if foundTeam != nil {
-		return nil, apperror.NewDuplicate("Title already taken.", "title")
+		return nil, apperr.NewDuplicate("Title already taken.", "title")
 	}
 
 	id, err := s.repo.CreateTeam(ctx, team)
@@ -92,7 +92,7 @@ func (s *TeamService) UpdateTeam(ctx context.Context, team *domain.Team) (*domai
 	_, err := s.repo.GetTeam(ctx, team.ID)
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
-			return nil, apperror.NewNotFound("team_id")
+			return nil, apperr.NewNotFound("team_id")
 		}
 		return nil, fmt.Errorf("getting team %d: %w", team.ID, err)
 	}
@@ -103,7 +103,7 @@ func (s *TeamService) UpdateTeam(ctx context.Context, team *domain.Team) (*domai
 			return nil, fmt.Errorf("checking team uniqueness: %w", err)
 		}
 		if foundTeam != nil {
-			return nil, apperror.NewDuplicate("Title already taken.", "title")
+			return nil, apperr.NewDuplicate("Title already taken.", "title")
 		}
 	}
 
@@ -122,14 +122,14 @@ func (s *TeamService) UpdateTeam(ctx context.Context, team *domain.Team) (*domai
 
 func (s *TeamService) SetTeamImage(ctx context.Context, teamID int32, img []byte) error {
 	if len(img) > 5<<20 {
-		return apperror.NewInvalidRequest("Image is too big.", "file")
+		return apperr.NewInvalidRequest("Image is too big.", "file")
 	}
 
 	mt := mimetype.Detect(img)
 	if !mt.Is("image/jpeg") &&
 		!mt.Is("image/png") &&
 		!mt.Is("image/webp") {
-		return apperror.NewInvalidRequest("Invalid image mime type.", "file")
+		return apperr.NewInvalidRequest("Invalid image mime type.", "file")
 	}
 
 	fileID := uuid.New().String()
@@ -138,7 +138,7 @@ func (s *TeamService) SetTeamImage(ctx context.Context, teamID int32, img []byte
 	team, err := s.repo.GetTeam(ctx, teamID)
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
-			return apperror.NewNotFound("team_id")
+			return apperr.NewNotFound("team_id")
 		}
 		return fmt.Errorf("getting team %d: %w", teamID, err)
 	}
@@ -167,19 +167,19 @@ func (s *TeamService) GetTeamImage(ctx context.Context, teamID int32) (*domain.T
 	team, err := s.repo.GetTeam(ctx, teamID)
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
-			return nil, apperror.NewNotFound("team_id")
+			return nil, apperr.NewNotFound("team_id")
 		}
 		return nil, fmt.Errorf("getting team %d: %w", teamID, err)
 	}
 
 	if team.ImageID == "" {
-		return nil, apperror.NewNotFound("image_id")
+		return nil, apperr.NewNotFound("image_id")
 	}
 
 	data, err := s.fileRepo.Read(ctx, filepath.Join(s.filesDir, team.ImageID))
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
-			return nil, apperror.NewNotFound("image_id")
+			return nil, apperr.NewNotFound("image_id")
 		}
 		return nil, fmt.Errorf("reading team image: %w", err)
 	}
@@ -193,7 +193,7 @@ func (s *TeamService) DisableTeam(ctx context.Context, teamID int32) error {
 	_, err := s.repo.GetTeam(ctx, teamID)
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
-			return apperror.NewNotFound("team_id")
+			return apperr.NewNotFound("team_id")
 		}
 		return fmt.Errorf("getting team %d: %w", teamID, err)
 	}
@@ -210,7 +210,7 @@ func (s *TeamService) EnableTeam(ctx context.Context, teamID int32) error {
 	_, err := s.repo.GetTeam(ctx, teamID)
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
-			return apperror.NewNotFound("team_id")
+			return apperr.NewNotFound("team_id")
 		}
 		return fmt.Errorf("getting team %d: %w", teamID, err)
 	}

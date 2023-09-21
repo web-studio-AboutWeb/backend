@@ -5,12 +5,10 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-
-	"web-studio-backend/internal/app/domain/apperror"
 )
 
 func TestUnwrapAppError(t *testing.T) {
-	tempAppError := apperror.NewInvalidRequest("msg", "field")
+	tempAppError := apperr.NewInvalidRequest("msg", "field")
 
 	tests := []struct {
 		err      error

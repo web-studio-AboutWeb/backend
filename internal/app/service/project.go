@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	"web-studio-backend/internal/app/domain"
-	"web-studio-backend/internal/app/domain/apperror"
+	"web-studio-backend/internal/app/domain/apperr"
 	"web-studio-backend/internal/app/infrastructure/repository"
 )
 
@@ -39,7 +39,7 @@ func (s *ProjectService) GetProject(ctx context.Context, id int32) (*domain.Proj
 	project, err := s.projectRepo.GetProject(ctx, id)
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
-			return nil, apperror.NewNotFound("project_id")
+			return nil, apperr.NewNotFound("project_id")
 		}
 		return nil, fmt.Errorf("getting project %d: %w", id, err)
 	}
@@ -82,7 +82,7 @@ func (s *ProjectService) UpdateProject(ctx context.Context, project *domain.Proj
 	_, err := s.projectRepo.GetProject(ctx, project.ID)
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
-			return nil, apperror.NewNotFound("project_id")
+			return nil, apperr.NewNotFound("project_id")
 		}
 		return nil, fmt.Errorf("getting project %d before update: %w", project.ID, err)
 	}
@@ -104,7 +104,7 @@ func (s *ProjectService) GetParticipants(ctx context.Context, projectID int32) (
 	project, err := s.projectRepo.GetProject(ctx, projectID)
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
-			return nil, apperror.NewNotFound("project_id")
+			return nil, apperr.NewNotFound("project_id")
 		}
 		return nil, fmt.Errorf("getting project %d: %w", project.ID, err)
 	}
@@ -121,7 +121,7 @@ func (s *ProjectService) GetParticipant(ctx context.Context, participantID, proj
 	participant, err := s.projectRepo.GetParticipant(ctx, participantID, projectID)
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
-			return nil, apperror.NewNotFound("user_id")
+			return nil, apperr.NewNotFound("user_id")
 		}
 		return nil, fmt.Errorf("getting participant: %w", err)
 	}
@@ -137,7 +137,7 @@ func (s *ProjectService) AddParticipant(ctx context.Context, participant *domain
 	_, err := s.userRepo.GetActiveUser(ctx, participant.UserID)
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
-			return nil, apperror.NewNotFound("user_id")
+			return nil, apperr.NewNotFound("user_id")
 		}
 		return nil, fmt.Errorf("getting active user: %w", err)
 	}
@@ -145,7 +145,7 @@ func (s *ProjectService) AddParticipant(ctx context.Context, participant *domain
 	_, err = s.projectRepo.GetProject(ctx, participant.ProjectID)
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
-			return nil, apperror.NewNotFound("project_id")
+			return nil, apperr.NewNotFound("project_id")
 		}
 		return nil, fmt.Errorf("getting project: %w", err)
 	}
@@ -155,7 +155,7 @@ func (s *ProjectService) AddParticipant(ctx context.Context, participant *domain
 		return nil, fmt.Errorf("getting project participant: %w", err)
 	}
 	if err == nil {
-		return nil, apperror.NewDuplicate("User already in participants list.", "user_id")
+		return nil, apperr.NewDuplicate("User already in participants list.", "user_id")
 	}
 
 	err = s.projectRepo.AddParticipant(ctx, participant)
@@ -179,7 +179,7 @@ func (s *ProjectService) UpdateParticipant(ctx context.Context, participant *dom
 	_, err := s.projectRepo.GetParticipant(ctx, participant.UserID, participant.ProjectID)
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
-			return nil, apperror.NewNotFound("user_id")
+			return nil, apperr.NewNotFound("user_id")
 		}
 		return nil, fmt.Errorf("getting participant: %w", err)
 	}
@@ -201,7 +201,7 @@ func (s *ProjectService) RemoveParticipant(ctx context.Context, participantID, p
 	_, err := s.projectRepo.GetParticipant(ctx, participantID, projectID)
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
-			return apperror.NewNotFound("user_id")
+			return apperr.NewNotFound("user_id")
 		}
 		return fmt.Errorf("getting participant: %w", err)
 	}

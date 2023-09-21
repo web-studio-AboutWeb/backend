@@ -10,7 +10,7 @@ import (
 	"github.com/google/uuid"
 
 	"web-studio-backend/internal/app/domain"
-	"web-studio-backend/internal/app/domain/apperror"
+	"web-studio-backend/internal/app/domain/apperr"
 	"web-studio-backend/internal/app/infrastructure/repository"
 )
 
@@ -41,7 +41,7 @@ func (s *DocumentService) GetDocument(ctx context.Context, id int32) (*domain.Do
 	doc, err := s.repo.GetDocument(ctx, id)
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
-			return nil, apperror.NewNotFound("document_id")
+			return nil, apperr.NewNotFound("document_id")
 		}
 		return nil, fmt.Errorf("getting document %d: %w", id, err)
 	}
@@ -49,7 +49,7 @@ func (s *DocumentService) GetDocument(ctx context.Context, id int32) (*domain.Do
 	content, err := s.fileRepo.Read(ctx, filepath.Join(s.filesDir, doc.FileID))
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
-			return nil, apperror.NewNotFound("document_id")
+			return nil, apperr.NewNotFound("document_id")
 		}
 		return nil, fmt.Errorf("reading document %d content: %w", id, err)
 	}
@@ -62,7 +62,7 @@ func (s *DocumentService) GetProjectDocuments(ctx context.Context, id int32) ([]
 	_, err := s.projectRepo.GetProject(ctx, id)
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
-			return nil, apperror.NewNotFound("project_id")
+			return nil, apperr.NewNotFound("project_id")
 		}
 		return nil, fmt.Errorf("getting document %d: %w", id, err)
 	}
@@ -77,13 +77,13 @@ func (s *DocumentService) GetProjectDocuments(ctx context.Context, id int32) ([]
 
 func (s *DocumentService) AddDocumentToProject(ctx context.Context, doc *domain.Document, projectID int32) (*domain.Document, error) {
 	if doc.SizeBytes > (5 << 20) { // 5MB
-		return nil, apperror.NewInvalidRequest("Document size is too big.", "")
+		return nil, apperr.NewInvalidRequest("Document size is too big.", "")
 	}
 
 	_, err := s.projectRepo.GetProject(ctx, projectID)
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
-			return nil, apperror.NewNotFound("project_id")
+			return nil, apperr.NewNotFound("project_id")
 		}
 		return nil, fmt.Errorf("getting project %d: %w", projectID, err)
 	}
@@ -122,7 +122,7 @@ func (s *DocumentService) DeleteDocumentFromProject(ctx context.Context, docID i
 	doc, err := s.repo.GetDocument(ctx, docID)
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
-			return apperror.NewNotFound("document_id")
+			return apperr.NewNotFound("document_id")
 		}
 		return fmt.Errorf("getting document %d: %w", docID, err)
 	}
@@ -140,7 +140,7 @@ func (s *DocumentService) DeleteDocumentFromProject(ctx context.Context, docID i
 	err = s.fileRepo.Delete(ctx, filepath.Join(s.filesDir, doc.FileID))
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
-			return apperror.NewNotFound("document_id")
+			return apperr.NewNotFound("document_id")
 		}
 		return fmt.Errorf("deleting document %d fs: %w", docID, err)
 	}

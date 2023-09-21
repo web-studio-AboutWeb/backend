@@ -7,7 +7,7 @@ import (
 	"log/slog"
 
 	"web-studio-backend/internal/app/domain"
-	"web-studio-backend/internal/app/domain/apperror"
+	"web-studio-backend/internal/app/domain/apperr"
 	"web-studio-backend/internal/app/infrastructure/repository"
 	"web-studio-backend/internal/pkg/auth/session"
 )
@@ -30,14 +30,14 @@ func (s *AuthService) SignIn(ctx context.Context, req *domain.SignInRequest) (*d
 	user, err := s.repo.GetUserByLogin(ctx, req.Login)
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
-			return nil, apperror.NewInvalidRequest("Invalid credentials.", "")
+			return nil, apperr.NewInvalidRequest("Invalid credentials.", "")
 		}
 		return nil, fmt.Errorf("getting user by login: %w", err)
 	}
 
 	if !user.ComparePassword(req.Password) {
 		slog.Debug("Invalid password")
-		return nil, apperror.NewInvalidRequest("Invalid credentials.", "")
+		return nil, apperr.NewInvalidRequest("Invalid credentials.", "")
 	}
 
 	sessionID, csrfToken, err := session.New(user.ID)

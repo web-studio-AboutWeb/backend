@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"web-studio-backend/internal/app/domain/apperror"
+	"web-studio-backend/internal/app/domain/apperr"
 )
 
 type UserPosition int16
@@ -58,24 +58,24 @@ type (
 )
 
 func (t *Team) Validate() error {
-	var validations []apperror.ValidationError
+	var validations []apperr.ValidationError
 
 	if t.Title == "" {
-		validations = append(validations, apperror.ValidationError{
+		validations = append(validations, apperr.ValidationError{
 			Message: "Title cannot be empty.",
 			Field:   "title",
 		})
 	}
 
 	if len(t.Description) > 512 {
-		validations = append(validations, apperror.ValidationError{
+		validations = append(validations, apperr.ValidationError{
 			Message: fmt.Sprintf("Description length must be less than %d characters.", 512),
 			Field:   "description",
 		})
 	}
 
 	if len(validations) > 0 {
-		return apperror.NewValidationError(validations, "")
+		return apperr.NewValidationError(validations, "")
 	}
 
 	return nil

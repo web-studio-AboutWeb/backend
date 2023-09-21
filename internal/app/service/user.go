@@ -11,7 +11,7 @@ import (
 	"github.com/google/uuid"
 
 	"web-studio-backend/internal/app/domain"
-	"web-studio-backend/internal/app/domain/apperror"
+	"web-studio-backend/internal/app/domain/apperr"
 	"web-studio-backend/internal/app/infrastructure/repository"
 	"web-studio-backend/internal/pkg/strhelp"
 )
@@ -43,7 +43,7 @@ func (s *UserService) GetUser(ctx context.Context, id int32) (*domain.User, erro
 	user, err := s.repo.GetUser(ctx, id)
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
-			return nil, apperror.NewNotFound("user_id")
+			return nil, apperr.NewNotFound("user_id")
 		}
 		return nil, fmt.Errorf("getting user %d: %w", id, err)
 	}
@@ -66,18 +66,18 @@ func (s *UserService) CreateUser(ctx context.Context, user *domain.User) (*domai
 	}
 
 	if user.Username == "" || len(user.Username) > 20 {
-		return nil, apperror.NewInvalidRequest(
+		return nil, apperr.NewInvalidRequest(
 			fmt.Sprintf("Username cannot be empty and must not exceed %d characters.", 20),
 			"username",
 		)
 	}
 
 	if !strhelp.ValidateEmail(user.Email) {
-		return nil, apperror.NewInvalidRequest("Email has invalid format.", "email")
+		return nil, apperr.NewInvalidRequest("Email has invalid format.", "email")
 	}
 
 	if user.EncodedPassword == "" || len(user.EncodedPassword) > 20 {
-		return nil, apperror.NewInvalidRequest(
+		return nil, apperr.NewInvalidRequest(
 			fmt.Sprintf("Password cannot be empty and must not exceed %d characters.", 20),
 			"login",
 		)
@@ -97,7 +97,7 @@ func (s *UserService) CreateUser(ctx context.Context, user *domain.User) (*domai
 			msgField = "Username"
 		}
 
-		return nil, apperror.NewDuplicate(
+		return nil, apperr.NewDuplicate(
 			fmt.Sprintf("%s already taken.", msgField),
 			field,
 		)
@@ -129,7 +129,7 @@ func (s *UserService) UpdateUser(ctx context.Context, user *domain.User) (*domai
 	_, err := s.repo.GetUser(ctx, user.ID)
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
-			return nil, apperror.NewNotFound("user_id")
+			return nil, apperr.NewNotFound("user_id")
 		}
 		return nil, fmt.Errorf("getting user %d: %w", user.ID, err)
 	}
@@ -151,7 +151,7 @@ func (s *UserService) RemoveUser(ctx context.Context, id int32) error {
 	user, err := s.repo.GetUser(ctx, id)
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
-			return apperror.NewNotFound("user_id")
+			return apperr.NewNotFound("user_id")
 		}
 		return fmt.Errorf("getting user %d: %w", id, err)
 	}
@@ -169,14 +169,14 @@ func (s *UserService) RemoveUser(ctx context.Context, id int32) error {
 
 func (s *UserService) SetUserImage(ctx context.Context, userID int32, img []byte) error {
 	if len(img) > 5<<20 {
-		return apperror.NewInvalidRequest("Image is too big.", "file")
+		return apperr.NewInvalidRequest("Image is too big.", "file")
 	}
 
 	mt := mimetype.Detect(img)
 	if !mt.Is("image/jpeg") &&
 		!mt.Is("image/png") &&
 		!mt.Is("image/webp") {
-		return apperror.NewInvalidRequest("Invalid image mime type.", "file")
+		return apperr.NewInvalidRequest("Invalid image mime type.", "file")
 	}
 
 	fileID := uuid.New().String()
@@ -185,7 +185,7 @@ func (s *UserService) SetUserImage(ctx context.Context, userID int32, img []byte
 	user, err := s.repo.GetUser(ctx, userID)
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
-			return apperror.NewNotFound("user_id")
+			return apperr.NewNotFound("user_id")
 		}
 		return fmt.Errorf("getting user %d: %w", userID, err)
 	}
@@ -214,19 +214,19 @@ func (s *UserService) GetUserImage(ctx context.Context, userID int32) (*domain.U
 	user, err := s.repo.GetUser(ctx, userID)
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
-			return nil, apperror.NewNotFound("user_id")
+			return nil, apperr.NewNotFound("user_id")
 		}
 		return nil, fmt.Errorf("getting user %d: %w", userID, err)
 	}
 
 	if user.ImageID == "" {
-		return nil, apperror.NewNotFound("image_id")
+		return nil, apperr.NewNotFound("image_id")
 	}
 
 	data, err := s.fileRepo.Read(ctx, filepath.Join(s.filesDir, user.ImageID))
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
-			return nil, apperror.NewNotFound("image_id")
+			return nil, apperr.NewNotFound("image_id")
 		}
 		return nil, fmt.Errorf("reading user image: %w", err)
 	}
