@@ -2,5 +2,5 @@
 app
 migrate
 web/static/apidocs/swagger.json
-documents
+files
 config.yml
