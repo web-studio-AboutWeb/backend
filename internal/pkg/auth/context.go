@@ -13,10 +13,10 @@ func NewContext(ctx context.Context, ac *domain.AuthContext) context.Context {
 	return context.WithValue(ctx, userKey, ac)
 }
 
-// FromContext returns auth context from given context.
+// MustFromContext returns auth context from given context.
 //
 //	Panics if auth context not found.
-func FromContext(ctx context.Context) *domain.AuthContext {
+func MustFromContext(ctx context.Context) *domain.AuthContext {
 	ac, ok := ctx.Value(userKey).(*domain.AuthContext)
 	if !ok {
 		// Panic here because this will break the application.
