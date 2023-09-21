@@ -1,8 +1,10 @@
-run:
-	go build -o app cmd/app/main.go && ./app -config-path config.default.yml
-
-swag:
+.PHONY:docs
+docs:
 	swag init -o web/static/apidocs --ot json -q -g cmd/app/main.go
+
+.PHONY:run
+run: docs
+	go build -o app cmd/app/main.go && ./app -config-path config.default.yml
 
 mcreate:
 	migrate create -ext sql -dir migrations -seq $(name) # $ name=<migration_name> make mcreate
