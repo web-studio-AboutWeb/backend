@@ -74,7 +74,7 @@ func (r *UserRepository) GetActiveUser(ctx context.Context, id int32) (*domain.U
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, repository.ErrObjectNotFound
 		}
-		return nil, fmt.Errorf("getting user %d: %w", id, err)
+		return nil, fmt.Errorf("getting user: %w", err)
 	}
 
 	user.RoleName = user.Role.String()
@@ -158,7 +158,7 @@ func (r *UserRepository) UpdateUser(ctx context.Context, user *domain.User) erro
 		user.Role,
 	)
 	if err != nil {
-		return fmt.Errorf("updating user %d: %w", user.ID, err)
+		return fmt.Errorf("updating user: %w", err)
 	}
 
 	return nil
@@ -167,7 +167,7 @@ func (r *UserRepository) UpdateUser(ctx context.Context, user *domain.User) erro
 func (r *UserRepository) DisableUser(ctx context.Context, id int32) error {
 	_, err := r.pool.Exec(ctx, `UPDATE users SET disabled_at=now() WHERE id=$1`, id)
 	if err != nil {
-		return fmt.Errorf("deleting user %d: %w", id, err)
+		return fmt.Errorf("deleting user: %w", err)
 	}
 
 	return nil
@@ -219,4 +219,19 @@ func (r *UserRepository) CheckUserUniqueness(ctx context.Context, username, emai
 	}
 
 	return &user, nil
+}
+
+func (r *UserRepository) SetUserImage(ctx context.Context, userID int32, imageID string) error {
+	_, err := r.pool.Exec(ctx, `
+		UPDATE users 
+		SET image_id=$2, updated_at=now()
+		WHERE id = $1`,
+		userID,
+		imageID,
+	)
+	if err != nil {
+		return fmt.Errorf("updating user: %w", err)
+	}
+
+	return nil
 }

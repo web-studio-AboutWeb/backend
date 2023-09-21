@@ -1,8 +1,13 @@
 package http
 
 import (
+	"bytes"
 	"context"
+	"errors"
+	"fmt"
+	"io"
 	"net/http"
+	"path/filepath"
 
 	"web-studio-backend/internal/app/domain"
 	"web-studio-backend/internal/app/handler/http/dto"
@@ -16,6 +21,9 @@ type UserService interface {
 	CreateUser(ctx context.Context, user *domain.User) (*domain.User, error)
 	UpdateUser(ctx context.Context, user *domain.User) (*domain.User, error)
 	RemoveUser(ctx context.Context, id int32) error
+
+	SetUserImage(ctx context.Context, userID int32, img []byte) error
+	GetUserImage(ctx context.Context, userID int32) (*domain.User, error)
 }
 
 type userHandler struct {
@@ -145,4 +153,72 @@ func (h *userHandler) removeUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
+}
+
+// setUserImage godoc
+// @Summary      Set user image
+// @Description  Updated user image. Accepts `multipart/form-data`.
+// @Description
+// @Description  Note: if a user already has an image, it will be deleted automatically on success.
+// @Tags         Users
+// @Accept       mpfd
+// @Param        user_id path int true "User identifier."
+// @Param        file formData file true "Image file. MUST have one of the following mime types: [`image/jpeg`, `image/png`, `image/webp`]"
+// @Success      200
+// @Failure      400  {object}  apperror.Error
+// @Failure      404  {object}  apperror.Error
+// @Failure      500  {object}  apperror.Error
+// @Router       /api/v1/users/{user_id}/image [post]
+func (h *userHandler) setUserImage(w http.ResponseWriter, r *http.Request) {
+	tid := httphelp.ParseParamInt32("user_id", r)
+
+	file, _, err := r.FormFile("file")
+	if err != nil {
+		if errors.Is(err, http.ErrMissingFile) {
+			// TODO: custom http error
+			httphelp.SendError(fmt.Errorf("file is not presented"), w)
+			return
+		}
+		httphelp.SendError(fmt.Errorf("parsing form file: %w", err), w)
+		return
+	}
+	defer file.Close()
+
+	content, err := io.ReadAll(file)
+	if err != nil {
+		httphelp.SendError(fmt.Errorf("reading file: %w", err), w)
+		return
+	}
+
+	err = h.userService.SetUserImage(r.Context(), tid, content)
+	if err != nil {
+		httphelp.SendError(fmt.Errorf("setting team image: %w", err), w)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
+// getUserImage godoc
+// @Summary      Get user image content
+// @Description  Returns user image.
+// @Tags         Users
+// @Produce      octet-stream
+// @Param        user_id path int true "User identifier."
+// @Success      200
+// @Failure      404  {object}  apperror.Error
+// @Failure      500  {object}  apperror.Error
+// @Router       /api/v1/users/{user_id}/image [get]
+func (h *userHandler) getUserImage(w http.ResponseWriter, r *http.Request) {
+	tid := httphelp.ParseParamInt32("user_id", r)
+
+	response, err := h.userService.GetUserImage(r.Context(), tid)
+	if err != nil {
+		httphelp.SendError(fmt.Errorf("getting team image: %w", err), w)
+		return
+	}
+
+	fileName := fmt.Sprintf("%s.%s", response.Username, filepath.Ext(response.ImageID))
+
+	http.ServeContent(w, r, fileName, response.UpdatedAt, bytes.NewReader(response.ImageContent))
 }

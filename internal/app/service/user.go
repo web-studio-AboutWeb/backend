@@ -4,12 +4,19 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
+	"path/filepath"
+
+	"github.com/gabriel-vasile/mimetype"
+	"github.com/google/uuid"
 
 	"web-studio-backend/internal/app/domain"
 	"web-studio-backend/internal/app/domain/apperror"
 	"web-studio-backend/internal/app/infrastructure/repository"
 	"web-studio-backend/internal/pkg/strhelp"
 )
+
+const usersDir = "users"
 
 //go:generate mockgen -source=user.go -destination=./mocks/user.go -package=mocks
 type UserRepository interface {
@@ -21,14 +28,16 @@ type UserRepository interface {
 	DisableUser(ctx context.Context, id int32) error
 	GetUserByLogin(ctx context.Context, login string) (*domain.User, error)
 	CheckUserUniqueness(ctx context.Context, username, email string) (*domain.User, error)
+	SetUserImage(ctx context.Context, userID int32, imageID string) error
 }
 
 type UserService struct {
-	repo UserRepository
+	repo     UserRepository
+	fileRepo FileRepository
 }
 
-func NewUserService(repo UserRepository) *UserService {
-	return &UserService{repo}
+func NewUserService(repo UserRepository, fileRepo FileRepository) *UserService {
+	return &UserService{repo, fileRepo}
 }
 
 func (s *UserService) GetUser(ctx context.Context, id int32) (*domain.User, error) {
@@ -157,4 +166,73 @@ func (s *UserService) RemoveUser(ctx context.Context, id int32) error {
 	}
 
 	return nil
+}
+
+func (s *UserService) SetUserImage(ctx context.Context, userID int32, img []byte) error {
+	if len(img) > 5<<20 {
+		return apperror.NewInvalidRequest("Image is too big.", "file")
+	}
+
+	mt := mimetype.Detect(img)
+	if !mt.Is("image/jpeg") &&
+		!mt.Is("image/png") &&
+		!mt.Is("image/webp") {
+		return apperror.NewInvalidRequest("Invalid image mime type.", "file")
+	}
+
+	fileID := uuid.New().String()
+	fileName := fileID + mt.Extension()
+
+	user, err := s.repo.GetUser(ctx, userID)
+	if err != nil {
+		if errors.Is(err, repository.ErrObjectNotFound) {
+			return apperror.NewNotFound("user_id")
+		}
+		return fmt.Errorf("getting user %d: %w", userID, err)
+	}
+
+	err = s.repo.SetUserImage(ctx, userID, fileName)
+	if err != nil {
+		return fmt.Errorf("setting user %d image: %w", userID, err)
+	}
+
+	err = s.fileRepo.Save(ctx, img, filepath.Join(usersDir, fileName))
+	if err != nil {
+		return fmt.Errorf("saving user image: %w", err)
+	}
+
+	if user.ImageID != "" {
+		err = s.fileRepo.Delete(ctx, filepath.Join(usersDir, user.ImageID))
+		if err != nil {
+			slog.Error("Deleting old user image", slog.String("error", err.Error()))
+		}
+	}
+
+	return nil
+}
+
+func (s *UserService) GetUserImage(ctx context.Context, userID int32) (*domain.User, error) {
+	user, err := s.repo.GetUser(ctx, userID)
+	if err != nil {
+		if errors.Is(err, repository.ErrObjectNotFound) {
+			return nil, apperror.NewNotFound("user_id")
+		}
+		return nil, fmt.Errorf("getting user %d: %w", userID, err)
+	}
+
+	if user.ImageID == "" {
+		return nil, apperror.NewNotFound("image_id")
+	}
+
+	data, err := s.fileRepo.Read(ctx, filepath.Join(usersDir, user.ImageID))
+	if err != nil {
+		if errors.Is(err, repository.ErrObjectNotFound) {
+			return nil, apperror.NewNotFound("image_id")
+		}
+		return nil, fmt.Errorf("reading user image: %w", err)
+	}
+
+	user.ImageContent = data
+
+	return user, nil
 }

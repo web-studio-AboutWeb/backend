@@ -34,20 +34,23 @@ func (ur UserRole) String() string {
 }
 
 type User struct {
-	ID              int32      `json:"id"`
-	Name            string     `json:"name"`
-	Surname         string     `json:"surname"`
-	Username        string     `json:"username"`
-	Email           string     `json:"email"`
-	EncodedPassword string     `json:"-"`
-	Salt            string     `json:"-"`
-	CreatedAt       time.Time  `json:"createdAt"`
-	UpdatedAt       time.Time  `json:"updatedAt"`
-	DisabledAt      *time.Time `json:"disabledAt,omitempty"`
-	Role            UserRole   `json:"role"`
-	RoleName        string     `json:"roleName"`
-	ImageID         string     `json:"imageID,omitempty"`
-	IsTeamLead      bool       `json:"isTeamLead"`
+	ID         int32      `json:"id"`
+	Name       string     `json:"name"`
+	Surname    string     `json:"surname"`
+	Username   string     `json:"username"`
+	Email      string     `json:"email"`
+	Role       UserRole   `json:"role"`
+	RoleName   string     `json:"roleName"`
+	IsTeamLead bool       `json:"isTeamLead"`
+	CreatedAt  time.Time  `json:"createdAt"`
+	UpdatedAt  time.Time  `json:"updatedAt"`
+	DisabledAt *time.Time `json:"disabledAt,omitempty"`
+
+	Salt            string `json:"-"`
+	EncodedPassword string `json:"-"`
+
+	ImageID      string `json:"-"`
+	ImageContent []byte `json:"-"`
 }
 
 func (u *User) Validate() error {

@@ -48,6 +48,8 @@ func NewHandler(
 		r.Post(`/api/v1/users`, uh.createUser)
 		r.Put(`/api/v1/users/{user_id}`, uh.updateUser)
 		r.Delete(`/api/v1/users/{user_id}`, uh.removeUser)
+		r.Post(`/api/v1/users/{user_id}/image`, uh.setUserImage)
+		r.Get(`/api/v1/users/{user_id}/image`, uh.getUserImage)
 
 		// Projects
 		r.Get(`/api/v1/projects/{project_id}`, ph.getProject)
