@@ -28,7 +28,7 @@ func newAuthHandler(authService AuthService, userService UserService) *authHandl
 
 // signIn godoc
 // @Summary      Sign in
-// @Description  On success returns CSRF token and sets HTTP cookie.
+// @Description  Starts user session. On success returns CSRF token and sets HTTP cookie.
 // @Description
 // @Description  All the following requests must contain the X-CSRF-token header for successful authorization.
 // @Description
@@ -38,8 +38,8 @@ func newAuthHandler(authService AuthService, userService UserService) *authHandl
 // @Tags         Auth
 // @Param        request body domain.SignInRequest true "Request body."
 // @Success      200  {object}	domain.SignInResponse
-// @Failure      401  {object}  apperror.Error
-// @Failure      500  {object}  apperror.Error
+// @Failure      401  {object}  Error
+// @Failure      500  {object}  Error
 // @Router       /api/v1/auth/sign-in [post]
 func (h *authHandler) signIn(w http.ResponseWriter, r *http.Request) {
 	var req domain.SignInRequest
@@ -66,11 +66,11 @@ func (h *authHandler) signIn(w http.ResponseWriter, r *http.Request) {
 
 // signOut godoc
 // @Summary      Sign out
-// @Description  Deletes HTTP cookie and logs out the user.
+// @Description  Ends user session and logs out the user.
 // @Tags         Auth
 // @Success      200
-// @Failure      401  {object}  apperror.Error
-// @Failure      500  {object}  apperror.Error
+// @Failure      401  {object}  Error
+// @Failure      500  {object}  Error
 // @Router       /api/v1/auth/sign-out [post]
 func (h *authHandler) signOut(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session_id")

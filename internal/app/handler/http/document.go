@@ -36,8 +36,8 @@ func newDocumentHandler(documentService DocumentService) *documentHandler {
 // @Produce      octet-stream
 // @Param        document_id path int true "Document identifier."
 // @Success      200
-// @Failure      404  {object}  apperror.Error
-// @Failure      500  {object}  apperror.Error
+// @Failure      404  {object}  Error
+// @Failure      500  {object}  Error
 // @Router       /api/v1/documents/{document_id} [get]
 func (h *documentHandler) downloadDocument(w http.ResponseWriter, r *http.Request) {
 	did := httphelp.ParseParamInt32("document_id", r)
@@ -57,8 +57,8 @@ func (h *documentHandler) downloadDocument(w http.ResponseWriter, r *http.Reques
 // @Tags         Documents
 // @Param        project_id path int true "Project identifier."
 // @Success      200  {array}   domain.Document
-// @Failure      404  {object}  apperror.Error
-// @Failure      500  {object}  apperror.Error
+// @Failure      404  {object}  Error
+// @Failure      500  {object}  Error
 // @Router       /api/v1/projects/{project_id}/documents [get]
 func (h *documentHandler) getProjectDocuments(w http.ResponseWriter, r *http.Request) {
 	pid := httphelp.ParseParamInt32("project_id", r)
@@ -84,9 +84,9 @@ func (h *documentHandler) getProjectDocuments(w http.ResponseWriter, r *http.Req
 // @Param        project_id path int true "Project identifier."
 // @Param        file formData file true "Document file."
 // @Success      200  {object}	domain.Document
-// @Failure      400  {object}  apperror.Error
-// @Failure      404  {object}  apperror.Error
-// @Failure      500  {object}  apperror.Error
+// @Failure      400  {object}  Error
+// @Failure      404  {object}  Error
+// @Failure      500  {object}  Error
 // @Router       /api/v1/projects/{project_id}/documents [post]
 func (h *documentHandler) addDocumentToProject(w http.ResponseWriter, r *http.Request) {
 	pid := httphelp.ParseParamInt32("project_id", r)
@@ -133,9 +133,9 @@ func (h *documentHandler) addDocumentToProject(w http.ResponseWriter, r *http.Re
 // @Param        project_id path int true "Project identifier."
 // @Param        document_id path int true "Document identifier."
 // @Success      200
-// @Failure      400  {object}  apperror.Error
-// @Failure      404  {object}  apperror.Error
-// @Failure      500  {object}  apperror.Error
+// @Failure      400  {object}  Error
+// @Failure      404  {object}  Error
+// @Failure      500  {object}  Error
 // @Router       /api/v1/projects/{project_id}/documents/{document_id} [delete]
 func (h *documentHandler) removeDocumentFromProject(w http.ResponseWriter, r *http.Request) {
 	pid := httphelp.ParseParamInt32("project_id", r)

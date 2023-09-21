@@ -2,12 +2,11 @@ package httphelp
 
 import (
 	"encoding/json"
-	"errors"
 	"io"
 	"log/slog"
 	"net/http"
 
-	"web-studio-backend/internal/app/domain/apperror"
+	"web-studio-backend/internal/app/handler/http/httperr"
 )
 
 func SendJSON(code int, data any, w http.ResponseWriter) {
@@ -46,46 +45,12 @@ func ReadJSON(to any, r *http.Request) error {
 func SendError(err error, w http.ResponseWriter) {
 	slog.Error(err.Error())
 
-	if appError := unwrapAppError(err); appError != nil {
-		var code int
-
-		switch appError.Type {
-		case apperror.NotFoundType:
-			code = http.StatusNotFound
-		case apperror.InvalidRequestType:
-			code = http.StatusBadRequest
-		case apperror.UnauthorizedType:
-			code = http.StatusUnauthorized
-		case apperror.DuplicateType, apperror.DisabledType:
-			code = http.StatusConflict
-		case apperror.ForbiddenType:
-			code = http.StatusForbidden
-		default:
-			code = http.StatusInternalServerError
-		}
-
-		SendJSON(code, appError, w)
+	if appError := httperr.UnwrapAppError(err); appError != nil {
+		httpError := httperr.ParseAppError(appError)
+		SendJSON(httpError.HttpCode, httpError, w)
 		return
 	}
 
-	SendJSON(http.StatusInternalServerError, apperror.Error{Message: err.Error(), Type: apperror.InternalType}, w)
-}
-
-func unwrapAppError(err error) *apperror.Error {
-	var (
-		ae   *apperror.Error
-		temp = err
-	)
-
-	for {
-		if temp == nil {
-			return nil
-		}
-
-		if errors.As(temp, &ae) {
-			return ae
-		}
-
-		temp = errors.Unwrap(temp)
-	}
+	// TODO: hide error message
+	SendJSON(http.StatusInternalServerError, httperr.Error{Message: err.Error(), Type: httperr.ErrorTypeInternal}, w)
 }

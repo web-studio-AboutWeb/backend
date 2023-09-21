@@ -41,8 +41,8 @@ func newUserHandler(us UserService) *userHandler {
 // @Produce      json
 // @Param        user_id path int true "User identifier."
 // @Success      200  {object}  domain.User
-// @Failure      400  {object}  apperror.Error
-// @Failure      500  {object}  apperror.Error
+// @Failure      400  {object}  Error
+// @Failure      500  {object}  Error
 // @Router       /api/v1/users/{user_id} [get]
 func (h *userHandler) getUser(w http.ResponseWriter, r *http.Request) {
 	userID := httphelp.ParseParamInt32("user_id", r)
@@ -62,8 +62,8 @@ func (h *userHandler) getUser(w http.ResponseWriter, r *http.Request) {
 // @Tags         Users
 // @Produce      json
 // @Success      200  {array}  domain.User
-// @Failure      400  {object}  apperror.Error
-// @Failure      500  {object}  apperror.Error
+// @Failure      400  {object}  Error
+// @Failure      500  {object}  Error
 // @Router       /api/v1/users [get]
 func (h *userHandler) getUsers(w http.ResponseWriter, r *http.Request) {
 	response, err := h.userService.GetUsers(r.Context())
@@ -83,8 +83,8 @@ func (h *userHandler) getUsers(w http.ResponseWriter, r *http.Request) {
 // @Produce      json
 // @Param        request body dto.CreateUserIn true "Request body."
 // @Success      200  {object}	domain.User
-// @Failure      400  {object}  apperror.Error
-// @Failure      500  {object}  apperror.Error
+// @Failure      400  {object}  Error
+// @Failure      500  {object}  Error
 // @Router       /api/v1/users [post]
 func (h *userHandler) createUser(w http.ResponseWriter, r *http.Request) {
 	var req dto.CreateUserIn
@@ -111,8 +111,8 @@ func (h *userHandler) createUser(w http.ResponseWriter, r *http.Request) {
 // @Param        user_id path int16 true "User identifier."
 // @Param        request body dto.UpdateUserIn true "Request body."
 // @Success      200  {object}	domain.User
-// @Failure      404  {object}  apperror.Error
-// @Failure      500  {object}  apperror.Error
+// @Failure      404  {object}  Error
+// @Failure      500  {object}  Error
 // @Router       /api/v1/users/{user_id} [put]
 func (h *userHandler) updateUser(w http.ResponseWriter, r *http.Request) {
 	userID := httphelp.ParseParamInt32("user_id", r)
@@ -140,8 +140,8 @@ func (h *userHandler) updateUser(w http.ResponseWriter, r *http.Request) {
 // @Produce      json
 // @Param        user_id path int true "User identifier."
 // @Success      200  {object}	nil
-// @Failure      404  {object}  apperror.Error
-// @Failure      500  {object}  apperror.Error
+// @Failure      404  {object}  Error
+// @Failure      500  {object}  Error
 // @Router       /api/v1/users/{user_id} [delete]
 func (h *userHandler) removeUser(w http.ResponseWriter, r *http.Request) {
 	userID := httphelp.ParseParamInt32("user_id", r)
@@ -165,9 +165,9 @@ func (h *userHandler) removeUser(w http.ResponseWriter, r *http.Request) {
 // @Param        user_id path int true "User identifier."
 // @Param        file formData file true "Image file. MUST have one of the following mime types: [`image/jpeg`, `image/png`, `image/webp`]"
 // @Success      200
-// @Failure      400  {object}  apperror.Error
-// @Failure      404  {object}  apperror.Error
-// @Failure      500  {object}  apperror.Error
+// @Failure      400  {object}  Error
+// @Failure      404  {object}  Error
+// @Failure      500  {object}  Error
 // @Router       /api/v1/users/{user_id}/image [post]
 func (h *userHandler) setUserImage(w http.ResponseWriter, r *http.Request) {
 	tid := httphelp.ParseParamInt32("user_id", r)
@@ -206,8 +206,8 @@ func (h *userHandler) setUserImage(w http.ResponseWriter, r *http.Request) {
 // @Produce      octet-stream
 // @Param        user_id path int true "User identifier."
 // @Success      200
-// @Failure      404  {object}  apperror.Error
-// @Failure      500  {object}  apperror.Error
+// @Failure      404  {object}  Error
+// @Failure      500  {object}  Error
 // @Router       /api/v1/users/{user_id}/image [get]
 func (h *userHandler) getUserImage(w http.ResponseWriter, r *http.Request) {
 	tid := httphelp.ParseParamInt32("user_id", r)

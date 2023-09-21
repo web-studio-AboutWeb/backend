@@ -12,11 +12,19 @@ const (
 	DuplicateType
 )
 
-type Error struct {
-	Message string    `json:"message"`
-	Field   string    `json:"field,omitempty"`
-	Type    ErrorType `json:"type"`
-}
+type (
+	ValidationError struct {
+		Message string
+		Field   string
+	}
+
+	Error struct {
+		Message          string
+		Field            string
+		Type             ErrorType
+		ValidationErrors []ValidationError
+	}
+)
 
 var _ error = Error{}
 

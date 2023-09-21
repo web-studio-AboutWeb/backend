@@ -38,8 +38,8 @@ func newProjectHandler(ps ProjectService) *projectHandler {
 // @Produce      json
 // @Param        project_id path int true "Project identifier."
 // @Success      200  {object}  domain.Project
-// @Failure      404  {object}  apperror.Error
-// @Failure      500  {object}  apperror.Error
+// @Failure      404  {object}  Error
+// @Failure      500  {object}  Error
 // @Router       /api/v1/projects/{project_id} [get]
 func (h *projectHandler) getProject(w http.ResponseWriter, r *http.Request) {
 	pid := httphelp.ParseParamInt32("project_id", r)
@@ -59,8 +59,8 @@ func (h *projectHandler) getProject(w http.ResponseWriter, r *http.Request) {
 // @Tags         Projects
 // @Produce      json
 // @Success      200  {array}  domain.Project
-// @Failure      404  {object}  apperror.Error
-// @Failure      500  {object}  apperror.Error
+// @Failure      404  {object}  Error
+// @Failure      500  {object}  Error
 // @Router       /api/v1/projects [get]
 func (h *projectHandler) getProjects(w http.ResponseWriter, r *http.Request) {
 	response, err := h.projectService.GetProjects(r.Context())
@@ -80,8 +80,8 @@ func (h *projectHandler) getProjects(w http.ResponseWriter, r *http.Request) {
 // @Produce      json
 // @Param        request body dto.CreateProjectRequest true "Request body."
 // @Success      200  {object}	domain.Project
-// @Failure      400  {object}  apperror.Error
-// @Failure      500  {object}  apperror.Error
+// @Failure      400  {object}  Error
+// @Failure      500  {object}  Error
 // @Router       /api/v1/projects [post]
 func (h *projectHandler) createProject(w http.ResponseWriter, r *http.Request) {
 	var req dto.CreateProjectRequest
@@ -108,8 +108,8 @@ func (h *projectHandler) createProject(w http.ResponseWriter, r *http.Request) {
 // @Param        project_id path int true "Project identifier."
 // @Param        request body dto.UpdateProjectRequest true "Request body."
 // @Success      200  {object}	domain.Project
-// @Failure      404  {object}  apperror.Error
-// @Failure      500  {object}  apperror.Error
+// @Failure      404  {object}  Error
+// @Failure      500  {object}  Error
 // @Router       /api/v1/projects/{project_id} [put]
 func (h *projectHandler) updateProject(w http.ResponseWriter, r *http.Request) {
 	projectID := httphelp.ParseParamInt32("project_id", r)
@@ -136,8 +136,8 @@ func (h *projectHandler) updateProject(w http.ResponseWriter, r *http.Request) {
 // @Produce      json
 // @Param        project_id path int true "Project identifier."
 // @Success      200  {array}   domain.ProjectParticipant
-// @Failure      404  {object}  apperror.Error
-// @Failure      500  {object}  apperror.Error
+// @Failure      404  {object}  Error
+// @Failure      500  {object}  Error
 // @Router       /api/v1/projects/{project_id}/participants [get]
 func (h *projectHandler) getParticipants(w http.ResponseWriter, r *http.Request) {
 	projectID := httphelp.ParseParamInt32("project_id", r)
@@ -159,8 +159,8 @@ func (h *projectHandler) getParticipants(w http.ResponseWriter, r *http.Request)
 // @Param        project_id path int true "Project identifier."
 // @Param        user_id path int true "Participant identifier."
 // @Success      200  {object}  domain.ProjectParticipant
-// @Failure      404  {object}  apperror.Error
-// @Failure      500  {object}  apperror.Error
+// @Failure      404  {object}  Error
+// @Failure      500  {object}  Error
 // @Router       /api/v1/projects/{project_id}/participants/{user_id} [get]
 func (h *projectHandler) getParticipant(w http.ResponseWriter, r *http.Request) {
 	projectID := httphelp.ParseParamInt32("project_id", r)
@@ -185,8 +185,8 @@ func (h *projectHandler) getParticipant(w http.ResponseWriter, r *http.Request) 
 // @Param        project_id path int true "Project identifier."
 // @Param        request body dto.AddProjectParticipantRequest true "Request body."
 // @Success      200  {object}  domain.ProjectParticipant
-// @Failure      404  {object}  apperror.Error
-// @Failure      500  {object}  apperror.Error
+// @Failure      404  {object}  Error
+// @Failure      500  {object}  Error
 // @Router       /api/v1/projects/{project_id}/participants [post]
 func (h *projectHandler) addParticipant(w http.ResponseWriter, r *http.Request) {
 	projectID := httphelp.ParseParamInt32("project_id", r)
@@ -217,8 +217,8 @@ func (h *projectHandler) addParticipant(w http.ResponseWriter, r *http.Request) 
 // @Param        user_id path int true "Participant identifier."
 // @Param        request body dto.UpdateProjectParticipantRequest true "Request body."
 // @Success      200  {object}  domain.ProjectParticipant
-// @Failure      404  {object}  apperror.Error
-// @Failure      500  {object}  apperror.Error
+// @Failure      404  {object}  Error
+// @Failure      500  {object}  Error
 // @Router       /api/v1/projects/{project_id}/participants/{user_id} [put]
 func (h *projectHandler) updateParticipant(w http.ResponseWriter, r *http.Request) {
 	projectID := httphelp.ParseParamInt32("project_id", r)
@@ -246,8 +246,8 @@ func (h *projectHandler) updateParticipant(w http.ResponseWriter, r *http.Reques
 // @Param        project_id path int true "Project identifier."
 // @Param        user_id path int true "Participant identifier."
 // @Success      200
-// @Failure      404  {object}  apperror.Error
-// @Failure      500  {object}  apperror.Error
+// @Failure      404  {object}  Error
+// @Failure      500  {object}  Error
 // @Router       /api/v1/projects/{project_id}/participants/{user_id} [delete]
 func (h *projectHandler) removeParticipant(w http.ResponseWriter, r *http.Request) {
 	projectID := httphelp.ParseParamInt32("project_id", r)

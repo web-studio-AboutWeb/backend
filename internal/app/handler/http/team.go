@@ -40,8 +40,8 @@ func newTeamHandler(service TeamService) *teamHandler {
 // @Produce      json
 // @Param        team_id path int true "Team identifier."
 // @Success      200  {object}  domain.Team
-// @Failure      404  {object}  apperror.Error
-// @Failure      500  {object}  apperror.Error
+// @Failure      404  {object}  Error
+// @Failure      500  {object}  Error
 // @Router       /api/v1/teams/{team_id} [get]
 func (h *teamHandler) getTeam(w http.ResponseWriter, r *http.Request) {
 	tid := httphelp.ParseParamInt32("team_id", r)
@@ -61,8 +61,8 @@ func (h *teamHandler) getTeam(w http.ResponseWriter, r *http.Request) {
 // @Tags         Teams
 // @Produce      json
 // @Success      200  {array}  domain.Team
-// @Failure      404  {object}  apperror.Error
-// @Failure      500  {object}  apperror.Error
+// @Failure      404  {object}  Error
+// @Failure      500  {object}  Error
 // @Router       /api/v1/teams [get]
 func (h *teamHandler) getTeams(w http.ResponseWriter, r *http.Request) {
 	response, err := h.teamService.GetTeams(r.Context())
@@ -82,8 +82,8 @@ func (h *teamHandler) getTeams(w http.ResponseWriter, r *http.Request) {
 // @Produce      json
 // @Param        request body dto.CreateTeamRequest true "Request body."
 // @Success      200  {object}	domain.Team
-// @Failure      400  {object}  apperror.Error
-// @Failure      500  {object}  apperror.Error
+// @Failure      400  {object}  Error
+// @Failure      500  {object}  Error
 // @Router       /api/v1/teams [post]
 func (h *teamHandler) createTeam(w http.ResponseWriter, r *http.Request) {
 	var req dto.CreateTeamRequest
@@ -110,8 +110,8 @@ func (h *teamHandler) createTeam(w http.ResponseWriter, r *http.Request) {
 // @Param        team_id path int true "Team identifier."
 // @Param        request body dto.UpdateTeamRequest true "Request body."
 // @Success      200  {object}	domain.Team
-// @Failure      404  {object}  apperror.Error
-// @Failure      500  {object}  apperror.Error
+// @Failure      404  {object}  Error
+// @Failure      500  {object}  Error
 // @Router       /api/v1/teams/{team_id} [put]
 func (h *teamHandler) updateTeam(w http.ResponseWriter, r *http.Request) {
 	tid := httphelp.ParseParamInt32("team_id", r)
@@ -141,9 +141,9 @@ func (h *teamHandler) updateTeam(w http.ResponseWriter, r *http.Request) {
 // @Param        team_id path int true "Team identifier."
 // @Param        file formData file true "Image file. MUST have one of the following mime types: [`image/jpeg`, `image/png`, `image/webp`]"
 // @Success      200
-// @Failure      400  {object}  apperror.Error
-// @Failure      404  {object}  apperror.Error
-// @Failure      500  {object}  apperror.Error
+// @Failure      400  {object}  Error
+// @Failure      404  {object}  Error
+// @Failure      500  {object}  Error
 // @Router       /api/v1/teams/{team_id}/image [post]
 func (h *teamHandler) setTeamImage(w http.ResponseWriter, r *http.Request) {
 	tid := httphelp.ParseParamInt32("team_id", r)
@@ -182,8 +182,8 @@ func (h *teamHandler) setTeamImage(w http.ResponseWriter, r *http.Request) {
 // @Produce      octet-stream
 // @Param        team_id path int true "Team identifier."
 // @Success      200
-// @Failure      404  {object}  apperror.Error
-// @Failure      500  {object}  apperror.Error
+// @Failure      404  {object}  Error
+// @Failure      500  {object}  Error
 // @Router       /api/v1/teams/{team_id}/image [get]
 func (h *teamHandler) getTeamImage(w http.ResponseWriter, r *http.Request) {
 	tid := httphelp.ParseParamInt32("team_id", r)
@@ -205,8 +205,8 @@ func (h *teamHandler) getTeamImage(w http.ResponseWriter, r *http.Request) {
 // @Tags         Teams
 // @Param        team_id path int true "Team identifier."
 // @Success      200
-// @Failure      404  {object}  apperror.Error
-// @Failure      500  {object}  apperror.Error
+// @Failure      404  {object}  Error
+// @Failure      500  {object}  Error
 // @Router       /api/v1/teams/{team_id}/disable [post]
 func (h *teamHandler) disableTeam(w http.ResponseWriter, r *http.Request) {
 	tid := httphelp.ParseParamInt32("team_id", r)
@@ -226,8 +226,8 @@ func (h *teamHandler) disableTeam(w http.ResponseWriter, r *http.Request) {
 // @Tags         Teams
 // @Param        team_id path int true "Team identifier."
 // @Success      200
-// @Failure      404  {object}  apperror.Error
-// @Failure      500  {object}  apperror.Error
+// @Failure      404  {object}  Error
+// @Failure      500  {object}  Error
 // @Router       /api/v1/teams/{team_id}/enable [post]
 func (h *teamHandler) enableTeam(w http.ResponseWriter, r *http.Request) {
 	tid := httphelp.ParseParamInt32("team_id", r)
