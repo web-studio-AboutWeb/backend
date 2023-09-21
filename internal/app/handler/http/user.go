@@ -96,7 +96,7 @@ func (h *userHandler) createUser(w http.ResponseWriter, r *http.Request) {
 
 // updateUser godoc
 // @Summary      Update user
-// @Description  Updates a user. The request body must contain all required fields.
+// @Description  Updates a user.
 // @Tags         Users
 // @Accept       json
 // @Produce      json

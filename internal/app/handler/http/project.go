@@ -101,7 +101,7 @@ func (h *projectHandler) createProject(w http.ResponseWriter, r *http.Request) {
 
 // updateProject godoc
 // @Summary      Update project
-// @Description  Updates a project. The request body must contain all required fields.
+// @Description  Updates a project.
 // @Tags         Projects
 // @Accept       json
 // @Produce      json

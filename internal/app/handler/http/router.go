@@ -14,11 +14,13 @@ func NewHandler(
 	projectService ProjectService,
 	authService AuthService,
 	documentService DocumentService,
+	teamService TeamService,
 ) http.Handler {
 	uh := newUserHandler(userService)
 	ph := newProjectHandler(projectService)
 	ah := newAuthHandler(authService, userService)
 	dh := newDocumentHandler(documentService)
+	th := newTeamHandler(teamService)
 
 	r := chi.NewRouter()
 
@@ -40,12 +42,14 @@ func NewHandler(
 		//r.Use(ah.authMiddleware)
 		// TODO: role middlewares
 
+		// Users
 		r.Get(`/api/v1/users/{user_id}`, uh.getUser)
 		r.Get(`/api/v1/users`, uh.getUsers)
 		r.Post(`/api/v1/users`, uh.createUser)
 		r.Put(`/api/v1/users/{user_id}`, uh.updateUser)
 		r.Delete(`/api/v1/users/{user_id}`, uh.removeUser)
 
+		// Projects
 		r.Get(`/api/v1/projects/{project_id}`, ph.getProject)
 		r.Get(`/api/v1/projects`, ph.getProjects)
 		r.Post(`/api/v1/projects`, ph.createProject)
@@ -56,10 +60,21 @@ func NewHandler(
 		r.Put(`/api/v1/projects/{project_id}/participants/{user_id}`, ph.updateParticipant)
 		r.Delete(`/api/v1/projects/{project_id}/participants/{user_id}`, ph.removeParticipant)
 
+		// Documents
 		r.Get(`/api/v1/projects/{project_id}/documents`, dh.getProjectDocuments)
 		r.Post(`/api/v1/projects/{project_id}/documents`, dh.addDocumentToProject)
 		r.Delete(`/api/v1/projects/{project_id}/documents/{document_id}`, dh.removeDocumentFromProject)
 		r.Get(`/api/v1/documents/{document_id}`, dh.downloadDocument)
+
+		// Teams
+		r.Get(`/api/v1/teams/{team_id}`, th.getTeam)
+		r.Get(`/api/v1/teams`, th.getTeams)
+		r.Post(`/api/v1/teams`, th.createTeam)
+		r.Put(`/api/v1/teams/{team_id}`, th.updateTeam)
+		r.Post(`/api/v1/teams/{team_id}/image`, th.setTeamImage)
+		r.Get(`/api/v1/teams/{team_id}/image`, th.getTeamImage)
+		r.Post(`/api/v1/teams/{team_id}/disable`, th.disableTeam)
+		r.Post(`/api/v1/teams/{team_id}/enable`, th.enableTeam)
 	})
 
 	return r
