@@ -50,6 +50,9 @@ func main() {
 		err = m.Down()
 	case "drop":
 		err = m.Drop()
+	case "drop-up":
+		err = m.Drop()
+		err = m.Up()
 	default:
 		fmt.Println("unknown action:", action)
 	}
