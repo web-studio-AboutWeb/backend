@@ -46,8 +46,6 @@ func (r *UserRepository) GetUser(ctx context.Context, id int32) (*domain.User, e
 		return nil, fmt.Errorf("scanning user: %w", err)
 	}
 
-	user.RoleName = user.Role.String()
-
 	return &user, nil
 }
 
@@ -76,8 +74,6 @@ func (r *UserRepository) GetActiveUser(ctx context.Context, id int32) (*domain.U
 		}
 		return nil, fmt.Errorf("getting user: %w", err)
 	}
-
-	user.RoleName = user.Role.String()
 
 	return &user, nil
 }
@@ -114,8 +110,6 @@ func (r *UserRepository) GetUsers(ctx context.Context) ([]domain.User, error) {
 		if err != nil {
 			return nil, fmt.Errorf("scanning user: %w", err)
 		}
-
-		user.RoleName = user.Role.String()
 
 		users = append(users, user)
 	}
