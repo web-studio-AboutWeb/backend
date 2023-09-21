@@ -20,7 +20,7 @@ type UserRepository interface {
 	UpdateUser(ctx context.Context, user *domain.User) error
 	DisableUser(ctx context.Context, id int32) error
 	GetUserByLogin(ctx context.Context, login string) (*domain.User, error)
-	CheckUsernameUniqueness(ctx context.Context, username, email string) (*domain.User, error)
+	CheckUserUniqueness(ctx context.Context, username, email string) (*domain.User, error)
 }
 
 type UserService struct {
@@ -75,7 +75,7 @@ func (s *UserService) CreateUser(ctx context.Context, user *domain.User) (*domai
 		)
 	}
 
-	foundUser, err := s.repo.CheckUsernameUniqueness(ctx, user.Username, user.Email)
+	foundUser, err := s.repo.CheckUserUniqueness(ctx, user.Username, user.Email)
 	if err != nil && !errors.Is(err, repository.ErrObjectNotFound) {
 		return nil, fmt.Errorf("getting user by login: %w", err)
 	}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"path/filepath"
 
 	"github.com/gabriel-vasile/mimetype"
 	"github.com/google/uuid"
@@ -12,6 +13,8 @@ import (
 	"web-studio-backend/internal/app/domain/apperror"
 	"web-studio-backend/internal/app/infrastructure/repository"
 )
+
+const documentsDir = "documents"
 
 //go:generate mockgen -source=document.go -destination=./mocks/document.go -package=mocks
 type DocumentRepository interface {
@@ -24,6 +27,7 @@ type DocumentRepository interface {
 	RemoveDocumentFromProject(ctx context.Context, docID int32, projectID int32) error
 }
 
+//go:generate mockgen -source=document.go -destination=./mocks/file.go -package=mocks
 type FileRepository interface {
 	Save(ctx context.Context, data []byte, fileName string) error
 	Read(ctx context.Context, fileName string) ([]byte, error)
@@ -50,7 +54,7 @@ func (s *DocumentService) GetDocument(ctx context.Context, id int32) (*domain.Do
 		return nil, fmt.Errorf("getting document %d: %w", id, err)
 	}
 
-	content, err := s.fileRepo.Read(ctx, doc.FileID)
+	content, err := s.fileRepo.Read(ctx, filepath.Join(documentsDir, doc.FileID))
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
 			return nil, apperror.NewNotFound("document_id")
@@ -104,7 +108,7 @@ func (s *DocumentService) AddDocumentToProject(ctx context.Context, doc *domain.
 		return nil, fmt.Errorf("creating document: %w", err)
 	}
 
-	err = s.fileRepo.Save(ctx, doc.Content, doc.FileID)
+	err = s.fileRepo.Save(ctx, doc.Content, filepath.Join(documentsDir, doc.FileID))
 	if err != nil {
 		return nil, fmt.Errorf("saving document: %w", err)
 	}
@@ -141,7 +145,7 @@ func (s *DocumentService) DeleteDocumentFromProject(ctx context.Context, docID i
 		return fmt.Errorf("deleting document %d: %w", docID, err)
 	}
 
-	err = s.fileRepo.Delete(ctx, doc.FileID)
+	err = s.fileRepo.Delete(ctx, filepath.Join(documentsDir, doc.FileID))
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
 			return apperror.NewNotFound("document_id")

@@ -39,19 +39,19 @@ func (m *MockUserRepository) EXPECT() *MockUserRepositoryMockRecorder {
 	return m.recorder
 }
 
-// CheckUsernameUniqueness mocks base method.
-func (m *MockUserRepository) CheckUsernameUniqueness(ctx context.Context, username, email string) (*domain.User, error) {
+// CheckUserUniqueness mocks base method.
+func (m *MockUserRepository) CheckUserUniqueness(ctx context.Context, username, email string) (*domain.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CheckUsernameUniqueness", ctx, username, email)
+	ret := m.ctrl.Call(m, "CheckUserUniqueness", ctx, username, email)
 	ret0, _ := ret[0].(*domain.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// CheckUsernameUniqueness indicates an expected call of CheckUsernameUniqueness.
-func (mr *MockUserRepositoryMockRecorder) CheckUsernameUniqueness(ctx, username, email any) *gomock.Call {
+// CheckUserUniqueness indicates an expected call of CheckUserUniqueness.
+func (mr *MockUserRepositoryMockRecorder) CheckUserUniqueness(ctx, username, email any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckUsernameUniqueness", reflect.TypeOf((*MockUserRepository)(nil).CheckUsernameUniqueness), ctx, username, email)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckUserUniqueness", reflect.TypeOf((*MockUserRepository)(nil).CheckUserUniqueness), ctx, username, email)
 }
 
 // CreateUser mocks base method.
