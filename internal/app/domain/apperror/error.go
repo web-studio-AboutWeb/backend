@@ -32,7 +32,7 @@ func (e Error) Error() string {
 	return e.Message
 }
 
-func New(t ErrorType, msg, field string) *Error {
+func New(t ErrorType, msg, field string) error {
 	return &Error{
 		Message: msg,
 		Field:   field,
@@ -40,47 +40,39 @@ func New(t ErrorType, msg, field string) *Error {
 	}
 }
 
-func NewInvalidRequest(msg, field string) error {
+func NewValidationError(verrors []ValidationError, field string) error {
 	return &Error{
-		Message: msg,
-		Field:   field,
-		Type:    InvalidRequestType,
+		Message:          "Validation error.",
+		Type:             InvalidRequestType,
+		ValidationErrors: verrors,
+		Field:            field,
 	}
+}
+
+func NewInvalidRequest(msg, field string) error {
+	return New(InvalidRequestType, msg, field)
 }
 
 func NewNotFound(field string) error {
-	return &Error{
-		Message: "Object not found.",
-		Field:   field,
-		Type:    NotFoundType,
-	}
+	return New(NotFoundType, "Object not found.", field)
 }
 
 func NewUnauthorized(msg string) error {
-	return &Error{
-		Message: msg,
-		Type:    UnauthorizedType,
-	}
+	return New(UnauthorizedType, msg, "")
 }
 
 func NewForbidden(msg string) error {
-	return &Error{
-		Message: msg,
-		Type:    ForbiddenType,
-	}
+	return New(ForbiddenType, msg, "")
 }
 
 func NewDisabled(msg string) error {
-	return &Error{
-		Message: msg,
-		Type:    DisabledType,
-	}
+	return New(DisabledType, msg, "")
 }
 
 func NewDuplicate(msg, field string) error {
-	return &Error{
-		Message: msg,
-		Field:   field,
-		Type:    DuplicateType,
-	}
+	return New(DuplicateType, msg, field)
+}
+
+func NewInternal(msg string) error {
+	return New(InternalType, msg, "")
 }

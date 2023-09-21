@@ -38,28 +38,40 @@ type (
 )
 
 func (p *Project) Validate() error {
+	var validations []apperror.ValidationError
+
 	if p.Title == "" {
-		return apperror.NewInvalidRequest("Title cannot be empty.", "title")
+		validations = append(validations, apperror.ValidationError{
+			Message: "Title cannot be empty.",
+			Field:   "title",
+		})
 	}
 	if len(p.Title) > 128 {
-		return apperror.NewInvalidRequest(
-			fmt.Sprintf("Title must be less than %d characters.", 128),
-			"title",
-		)
+		validations = append(validations, apperror.ValidationError{
+			Message: fmt.Sprintf("Title must be less than %d characters.", 128),
+			Field:   "title",
+		})
 	}
 
 	if len(p.Description) > 10000 {
-		return apperror.NewInvalidRequest(
-			fmt.Sprintf("Description must be less than %d characters.", 10000),
-			"description",
-		)
+		validations = append(validations, apperror.ValidationError{
+			Message: fmt.Sprintf("Description must be less than %d characters.", 10000),
+			Field:   "description",
+		})
 	}
 
 	if p.Link != nil {
 		_, err := url.ParseRequestURI(*p.Link)
 		if err != nil {
-			return apperror.NewInvalidRequest("Link has invalid format.", "link")
+			validations = append(validations, apperror.ValidationError{
+				Message: "Link has invalid format.",
+				Field:   "link",
+			})
 		}
+	}
+
+	if len(validations) > 0 {
+		return apperror.NewValidationError(validations, "")
 	}
 
 	return nil

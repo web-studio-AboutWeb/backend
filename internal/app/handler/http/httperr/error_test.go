@@ -1,4 +1,4 @@
-package httphelp
+package httperr
 
 import (
 	"fmt"
@@ -43,7 +43,7 @@ func TestUnwrapAppError(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		ae := unwrapAppError(tt.err)
+		ae := UnwrapAppError(tt.err)
 
 		if tt.appError {
 			require.NotNil(t, ae)

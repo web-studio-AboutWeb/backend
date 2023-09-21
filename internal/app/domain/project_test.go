@@ -26,6 +26,14 @@ func TestProject_Validate(t *testing.T) {
 			p:         &Project{Description: "something"},
 		},
 		{
+			name:      "title is too long",
+			wantError: true,
+			p: &Project{Title: (func() string {
+				s, _ := strhelp.GenerateRandomString(129)
+				return s
+			})()},
+		},
+		{
 			name:      "description is too long",
 			wantError: true,
 			p: &Project{

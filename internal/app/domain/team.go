@@ -58,15 +58,24 @@ type (
 )
 
 func (t *Team) Validate() error {
+	var validations []apperror.ValidationError
+
 	if t.Title == "" {
-		return apperror.NewInvalidRequest("Title cannot be empty.", "title")
+		validations = append(validations, apperror.ValidationError{
+			Message: "Title cannot be empty.",
+			Field:   "title",
+		})
 	}
 
 	if len(t.Description) > 512 {
-		return apperror.NewInvalidRequest(
-			fmt.Sprintf("Description length must be less than %d characters.", 512),
-			"description",
-		)
+		validations = append(validations, apperror.ValidationError{
+			Message: fmt.Sprintf("Description length must be less than %d characters.", 512),
+			Field:   "description",
+		})
+	}
+
+	if len(validations) > 0 {
+		return apperror.NewValidationError(validations, "")
 	}
 
 	return nil

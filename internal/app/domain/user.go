@@ -54,25 +54,31 @@ type User struct {
 }
 
 func (u *User) Validate() error {
+	var validations []apperror.ValidationError
+
 	if u.Name == "" || len(u.Name) > 30 {
-		return apperror.NewInvalidRequest(
-			fmt.Sprintf("Name cannot be empty and must not exceed %d characters.", 30),
-			"name",
-		)
+		validations = append(validations, apperror.ValidationError{
+			Message: fmt.Sprintf("Name cannot be empty and must not exceed %d characters.", 30),
+			Field:   "name",
+		})
 	}
 
 	if u.Surname == "" || len(u.Surname) > 50 {
-		return apperror.NewInvalidRequest(
-			fmt.Sprintf("Surname cannot be empty and must not exceed %d characters.", 50),
-			"surname",
-		)
+		validations = append(validations, apperror.ValidationError{
+			Message: fmt.Sprintf("Surname cannot be empty and must not exceed %d characters.", 50),
+			Field:   "surname",
+		})
 	}
 
 	if u.Role.String() == "" {
-		return apperror.NewInvalidRequest(
-			fmt.Sprintf("Unknown role %d.", u.Role),
-			"role",
-		)
+		validations = append(validations, apperror.ValidationError{
+			Message: fmt.Sprintf("Unknown role %d.", u.Role),
+			Field:   "role",
+		})
+	}
+
+	if len(validations) > 0 {
+		return apperror.NewValidationError(validations, "")
 	}
 
 	return nil
