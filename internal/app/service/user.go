@@ -16,8 +16,6 @@ import (
 	"web-studio-backend/internal/pkg/strhelp"
 )
 
-const usersDir = "users"
-
 //go:generate mockgen -source=user.go -destination=./mocks/user.go -package=mocks
 type UserRepository interface {
 	GetUser(ctx context.Context, id int32) (*domain.User, error)
@@ -32,12 +30,13 @@ type UserRepository interface {
 }
 
 type UserService struct {
+	filesDir string
 	repo     UserRepository
 	fileRepo FileRepository
 }
 
 func NewUserService(repo UserRepository, fileRepo FileRepository) *UserService {
-	return &UserService{repo, fileRepo}
+	return &UserService{"users", repo, fileRepo}
 }
 
 func (s *UserService) GetUser(ctx context.Context, id int32) (*domain.User, error) {
@@ -196,13 +195,13 @@ func (s *UserService) SetUserImage(ctx context.Context, userID int32, img []byte
 		return fmt.Errorf("setting user %d image: %w", userID, err)
 	}
 
-	err = s.fileRepo.Save(ctx, img, filepath.Join(usersDir, fileName))
+	err = s.fileRepo.Save(ctx, img, filepath.Join(s.filesDir, fileName))
 	if err != nil {
 		return fmt.Errorf("saving user image: %w", err)
 	}
 
 	if user.ImageID != "" {
-		err = s.fileRepo.Delete(ctx, filepath.Join(usersDir, user.ImageID))
+		err = s.fileRepo.Delete(ctx, filepath.Join(s.filesDir, user.ImageID))
 		if err != nil {
 			slog.Error("Deleting old user image", slog.String("error", err.Error()))
 		}
@@ -224,7 +223,7 @@ func (s *UserService) GetUserImage(ctx context.Context, userID int32) (*domain.U
 		return nil, apperror.NewNotFound("image_id")
 	}
 
-	data, err := s.fileRepo.Read(ctx, filepath.Join(usersDir, user.ImageID))
+	data, err := s.fileRepo.Read(ctx, filepath.Join(s.filesDir, user.ImageID))
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
 			return nil, apperror.NewNotFound("image_id")

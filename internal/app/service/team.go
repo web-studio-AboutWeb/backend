@@ -15,8 +15,6 @@ import (
 	"web-studio-backend/internal/app/infrastructure/repository"
 )
 
-const teamsDir = "teams"
-
 //go:generate mockgen -source=team.go -destination=./mocks/team.go -package=mocks
 type TeamRepository interface {
 	GetTeam(ctx context.Context, id int32) (*domain.Team, error)
@@ -30,12 +28,13 @@ type TeamRepository interface {
 }
 
 type TeamService struct {
+	filesDir string
 	repo     TeamRepository
 	fileRepo FileRepository
 }
 
 func NewTeamService(repo TeamRepository, fileRepo FileRepository) *TeamService {
-	return &TeamService{repo, fileRepo}
+	return &TeamService{"teams", repo, fileRepo}
 }
 
 func (s *TeamService) GetTeam(ctx context.Context, id int32) (*domain.Team, error) {
@@ -149,13 +148,13 @@ func (s *TeamService) SetTeamImage(ctx context.Context, teamID int32, img []byte
 		return fmt.Errorf("setting team %d image: %w", teamID, err)
 	}
 
-	err = s.fileRepo.Save(ctx, img, filepath.Join(teamsDir, fileName))
+	err = s.fileRepo.Save(ctx, img, filepath.Join(s.filesDir, fileName))
 	if err != nil {
 		return fmt.Errorf("saving team image: %w", err)
 	}
 
 	if team.ImageID != "" {
-		err = s.fileRepo.Delete(ctx, filepath.Join(teamsDir, team.ImageID))
+		err = s.fileRepo.Delete(ctx, filepath.Join(s.filesDir, team.ImageID))
 		if err != nil {
 			slog.Error("Deleting old team image", slog.String("error", err.Error()))
 		}
@@ -177,7 +176,7 @@ func (s *TeamService) GetTeamImage(ctx context.Context, teamID int32) (*domain.T
 		return nil, apperror.NewNotFound("image_id")
 	}
 
-	data, err := s.fileRepo.Read(ctx, filepath.Join(teamsDir, team.ImageID))
+	data, err := s.fileRepo.Read(ctx, filepath.Join(s.filesDir, team.ImageID))
 	if err != nil {
 		if errors.Is(err, repository.ErrObjectNotFound) {
 			return nil, apperror.NewNotFound("image_id")
