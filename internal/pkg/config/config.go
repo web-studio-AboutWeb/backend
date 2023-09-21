@@ -13,12 +13,6 @@ import (
 type Config struct {
 	App struct {
 		Env string `yaml:"env" env-default:"dev"`
-		Jwt struct {
-			AccessTokenExpMinutes int16  `yaml:"access_token_exp_minutes"`
-			RefreshTokenExpDays   int16  `yaml:"refresh_token_exp_days"`
-			AccessTokenSecretKey  string `yaml:"access_token_secret_key"`
-			RefreshTokenSecretKey string `yaml:"refresh_token_secret_key"`
-		} `yaml:"jwt"`
 	} `yaml:"app" env-required:"true"`
 	Http struct {
 		HttpsEnabled bool   `yaml:"https_enabled" env-default:"false"`

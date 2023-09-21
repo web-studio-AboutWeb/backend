@@ -1,10 +1,5 @@
 app:
   env: dev
-  jwt:
-    access_expiration_minutes: 15
-    refresh_expiration_days: 7
-    access_token_secret_key: helloworld
-    refresh_token_secret_key: abc123
 http:
   port: 8000
   host: localhost
