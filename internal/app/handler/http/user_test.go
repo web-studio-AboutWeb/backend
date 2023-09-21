@@ -14,6 +14,7 @@ import (
 	"go.uber.org/mock/gomock"
 
 	"web-studio-backend/internal/app/domain"
+	"web-studio-backend/internal/app/domain/apperr"
 	"web-studio-backend/internal/app/handler/http/dto"
 	"web-studio-backend/internal/app/handler/http/httperr"
 	smocks "web-studio-backend/internal/app/handler/http/mocks"

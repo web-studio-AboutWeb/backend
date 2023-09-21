@@ -5,6 +5,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+
+	"web-studio-backend/internal/app/domain/apperr"
 )
 
 func TestUnwrapAppError(t *testing.T) {
