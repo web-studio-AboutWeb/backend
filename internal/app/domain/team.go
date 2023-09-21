@@ -1,6 +1,11 @@
 package domain
 
-import "time"
+import (
+	"fmt"
+	"time"
+
+	"web-studio-backend/internal/app/domain/apperror"
+)
 
 type UserPosition int16
 
@@ -31,17 +36,38 @@ func (up UserPosition) String() string {
 
 type (
 	Team struct {
-		ID         int32      `json:"id"`
-		Title      string     `json:"title"`
-		CreatedAt  time.Time  `json:"createdAt"`
-		UpdatedAt  time.Time  `json:"updatedAt"`
-		DisabledAt *time.Time `json:"disabledAt,omitempty"`
+		ID          int32      `json:"id"`
+		Title       string     `json:"title"`
+		Description string     `json:"description"`
+		HasImage    bool       `json:"hasImage"`
+		CreatedAt   time.Time  `json:"createdAt"`
+		UpdatedAt   time.Time  `json:"updatedAt"`
+		DisabledAt  *time.Time `json:"disabledAt,omitempty"`
+
+		ImageID      string `json:"-"`
+		ImageContent []byte `json:"-"`
 	}
 
 	TeamMember struct {
-		UserID   int32        `json:"userID"`
-		TeamID   int32        `json:"teamID"`
-		Role     UserRole     `json:"role"`
-		Position UserPosition `json:"position"`
+		UserID    int32        `json:"userID"`
+		TeamID    int32        `json:"teamID"`
+		Role      UserRole     `json:"role"`
+		Position  UserPosition `json:"position"`
+		CreatedAt time.Time    `json:"createdAt"`
 	}
 )
+
+func (t *Team) Validate() error {
+	if t.Title == "" {
+		return apperror.NewInvalidRequest("Title cannot be empty.", "title")
+	}
+
+	if len(t.Description) > 512 {
+		return apperror.NewInvalidRequest(
+			fmt.Sprintf("Description length must be less than %d characters.", 512),
+			"description",
+		)
+	}
+
+	return nil
+}
