@@ -198,7 +198,7 @@ func (r *UserRepository) GetUserByLogin(ctx context.Context, login string) (*dom
 	return &user, nil
 }
 
-func (r *UserRepository) CheckUsernameUniqueness(ctx context.Context, username, email string) (*domain.User, error) {
+func (r *UserRepository) CheckUserUniqueness(ctx context.Context, username, email string) (*domain.User, error) {
 	var user domain.User
 
 	err := r.pool.QueryRow(ctx, `
