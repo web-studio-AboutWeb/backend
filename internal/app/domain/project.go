@@ -17,9 +17,9 @@ type (
 		Technologies []string  `json:"technologies,omitempty"`
 		CreatedAt    time.Time `json:"createdAt"`
 		UpdatedAt    time.Time `json:"updatedAt"`
+		Link         string    `json:"link,omitempty"`
+		ImageId      string    `json:"-"`
 
-		CoverId *string    `json:"-"`
-		Link    *string    `json:"link,omitempty"`
 		TeamID  *int32     `json:"teamID,omitempty"`
 		EndedAt *time.Time `json:"endedAt,omitempty"`
 	}
@@ -60,8 +60,8 @@ func (p *Project) Validate() error {
 		})
 	}
 
-	if p.Link != nil {
-		_, err := url.ParseRequestURI(*p.Link)
+	if p.Link != "" {
+		_, err := url.ParseRequestURI(p.Link)
 		if err != nil {
 			validations = append(validations, apperr.ValidationError{
 				Message: "Link has invalid format.",

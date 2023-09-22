@@ -6,7 +6,7 @@ CREATE TABLE projects
     created_at  timestamptz NOT NULL DEFAULT now(),
     updated_at  timestamptz NOT NULL DEFAULT now(),
     team_id     int4 REFERENCES teams (id),
-    cover_id    text,
+    image_id    text NOT NULL,
     ended_at    timestamptz,
     isactive    bool,
     link        text

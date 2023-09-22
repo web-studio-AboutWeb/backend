@@ -35,7 +35,7 @@ func TestProjectRepository_GetProject(t *testing.T) {
 
 	q := `
 		SELECT 
-		    id, title, description, cover_id, created_at, updated_at, ended_at,
+		    id, title, description, image_id, created_at, updated_at, ended_at,
 		    link, isactive, technologies, team_id
         FROM projects
         WHERE id = $1`
@@ -61,26 +61,26 @@ func TestProjectRepository_GetProject(t *testing.T) {
 				Technologies: []string{"tech1", "tech2"},
 				CreatedAt:    tempTime,
 				UpdatedAt:    tempTime,
-				CoverId:      ptr.String("cover_id"),
-				Link:         ptr.String("link"),
+				ImageId:      "image_id",
+				Link:         "link",
 				TeamID:       ptr.Int32(2),
 				EndedAt:      &tempTime,
 			},
 			wantErr: false,
 			mock: func(id int32) {
 				row := mock.NewRows([]string{
-					"id", "title", "description", "cover_id", "created_at", "updated_at", "ended_at",
+					"id", "title", "description", "image_id", "created_at", "updated_at", "ended_at",
 					"link", "isactive", "technologies", "team_id",
 				}).
 					AddRow(
 						id,
 						"title",
 						"description",
-						ptr.String("cover_id"),
+						"image_id",
 						tempTime,
 						tempTime,
 						&tempTime,
-						ptr.String("link"),
+						"link",
 						true,
 						[]string{"tech1", "tech2"},
 						ptr.Int32(2),
@@ -137,7 +137,7 @@ func TestProjectRepository_GetProjects(t *testing.T) {
 
 	q := `
 		SELECT 
-		    id, title, description, cover_id, created_at, updated_at, ended_at,
+		    id, title, description, image_id, created_at, updated_at, ended_at,
 		    link, isactive, technologies, team_id
         FROM projects
         WHERE isactive
@@ -162,8 +162,8 @@ func TestProjectRepository_GetProjects(t *testing.T) {
 					Technologies: []string{"tech1", "tech2"},
 					CreatedAt:    tempTime,
 					UpdatedAt:    tempTime,
-					CoverId:      ptr.String("cover1"),
-					Link:         ptr.String("link1"),
+					ImageId:      "image1",
+					Link:         "link1",
 					TeamID:       ptr.Int32(2),
 					EndedAt:      &tempTime,
 				},
@@ -179,18 +179,18 @@ func TestProjectRepository_GetProjects(t *testing.T) {
 			wantErr: false,
 			mock: func() {
 				rows := mock.NewRows([]string{
-					"id", "title", "description", "cover_id", "created_at", "updated_at", "ended_at",
+					"id", "title", "description", "image_id", "created_at", "updated_at", "ended_at",
 					"link", "isactive", "technologies", "team_id",
 				}).
 					AddRow(
 						int32(1),
 						"title1",
 						"description1",
-						ptr.String("cover1"),
+						"image1",
 						tempTime,
 						tempTime,
 						&tempTime,
-						ptr.String("link1"),
+						"link1",
 						true,
 						[]string{"tech1", "tech2"},
 						ptr.Int32(2),
@@ -199,11 +199,11 @@ func TestProjectRepository_GetProjects(t *testing.T) {
 						int32(2),
 						"title2",
 						"description2",
-						nil,
+						"",
 						tempTime,
 						tempTime,
 						nil,
-						nil,
+						"",
 						false,
 						nil,
 						nil,
@@ -246,8 +246,8 @@ func TestProjectRepository_CreateProject(t *testing.T) {
 	mock, repo := prepareProjectMock(t)
 
 	q := `
-		INSERT INTO projects(title, description, team_id, isactive, link, technologies)
-		VALUES($1, $2, $3, TRUE, $4, $5)
+		INSERT INTO projects(title, description, team_id, isactive, link, technologies, image_id)
+		VALUES($1, $2, $3, TRUE, $4, $5, $6)
 		RETURNING id`
 
 	tests := []struct {
@@ -272,6 +272,7 @@ func TestProjectRepository_CreateProject(t *testing.T) {
 						project.TeamID,
 						project.Link,
 						project.Technologies,
+						project.ImageId,
 					).WillReturnRows(rows)
 			},
 		},
@@ -288,6 +289,7 @@ func TestProjectRepository_CreateProject(t *testing.T) {
 						project.TeamID,
 						project.Link,
 						project.Technologies,
+						project.ImageId,
 					).WillReturnError(fmt.Errorf("some error"))
 			},
 		},
@@ -297,8 +299,9 @@ func TestProjectRepository_CreateProject(t *testing.T) {
 		Title:        "title",
 		Description:  "description",
 		TeamID:       ptr.Int32(1),
-		Link:         ptr.String("test"),
+		Link:         "test",
 		Technologies: []string{"tech1", "tech2"},
+		ImageId:      "image_id",
 	}
 
 	for _, tc := range tests {
@@ -344,7 +347,7 @@ func TestProjectRepository_UpdateProject(t *testing.T) {
 				ID:           1,
 				Title:        "title",
 				Description:  "description",
-				Link:         ptr.String("link"),
+				Link:         "link",
 				Technologies: []string{"tech1", "tech2"},
 			},
 			mock: func(project *domain.Project) {

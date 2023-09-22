@@ -8,7 +8,7 @@ type (
 	CreateProjectRequest struct {
 		Title        string   `json:"title"`
 		Description  string   `json:"description"`
-		Link         *string  `json:"link,omitempty"`
+		Link         string   `json:"link,omitempty"`
 		TeamID       *int32   `json:"teamID,omitempty"`
 		Technologies []string `json:"technologies,omitempty"`
 	}
@@ -16,7 +16,7 @@ type (
 	UpdateProjectRequest struct {
 		Title        string   `json:"title"`
 		Description  string   `json:"description"`
-		Link         *string  `json:"link,omitempty"`
+		Link         string   `json:"link,omitempty"`
 		TeamID       *int32   `json:"teamID,omitempty"`
 		Technologies []string `json:"technologies,omitempty"`
 	}
