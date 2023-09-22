@@ -24,7 +24,8 @@ func (r *ProjectRepository) GetProject(ctx context.Context, id int32) (*domain.P
 
 	err := r.pool.QueryRow(ctx, `
 		SELECT 
-		    id, title, description, cover_id, created_at, updated_at, ended_at, link, isactive, technologies
+		    id, title, description, cover_id, created_at, updated_at, ended_at,
+		    link, isactive, technologies, team_id
         FROM projects
         WHERE id = $1`, id).Scan(
 		&project.ID,
@@ -37,35 +38,7 @@ func (r *ProjectRepository) GetProject(ctx context.Context, id int32) (*domain.P
 		&project.Link,
 		&project.IsActive,
 		&project.Technologies,
-	)
-	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, repository.ErrObjectNotFound
-		}
-		return nil, fmt.Errorf("scanning project: %w", err)
-	}
-
-	return &project, nil
-}
-
-func (r *ProjectRepository) GetActiveProject(ctx context.Context, id int32) (*domain.Project, error) {
-	var project domain.Project
-
-	err := r.pool.QueryRow(ctx, `
-		SELECT 
-		    id, title, description, cover_id, created_at, updated_at, ended_at, link, isactive, technologies
-        FROM projects
-        WHERE id=$1 AND isactive`, id).Scan(
-		&project.ID,
-		&project.Title,
-		&project.Description,
-		&project.CoverId,
-		&project.CreatedAt,
-		&project.UpdatedAt,
-		&project.EndedAt,
-		&project.Link,
-		&project.IsActive,
-		&project.Technologies,
+		&project.TeamID,
 	)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
@@ -80,7 +53,8 @@ func (r *ProjectRepository) GetActiveProject(ctx context.Context, id int32) (*do
 func (r *ProjectRepository) GetProjects(ctx context.Context) ([]domain.Project, error) {
 	rows, err := r.pool.Query(ctx, `
 		SELECT 
-		    id, title, description, cover_id, created_at, updated_at, ended_at, link, isactive, technologies
+		    id, title, description, cover_id, created_at, updated_at, ended_at,
+		    link, isactive, technologies, team_id
         FROM projects
         WHERE isactive
         ORDER BY created_at`)
@@ -104,6 +78,7 @@ func (r *ProjectRepository) GetProjects(ctx context.Context) ([]domain.Project, 
 			&project.Link,
 			&project.IsActive,
 			&project.Technologies,
+			&project.TeamID,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("scanning project: %w", err)
@@ -118,10 +93,10 @@ func (r *ProjectRepository) GetProjects(ctx context.Context) ([]domain.Project, 
 func (r *ProjectRepository) CreateProject(ctx context.Context, project *domain.Project) (int32, error) {
 	var projectId int32
 
-	err := r.pool.QueryRow(ctx,
-		`INSERT INTO projects(title, description, team_id, isactive, link, technologies)
-		 VALUES($1, $2, $3, TRUE, $4, $5)
-		 RETURNING  id`,
+	err := r.pool.QueryRow(ctx, `
+		INSERT INTO projects(title, description, team_id, isactive, link, technologies)
+		VALUES($1, $2, $3, TRUE, $4, $5)
+		RETURNING id`,
 		project.Title,
 		project.Description,
 		project.TeamID,
@@ -165,7 +140,8 @@ func (r *ProjectRepository) DisableProject(ctx context.Context, id int32) error 
 func (r *ProjectRepository) GetParticipants(ctx context.Context, projectID int32) ([]domain.ProjectParticipant, error) {
 	rows, err := r.pool.Query(ctx, `
 		SELECT
-		    pp.user_id, pp.project_id, pp.role, pp.position, pp.created_at, pp.updated_at, u.name, u.surname, u.username
+		    pp.user_id, pp.project_id, pp.role, pp.position, pp.created_at, pp.updated_at,
+		    u.name, u.surname, u.username
 	 	FROM project_participants pp
 			JOIN users u ON u.id = pp.user_id
 	 	WHERE pp.project_id = $1`, projectID)
@@ -204,7 +180,8 @@ func (r *ProjectRepository) GetParticipant(ctx context.Context, participantID, p
 
 	err := r.pool.QueryRow(ctx, `
 		SELECT 
-		    pp.user_id, pp.project_id, pp.role, pp.position, pp.created_at, pp.updated_at, u.name, u.surname, u.username
+		    pp.user_id, pp.project_id, pp.role, pp.position, pp.created_at, pp.updated_at,
+		    u.name, u.surname, u.username
 		FROM project_participants pp
 			JOIN users u ON u.id=pp.user_id
 		WHERE pp.user_id=$1 AND pp.project_id=$2`, participantID, projectID).Scan(

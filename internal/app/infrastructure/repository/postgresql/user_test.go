@@ -30,9 +30,10 @@ func prepareUserMock(t *testing.T) (pgxmock.PgxPoolIface, *postgresql.UserReposi
 func TestUserRepository_CreateUser(t *testing.T) {
 	mock, repo := prepareUserMock(t)
 
-	q := `INSERT INTO users(name, surname, username, email, encoded_password, salt, role, is_teamlead, image_id)
-		 VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)
-		 RETURNING  id`
+	q := `
+		INSERT INTO users(name, surname, username, email, encoded_password, salt, role, is_teamlead, image_id)
+		VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)
+		RETURNING  id`
 
 	tests := []struct {
 		name     string
@@ -444,7 +445,7 @@ func TestUserRepository_GetUsers(t *testing.T) {
 						"image2",
 					)
 
-				mock.ExpectQuery(q).WillReturnRows(rows)
+				mock.ExpectQuery(q).WillReturnRows(rows).RowsWillBeClosed()
 			},
 		},
 		{

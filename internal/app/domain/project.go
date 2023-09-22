@@ -18,7 +18,7 @@ type (
 		CreatedAt    time.Time `json:"createdAt"`
 		UpdatedAt    time.Time `json:"updatedAt"`
 
-		CoverId *string    `json:"coverId,omitempty"`
+		CoverId *string    `json:"-"`
 		Link    *string    `json:"link,omitempty"`
 		TeamID  *int32     `json:"teamID,omitempty"`
 		EndedAt *time.Time `json:"endedAt,omitempty"`
