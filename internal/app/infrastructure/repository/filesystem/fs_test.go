@@ -32,13 +32,12 @@ func TestNew(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(tt *testing.T) {
 			os.Mkdir(filepath.Dir(tc.dirPath), os.ModePerm)
-			defer os.Remove(tc.dirPath)
+			defer os.RemoveAll(tc.dirPath)
 
 			if tc.tempFile {
 				f, err := os.Create(tc.dirPath)
 				require.NoError(tt, err)
 				defer f.Close()
-				defer os.Remove(tc.dirPath)
 			}
 
 			_, err := New(tc.dirPath)
@@ -46,6 +45,7 @@ func TestNew(t *testing.T) {
 				require.Error(tt, err)
 				return
 			}
+
 			require.NoError(tt, err)
 		})
 	}
@@ -56,8 +56,7 @@ func TestFileSystem_Read(t *testing.T) {
 	tempFile := "temp_file.txt"
 	fileContent := "hello, world!\n"
 
-	err := os.Mkdir(tempDir, 0744)
-	require.NoError(t, err)
+	_ = os.Mkdir(tempDir, 0744)
 	defer os.RemoveAll(tempDir)
 
 	f, err := os.Create(filepath.Join(tempDir, tempFile))
@@ -80,8 +79,7 @@ func TestFileSystem_Save(t *testing.T) {
 	tempDir := "temp_dir"
 	fileContent := "hello, world!\n"
 
-	err := os.Mkdir(tempDir, 0744)
-	require.NoError(t, err)
+	_ = os.Mkdir(tempDir, 0744)
 	defer os.RemoveAll(tempDir)
 
 	fs, err := New(tempDir)
@@ -101,8 +99,7 @@ func TestFileSystem_Save(t *testing.T) {
 func TestFileSystem_Delete(t *testing.T) {
 	tempDir := "temp_dir"
 
-	err := os.Mkdir(tempDir, 0744)
-	require.NoError(t, err)
+	_ = os.Mkdir(tempDir, 0744)
 	defer os.RemoveAll(tempDir)
 
 	fs, err := New(tempDir)

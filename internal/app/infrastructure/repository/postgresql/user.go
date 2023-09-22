@@ -79,12 +79,11 @@ func (r *UserRepository) GetActiveUser(ctx context.Context, id int32) (*domain.U
 }
 
 func (r *UserRepository) GetUsers(ctx context.Context) ([]domain.User, error) {
-
 	rows, err := r.pool.Query(ctx, `
 		SELECT 
-		    id, name, surname, username, email, created_at, updated_at, disabled_at, role, is_teamlead, image_id
-        FROM users
-        WHERE disabled_at IS NULL`)
+		    id, name, surname, username, email, created_at, updated_at, disabled_at,
+		    role, is_teamlead, image_id
+        FROM users`)
 	if err != nil {
 		return nil, fmt.Errorf("selecting users: %w", err)
 	}
