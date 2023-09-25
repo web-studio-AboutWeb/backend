@@ -54,7 +54,11 @@ func NewHandler(
 		// Projects
 		r.Get(`/api/v1/projects/{project_id}`, ph.getProject)
 		r.Get(`/api/v1/projects`, ph.getProjects)
-		r.Post(`/api/v1/projects`, ph.createProject)
+		r.Group(func(r chi.Router) {
+			// TODO: remove
+			r.Use(ah.authMiddleware)
+			r.Post(`/api/v1/projects`, ph.createProject)
+		})
 		r.Put(`/api/v1/projects/{project_id}`, ph.updateProject)
 		r.Get(`/api/v1/projects/{project_id}/participants`, ph.getParticipants)
 		r.Post(`/api/v1/projects/{project_id}/participants`, ph.addParticipant)
