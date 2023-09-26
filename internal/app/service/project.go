@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/jackc/pgx/v5"
+
 	"web-studio-backend/internal/app/domain"
 	"web-studio-backend/internal/app/domain/apperr"
 	"web-studio-backend/internal/app/infrastructure/repository"
@@ -28,10 +30,11 @@ type ProjectRepository interface {
 type ProjectService struct {
 	projectRepo ProjectRepository
 	userRepo    UserRepository
+	teamRepo    TeamRepository
 }
 
-func NewProjectService(repo ProjectRepository, userRepo UserRepository) *ProjectService {
-	return &ProjectService{repo, userRepo}
+func NewProjectService(repo ProjectRepository, userRepo UserRepository, teamRepo TeamRepository) *ProjectService {
+	return &ProjectService{repo, userRepo, teamRepo}
 }
 
 func (s *ProjectService) GetProject(ctx context.Context, id int32) (*domain.Project, error) {
@@ -60,6 +63,16 @@ func (s *ProjectService) CreateProject(ctx context.Context, project *domain.Proj
 		return nil, fmt.Errorf("validating project: %w", err)
 	}
 
+	if project.TeamID != nil {
+		_, err := s.teamRepo.GetTeam(ctx, *project.TeamID)
+		if err != nil {
+			if errors.Is(err, pgx.ErrNoRows) {
+				return nil, apperr.NewNotFound("team_id")
+			}
+			return nil, fmt.Errorf("getting team %d: %w", *project.TeamID, err)
+		}
+	}
+
 	projectId, err := s.projectRepo.CreateProject(ctx, project)
 	if err != nil {
 		return nil, fmt.Errorf("creating project: %w", err)
@@ -76,6 +89,16 @@ func (s *ProjectService) CreateProject(ctx context.Context, project *domain.Proj
 func (s *ProjectService) UpdateProject(ctx context.Context, project *domain.Project) (*domain.Project, error) {
 	if err := project.Validate(); err != nil {
 		return nil, fmt.Errorf("validating project: %w", err)
+	}
+
+	if project.TeamID != nil {
+		_, err := s.teamRepo.GetTeam(ctx, *project.TeamID)
+		if err != nil {
+			if errors.Is(err, pgx.ErrNoRows) {
+				return nil, apperr.NewNotFound("team_id")
+			}
+			return nil, fmt.Errorf("getting team %d: %w", *project.TeamID, err)
+		}
 	}
 
 	_, err := s.projectRepo.GetProject(ctx, project.ID)
