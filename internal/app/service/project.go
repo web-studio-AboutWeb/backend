@@ -5,8 +5,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/jackc/pgx/v5"
-
 	"web-studio-backend/internal/app/domain"
 	"web-studio-backend/internal/app/domain/apperr"
 	"web-studio-backend/internal/app/infrastructure/repository"
@@ -66,7 +64,7 @@ func (s *ProjectService) CreateProject(ctx context.Context, project *domain.Proj
 	if project.TeamID != nil {
 		_, err := s.teamRepo.GetTeam(ctx, *project.TeamID)
 		if err != nil {
-			if errors.Is(err, pgx.ErrNoRows) {
+			if errors.Is(err, repository.ErrObjectNotFound) {
 				return nil, apperr.NewNotFound("team_id")
 			}
 			return nil, fmt.Errorf("getting team %d: %w", *project.TeamID, err)
@@ -94,7 +92,7 @@ func (s *ProjectService) UpdateProject(ctx context.Context, project *domain.Proj
 	if project.TeamID != nil {
 		_, err := s.teamRepo.GetTeam(ctx, *project.TeamID)
 		if err != nil {
-			if errors.Is(err, pgx.ErrNoRows) {
+			if errors.Is(err, repository.ErrObjectNotFound) {
 				return nil, apperr.NewNotFound("team_id")
 			}
 			return nil, fmt.Errorf("getting team %d: %w", *project.TeamID, err)
