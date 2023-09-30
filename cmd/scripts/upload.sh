@@ -17,7 +17,7 @@ echo "Compiling migrate..."
 GOOS=linux GOARCH=amd64 go build -o migrate -v -ldflags="-w -s" cmd/migrate/migrate.go
 
 echo "Compiling apidocs..."
-swag init -o web/static/apidocs --ot json -q -g cmd/app/main.go
+swag init -o web/static/apidocs --ot json --parseDependency --parseInternal --parseDepth 1 -q -g cmd/app/main.go
 
 if [ "$2" == "migrate" ] && [ "$3" != "" ]; then
   echo "migrate $3 will be executed."

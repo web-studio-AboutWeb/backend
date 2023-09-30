@@ -20,8 +20,9 @@ type (
 		Link         string    `json:"link,omitempty"`
 		ImageId      string    `json:"-"`
 
-		TeamID  *int32     `json:"teamID,omitempty"`
-		EndedAt *time.Time `json:"endedAt,omitempty"`
+		TeamID    *int32     `json:"teamID,omitempty"`
+		StartedAt *time.Time `json:"startedAt,omitempty"`
+		EndedAt   *time.Time `json:"endedAt,omitempty"`
 	}
 
 	ProjectParticipant struct {

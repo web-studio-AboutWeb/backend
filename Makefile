@@ -1,6 +1,6 @@
 .PHONY:docs
 docs:
-	swag init -o web/static/apidocs --ot json -q -g cmd/app/main.go
+	swag init -o web/static/apidocs --ot json --parseDependency --parseInternal --parseDepth 1 -q -g cmd/app/main.go
 
 .PHONY:run
 run: docs

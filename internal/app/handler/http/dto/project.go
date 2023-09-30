@@ -1,24 +1,30 @@
 package dto
 
 import (
+	"time"
+
 	"web-studio-backend/internal/app/domain"
 )
 
 type (
 	CreateProjectRequest struct {
-		Title        string   `json:"title"`
-		Description  string   `json:"description"`
-		Link         string   `json:"link,omitempty"`
-		TeamID       *int32   `json:"teamID,omitempty"`
-		Technologies []string `json:"technologies,omitempty"`
+		Title        string     `json:"title"`
+		Description  string     `json:"description"`
+		Link         string     `json:"link,omitempty"`
+		StartedAt    *time.Time `json:"startedAt,omitempty"`
+		EndedAt      *time.Time `json:"endedAt,omitempty"`
+		TeamID       *int32     `json:"teamID,omitempty"`
+		Technologies []string   `json:"technologies,omitempty"`
 	}
 
 	UpdateProjectRequest struct {
-		Title        string   `json:"title"`
-		Description  string   `json:"description"`
-		Link         string   `json:"link,omitempty"`
-		TeamID       *int32   `json:"teamID,omitempty"`
-		Technologies []string `json:"technologies,omitempty"`
+		Title        string     `json:"title"`
+		Description  string     `json:"description"`
+		Link         string     `json:"link,omitempty"`
+		StartedAt    *time.Time `json:"startedAt,omitempty"`
+		EndedAt      *time.Time `json:"endedAt,omitempty"`
+		TeamID       *int32     `json:"teamID,omitempty"`
+		Technologies []string   `json:"technologies,omitempty"`
 	}
 
 	AddProjectParticipantRequest struct {
@@ -44,6 +50,8 @@ func (r *CreateProjectRequest) ToDomain() *domain.Project {
 		Link:         r.Link,
 		TeamID:       r.TeamID,
 		Technologies: r.Technologies,
+		StartedAt:    r.StartedAt,
+		EndedAt:      r.EndedAt,
 	}
 }
 
@@ -59,6 +67,8 @@ func (r *UpdateProjectRequest) ToDomain(projectID int32) *domain.Project {
 		Link:         r.Link,
 		TeamID:       r.TeamID,
 		Technologies: r.Technologies,
+		StartedAt:    r.StartedAt,
+		EndedAt:      r.EndedAt,
 	}
 }
 
