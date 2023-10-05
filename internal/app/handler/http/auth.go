@@ -56,10 +56,13 @@ func (h *authHandler) signIn(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.SetCookie(w, &http.Cookie{
-		Name:    "session_id",
-		Value:   response.SessionID,
-		Path:    "/",
-		Expires: time.Now().Add(session.TTL),
+		Name:     "session_id",
+		Value:    response.SessionID,
+		SameSite: http.SameSiteNoneMode,
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   true,
+		Expires:  time.Now().Add(session.TTL),
 	})
 
 	httphelp.SendJSON(http.StatusOK, response, w)

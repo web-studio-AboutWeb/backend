@@ -25,15 +25,24 @@ func NewHandler(
 
 	r := chi.NewRouter()
 
+	r.Use(middleware.RequestID)
+	r.Use(middleware.RealIP)
 	r.Use(middleware.Logger)
+	r.Use(httprate.LimitByIP(69, time.Minute))
 	r.Use(middleware.Recoverer)
 	r.Use(cors.New(cors.Options{
-		AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete},
-		AllowedHeaders:   []string{"Accept", "X-CSRF-Token", "Content-Type", "Cookie"},
-		MaxAge:           60 * 60 * 60 * 24 * 365,
+		AllowedOrigins:   []string{"http://localhost:*", "http://127.0.0.1:*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
 		AllowCredentials: true,
+		MaxAge:           300,
 	}).Handler)
-	r.Use(httprate.LimitByIP(69, time.Minute))
+	r.Use(
+		middleware.SetHeader("X-Content-Type-Options", "nosniff"),
+		middleware.SetHeader("X-Frame-Options", "deny"),
+	)
+	r.Use(middleware.NoCache)
 
 	r.Get("/static/*", getStatic)
 
