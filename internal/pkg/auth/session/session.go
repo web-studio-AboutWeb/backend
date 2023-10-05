@@ -14,21 +14,32 @@ const TTL = 24 * time.Hour
 var ErrSessionNotFound = errors.New("session not found")
 
 type Session struct {
-	ID        string
 	UserID    int32
 	CSRFToken string
 }
 
 // sessions are used to map 'session_id' cookie to user ID.
 var (
-	sessions = map[string]*Session{}
+	sessions = map[string]Session{}
 	m        sync.RWMutex
 )
 
 func New(userID int32) (string, string, error) {
-	sessionID, err := generateSessionID()
-	if err != nil {
-		return "", "", fmt.Errorf("generating session id: %w", err)
+	m.Lock()
+	defer m.Unlock()
+
+	var sessionID string
+
+	for {
+		sid, err := generateSessionID()
+		if err != nil {
+			return "", "", fmt.Errorf("generating session id: %w", err)
+		}
+
+		if _, ok := sessions[sid]; !ok {
+			sessionID = sid
+			break
+		}
 	}
 
 	csrfToken, err := generateCSRFToken()
@@ -36,9 +47,7 @@ func New(userID int32) (string, string, error) {
 		return "", "", fmt.Errorf("generating session id: %w", err)
 	}
 
-	m.Lock()
-	defer m.Unlock()
-	sessions[sessionID] = &Session{
+	sessions[sessionID] = Session{
 		UserID:    userID,
 		CSRFToken: csrfToken,
 	}
@@ -70,7 +79,7 @@ func GetSession(sessionID string) (*Session, error) {
 		return nil, ErrSessionNotFound
 	}
 
-	return session, nil
+	return &session, nil
 }
 
 // Delete deactivates the session.
@@ -83,6 +92,9 @@ func Delete(sessionID string) {
 
 // DeleteUserSession deletes session for given user.
 func DeleteUserSession(userID int32) {
+	m.Lock()
+	defer m.Unlock()
+
 	var sessionID string
 
 	for sid, sess := range sessions {
@@ -92,5 +104,5 @@ func DeleteUserSession(userID int32) {
 		}
 	}
 
-	Delete(sessionID)
+	delete(sessions, sessionID)
 }

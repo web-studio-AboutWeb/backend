@@ -7,6 +7,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/httprate"
+	"github.com/rs/cors"
 )
 
 func NewHandler(
@@ -26,8 +27,13 @@ func NewHandler(
 
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
+	r.Use(cors.New(cors.Options{
+		AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete},
+		AllowedHeaders:   []string{"Accept", "X-CSRF-Token", "Content-Type", "Cookie"},
+		MaxAge:           60 * 60 * 60 * 24 * 365,
+		AllowCredentials: true,
+	}).Handler)
 	r.Use(httprate.LimitByIP(69, time.Minute))
-	r.Use(corsMiddleware())
 
 	r.Get("/static/*", getStatic)
 

@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"web-studio-backend/internal/app/domain"
+	"web-studio-backend/internal/app/infrastructure/repository/filesystem"
 	"web-studio-backend/internal/app/infrastructure/repository/postgresql"
 	"web-studio-backend/internal/app/service"
 	"web-studio-backend/internal/pkg/config"
@@ -32,7 +33,8 @@ func main() {
 	log.Println("Connected to database")
 
 	userRepo := postgresql.NewUserRepository(pg.Pool)
-	userService := service.NewUserService(userRepo)
+	fs, _ := filesystem.New("")
+	userService := service.NewUserService(userRepo, fs)
 
 	_, err = userService.CreateUser(context.Background(), &domain.User{
 		Name:            "test",

@@ -42,7 +42,7 @@ func (s *AuthService) SignIn(ctx context.Context, req *domain.SignInRequest) (*d
 
 	sessionID, csrfToken, err := session.New(user.ID)
 	if err != nil {
-		return nil, fmt.Errorf("generating session id: %w", err)
+		return nil, fmt.Errorf("creating new session: %w", err)
 	}
 
 	return &domain.SignInResponse{

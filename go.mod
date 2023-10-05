@@ -5,13 +5,13 @@ go 1.21
 require (
 	github.com/gabriel-vasile/mimetype v1.4.2
 	github.com/go-chi/chi/v5 v5.0.8
-	github.com/go-chi/cors v1.2.1
 	github.com/go-chi/httprate v0.7.4
 	github.com/golang-migrate/migrate/v4 v4.16.2
 	github.com/google/uuid v1.3.0
 	github.com/ilyakaznacheev/cleanenv v1.4.2
 	github.com/jackc/pgx/v5 v5.4.3
 	github.com/pashagolub/pgxmock/v3 v3.0.0
+	github.com/rs/cors v1.10.1
 	github.com/stretchr/testify v1.8.1
 	go.uber.org/mock v0.3.0
 )

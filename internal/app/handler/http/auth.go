@@ -2,6 +2,7 @@ package http
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -96,25 +97,25 @@ func (h *authHandler) authMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		cookie, err := r.Cookie("session_id")
 		if err != nil {
-			w.WriteHeader(http.StatusUnauthorized)
+			http.Error(w, "session_id does not exists", http.StatusUnauthorized)
 			return
 		}
 
 		sess, err := session.GetSession(cookie.Value)
 		if err != nil {
-			w.WriteHeader(http.StatusUnauthorized)
+			http.Error(w, fmt.Sprintf("user session not found(session id: %s)", cookie.Value), http.StatusUnauthorized)
 			return
 		}
 
 		token := r.Header.Get("X-CSRF-Token")
 		if token != sess.CSRFToken {
-			w.WriteHeader(http.StatusUnauthorized)
+			http.Error(w, "invalid csrf token("+token+")", http.StatusUnauthorized)
 			return
 		}
 
 		user, err := h.userService.GetUser(r.Context(), sess.UserID)
 		if err != nil {
-			w.WriteHeader(http.StatusUnauthorized)
+			http.Error(w, "user not found", http.StatusUnauthorized)
 			return
 		}
 
