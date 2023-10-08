@@ -12,8 +12,10 @@ type (
 		Login    string `json:"login"`
 		Password string `json:"password"`
 	}
+
 	SignInResponse struct {
 		SessionID string `json:"-"`
 		CSRFToken string `json:"csrfToken"`
+		UserID    int32  `json:"userID"`
 	}
 )

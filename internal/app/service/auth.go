@@ -48,6 +48,7 @@ func (s *AuthService) SignIn(ctx context.Context, req *domain.SignInRequest) (*d
 	return &domain.SignInResponse{
 		SessionID: sessionID,
 		CSRFToken: csrfToken,
+		UserID:    user.ID,
 	}, nil
 }
 

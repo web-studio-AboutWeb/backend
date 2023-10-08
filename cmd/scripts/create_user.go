@@ -23,7 +23,7 @@ func main() {
 		log.Fatalf("decoding database username: %v", err)
 	}
 
-	dbConnString := postgres.ConnectionString(user, password, cfg.Database.Host, cfg.Database.Database)
+	dbConnString := postgres.ConnectionString(user, password, "45.141.78.221", cfg.Database.Database)
 
 	pg, err := postgres.New(context.Background(), dbConnString)
 	if err != nil {
