@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"time"
 
 	"web-studio-backend/internal/app/domain"
 	"web-studio-backend/internal/app/handler/http/httphelp"
@@ -55,16 +54,6 @@ func (h *authHandler) signIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.SetCookie(w, &http.Cookie{
-		Name:     "session_id",
-		Value:    response.SessionID,
-		SameSite: http.SameSiteNoneMode,
-		Path:     "/",
-		HttpOnly: true,
-		Secure:   true,
-		Expires:  time.Now().Add(session.TTL),
-	})
-
 	httphelp.SendJSON(http.StatusOK, response, w)
 }
 
@@ -77,36 +66,17 @@ func (h *authHandler) signIn(w http.ResponseWriter, r *http.Request) {
 // @Failure      500  {object}  Error
 // @Router       /api/v1/auth/sign-out [post]
 func (h *authHandler) signOut(w http.ResponseWriter, r *http.Request) {
-	cookie, err := r.Cookie("session_id")
-	if err != nil {
-		// Cookie is not provided, just skip.
-		w.WriteHeader(http.StatusOK)
-		return
-	}
-
-	h.authService.SignOut(r.Context(), cookie.Value)
-
-	http.SetCookie(w, &http.Cookie{
-		Name:   "session_id",
-		Value:  "",
-		Path:   "/",
-		MaxAge: -1, // delete cookie
-	})
-
+	h.authService.SignOut(r.Context(), getSessionIdFromRequest(r))
 	w.WriteHeader(http.StatusOK)
 }
 
 func (h *authHandler) authMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		cookie, err := r.Cookie("session_id")
-		if err != nil {
-			http.Error(w, "session_id does not exists", http.StatusUnauthorized)
-			return
-		}
+		sessionID := getSessionIdFromRequest(r)
 
-		sess, err := session.GetSession(cookie.Value)
+		sess, err := session.GetSession(sessionID)
 		if err != nil {
-			http.Error(w, fmt.Sprintf("user session not found(session id: %s)", cookie.Value), http.StatusUnauthorized)
+			http.Error(w, fmt.Sprintf("user session not found(session id: %s)", sessionID), http.StatusUnauthorized)
 			return
 		}
 
@@ -131,4 +101,8 @@ func (h *authHandler) authMiddleware(next http.Handler) http.Handler {
 
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
+}
+
+func getSessionIdFromRequest(r *http.Request) string {
+	return r.Header.Get("X-Session-Id")
 }
