@@ -14,7 +14,7 @@ type (
 	}
 
 	SignInResponse struct {
-		SessionID string `json:"sessionID"`
+		SessionID string `json:"-"`
 		CSRFToken string `json:"csrfToken"`
 		UserID    int32  `json:"userID"`
 	}

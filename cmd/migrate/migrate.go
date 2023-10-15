@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"log"
@@ -58,6 +59,9 @@ func main() {
 	}
 
 	if err != nil {
+		if errors.Is(err, migrate.ErrNoChange) {
+			fmt.Println("Migrate: No changes")
+		}
 		log.Fatalf("applying migration: %v", err)
 	}
 

@@ -19,16 +19,19 @@ GOOS=linux GOARCH=amd64 go build -o migrate -v -ldflags="-w -s" cmd/migrate/migr
 echo "Compiling apidocs..."
 swag init -o web/static/apidocs --ot json --parseDependency --parseInternal --parseDepth 1 -q -g cmd/app/main.go
 
+FILES=""
+
 if [ "$2" == "migrate" ] && [ "$3" != "" ]; then
   echo "migrate $3 will be executed."
   MIGRATE="&& chmod +x ./migrate && ./migrate $3"
+  FILES="./migrations ./migrate"
 fi
 
 echo "Enter password several times if asked, that's ok."
 
 ssh -t "$TARGET" "sudo rm /opt/ws/app"
 
-scp -r ./web ./app ./migrate ./migrations ./cmd/scripts/update.sh "$TARGET:/opt/ws"
+scp -r ./web ./app ./cmd/scripts/update.sh $FILES "$TARGET:/opt/ws"
 
 ssh -t "$TARGET" "cd /opt/ws &&
     (sudo tmux kill-session -t about-web || pkill tmux);
