@@ -16,12 +16,14 @@ func NewHandler(
 	authService AuthService,
 	documentService DocumentService,
 	teamService TeamService,
+	projectCategoryService ProjectCategoryService,
 ) http.Handler {
 	uh := newUserHandler(userService)
 	ph := newProjectHandler(projectService)
 	ah := newAuthHandler(authService, userService)
 	dh := newDocumentHandler(documentService)
 	th := newTeamHandler(teamService)
+	pch := newProjectCategoryHandler(projectCategoryService)
 
 	r := chi.NewRouter()
 
@@ -80,6 +82,12 @@ func NewHandler(
 		r.Get(`/api/v1/projects/{project_id}/participants/{user_id}`, ph.getParticipant)
 		r.Put(`/api/v1/projects/{project_id}/participants/{user_id}`, ph.updateParticipant)
 		r.Delete(`/api/v1/projects/{project_id}/participants/{user_id}`, ph.removeParticipant)
+
+		// Project categories
+		r.Get(`/api/v1/projects/categories`, pch.getProjectCategories)
+		r.Post(`/api/v1/projects/categories`, pch.createProjectCategory)
+		r.Put(`/api/v1/projects/categories/{category_id}`, pch.updateProjectCategory)
+		r.Delete(`/api/v1/projects/categories/{category_id}`, pch.deleteProjectCategory)
 
 		// Documents
 		r.Get(`/api/v1/projects/{project_id}/documents`, dh.getProjectDocuments)

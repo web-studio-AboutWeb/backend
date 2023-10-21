@@ -36,6 +36,11 @@ type (
 		CreatedAt time.Time    `json:"createdAt"`
 		UpdatedAt time.Time    `json:"updatedAt"`
 	}
+
+	ProjectCategory struct {
+		ID   int16  `json:"id"`
+		Name string `json:"name"`
+	}
 )
 
 func (p *Project) Validate() error {

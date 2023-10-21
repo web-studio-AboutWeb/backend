@@ -65,6 +65,7 @@ func Run(configPath string) error {
 	projectRepo := postgresql.NewProjectRepository(pg.Pool)
 	documentRepo := postgresql.NewDocumentRepository(pg.Pool)
 	teamRepo := postgresql.NewTeamRepository(pg.Pool)
+	projectCategoryRepo := postgresql.NewProjectCategoryRepository(pg.Pool)
 
 	// FS storage initialization
 	filesFS, err := filesystem.New(filesDir)
@@ -78,6 +79,7 @@ func Run(configPath string) error {
 	authService := service.NewAuthService(userRepo)
 	documentService := service.NewDocumentService(documentRepo, projectRepo, filesFS)
 	teamService := service.NewTeamService(teamRepo, filesFS)
+	projectCategoryService := service.NewProjectCategoryService(projectCategoryRepo)
 
 	// Handler initialization
 	handler := http.NewHandler(
@@ -86,6 +88,7 @@ func Run(configPath string) error {
 		authService,
 		documentService,
 		teamService,
+		projectCategoryService,
 	)
 
 	httpServer := &stdhttp.Server{

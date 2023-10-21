@@ -37,6 +37,14 @@ type (
 		Role     domain.UserRole     `json:"role"`
 		Position domain.UserPosition `json:"position"`
 	}
+
+	CreateProjectCategoryRequest struct {
+		Name string `json:"name"`
+	}
+
+	UpdateProjectCategoryRequest struct {
+		Name string `json:"name"`
+	}
 )
 
 func (r *CreateProjectRequest) ToDomain() *domain.Project {
