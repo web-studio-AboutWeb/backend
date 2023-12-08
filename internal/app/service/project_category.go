@@ -31,10 +31,10 @@ func (s *ProjectCategoryService) CreateProjectCategory(ctx context.Context, pc *
 	// TODO: validate
 
 	_, err := s.repo.GetProjectCategoryByName(ctx, pc.Name)
-	if err != nil {
-		if errors.Is(err, repository.ErrObjectNotFound) {
-			return nil, apperr.NewDuplicate("Project category with such name already exists.", "name")
-		}
+	if err == nil {
+		return nil, apperr.NewDuplicate("Project category with such name already exists.", "name")
+	}
+	if err != nil && !errors.Is(err, repository.ErrObjectNotFound) {
 		return nil, fmt.Errorf("getting project category by name %s: %w", pc.Name, err)
 	}
 
@@ -65,10 +65,10 @@ func (s *ProjectCategoryService) UpdateProjectCategory(ctx context.Context, pc *
 	}
 
 	_, err = s.repo.GetProjectCategoryByName(ctx, pc.Name)
-	if err != nil {
-		if errors.Is(err, repository.ErrObjectNotFound) {
-			return apperr.NewDuplicate("Project category with such name already exists.", "name")
-		}
+	if err == nil {
+		return apperr.NewDuplicate("Project category with such name already exists.", "name")
+	}
+	if err != nil && !errors.Is(err, repository.ErrObjectNotFound) {
 		return fmt.Errorf("getting project category by name %s: %w", pc.Name, err)
 	}
 

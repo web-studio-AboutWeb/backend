@@ -110,7 +110,7 @@ func (h *projectCategoryHandler) updateProjectCategory(w http.ResponseWriter, r 
 // @Success      204
 // @Failure      404  {object}  Error
 // @Failure      500  {object}  Error
-// @Router       /api/v1/projects/{project_id}/documents/{document_id} [delete]
+// @Router       /api/v1/projects/categories/{category_id} [delete]
 func (h *projectCategoryHandler) deleteProjectCategory(w http.ResponseWriter, r *http.Request) {
 	categoryID := httphelp.ParseParamInt16("category_id", r)
 

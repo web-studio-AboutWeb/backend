@@ -24,7 +24,8 @@ func (r *ProjectCategoryRepository) CreateProjectCategory(ctx context.Context, p
 
 	err := r.pool.QueryRow(ctx, `
 		INSERT INTO project_categories(name)
-		VALUES ($1)`, pc.Name).
+		VALUES ($1)
+		RETURNING id`, pc.Name).
 		Scan(&id)
 	if err != nil {
 		return 0, fmt.Errorf("inserting project category: %w", err)
