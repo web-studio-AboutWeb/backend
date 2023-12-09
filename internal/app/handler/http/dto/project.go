@@ -15,6 +15,7 @@ type (
 		EndedAt      *time.Time `json:"endedAt,omitempty"`
 		TeamID       *int32     `json:"teamID,omitempty"`
 		Technologies []string   `json:"technologies,omitempty"`
+		CategoryID   int        `json:"category_id"`
 	}
 
 	UpdateProjectRequest struct {
@@ -60,6 +61,7 @@ func (r *CreateProjectRequest) ToDomain() *domain.Project {
 		Technologies: r.Technologies,
 		StartedAt:    r.StartedAt,
 		EndedAt:      r.EndedAt,
+		CategoryID:   r.CategoryID,
 	}
 }
 
