@@ -10,19 +10,21 @@ import (
 
 type (
 	Project struct {
-		ID           int32     `json:"id"`
-		Title        string    `json:"title"`
-		Description  string    `json:"description"`
-		IsActive     bool      `json:"isActive"`
-		Technologies []string  `json:"technologies,omitempty"`
-		CreatedAt    time.Time `json:"createdAt"`
-		UpdatedAt    time.Time `json:"updatedAt"`
-		Link         string    `json:"link,omitempty"`
-		ImageId      string    `json:"-"`
-
-		TeamID    *int32     `json:"teamID,omitempty"`
-		StartedAt *time.Time `json:"startedAt,omitempty"`
-		EndedAt   *time.Time `json:"endedAt,omitempty"`
+		ID           int32      `json:"id"`
+		Title        string     `json:"title"`
+		Description  string     `json:"description"`
+		IsActive     bool       `json:"isActive"`
+		Technologies []string   `json:"technologies,omitempty"`
+		CreatedAt    time.Time  `json:"createdAt"`
+		UpdatedAt    time.Time  `json:"updatedAt"`
+		Link         string     `json:"link,omitempty"`
+		CategoryID   int        `json:"-"`
+		Category     string     `json:"category"`
+		ImageId      string     `json:"-"`
+		ImageContent []byte     `json:"-"`
+		TeamID       *int32     `json:"teamID,omitempty"`
+		StartedAt    *time.Time `json:"startedAt,omitempty"`
+		EndedAt      *time.Time `json:"endedAt,omitempty"`
 	}
 
 	ProjectParticipant struct {

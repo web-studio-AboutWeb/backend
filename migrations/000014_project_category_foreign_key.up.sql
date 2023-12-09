@@ -1,0 +1,1 @@
+ALTER TABLE projects ADD COLUMN category_id INT REFERENCES project_categories (id);

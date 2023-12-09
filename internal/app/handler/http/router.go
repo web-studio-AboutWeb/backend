@@ -77,6 +77,8 @@ func NewHandler(
 			r.Post(`/api/v1/projects`, ph.createProject)
 		})
 		r.Put(`/api/v1/projects/{project_id}`, ph.updateProject)
+		r.Post(`/api/v1/projects/{project_id}/image`, ph.setProjectImage)
+		r.Get(`/api/v1/projects/{project_id}/image`, ph.getProjectImage)
 		r.Get(`/api/v1/projects/{project_id}/participants`, ph.getParticipants)
 		r.Post(`/api/v1/projects/{project_id}/participants`, ph.addParticipant)
 		r.Get(`/api/v1/projects/{project_id}/participants/{user_id}`, ph.getParticipant)

@@ -1,8 +1,13 @@
 package http
 
 import (
+	"bytes"
 	"context"
+	"errors"
+	"fmt"
+	"io"
 	"net/http"
+	"path/filepath"
 
 	"web-studio-backend/internal/app/domain"
 	"web-studio-backend/internal/app/handler/http/dto"
@@ -21,6 +26,9 @@ type ProjectService interface {
 	AddParticipant(ctx context.Context, participant *domain.ProjectParticipant) (*domain.ProjectParticipant, error)
 	UpdateParticipant(ctx context.Context, participant *domain.ProjectParticipant) (*domain.ProjectParticipant, error)
 	RemoveParticipant(ctx context.Context, participantID, projectID int32) error
+
+	SetProjectImage(ctx context.Context, projectID int32, img []byte) error
+	GetProjectImage(ctx context.Context, projectID int32) (*domain.Project, error)
 }
 
 type projectHandler struct {
@@ -260,4 +268,71 @@ func (h *projectHandler) removeParticipant(w http.ResponseWriter, r *http.Reques
 	}
 
 	w.WriteHeader(http.StatusOK)
+}
+
+// setProjectImage godoc
+// @Summary      Set project image
+// @Description  Updated project image. Accepts `multipart/form-data`.
+// @Description
+// @Description  Note: if a project already has an image, it will be deleted automatically on success.
+// @Tags         Projects
+// @Accept       mpfd
+// @Param        project_id path int true "Project identifier."
+// @Param        file formData file true "Image file. MUST have one of the following mime types: [`image/jpeg`, `image/png`, `image/webp`]"
+// @Success      200
+// @Failure      400  {object}  Error
+// @Failure      404  {object}  Error
+// @Failure      500  {object}  Error
+// @Router       /api/v1/projects/{project_id}/image [post]
+func (h *projectHandler) setProjectImage(w http.ResponseWriter, r *http.Request) {
+	projectId := httphelp.ParseParamInt32("project_id", r)
+
+	file, _, err := r.FormFile("file")
+	if err != nil {
+		if errors.Is(err, http.ErrMissingFile) {
+			// TODO: custom http error
+			httphelp.SendError(fmt.Errorf("file is not presented"), w)
+			return
+		}
+		httphelp.SendError(fmt.Errorf("parsing form file: %w", err), w)
+		return
+	}
+	defer file.Close()
+
+	content, err := io.ReadAll(file)
+	if err != nil {
+		httphelp.SendError(fmt.Errorf("reading file: %w", err), w)
+		return
+	}
+
+	err = h.projectService.SetProjectImage(r.Context(), projectId, content)
+	if err != nil {
+		httphelp.SendError(fmt.Errorf("setting project image: %w", err), w)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
+// getProjectImage godoc
+// @Summary      Get project image content
+// @Description  Returns project image.
+// @Tags         Projects
+// @Produce      octet-stream
+// @Param        project_id path int true "Project identifier."
+// @Success      200
+// @Failure      404  {object}  Error
+// @Failure      500  {object}  Error
+// @Router       /api/v1/projects/{project_id}/image [get]
+func (h *projectHandler) getProjectImage(w http.ResponseWriter, r *http.Request) {
+	tid := httphelp.ParseParamInt32("project_id", r)
+
+	response, err := h.projectService.GetProjectImage(r.Context(), tid)
+	if err != nil {
+		httphelp.SendError(fmt.Errorf("getting project image: %w", err), w)
+		return
+	}
+
+	fileName := fmt.Sprintf("%s.%s", response.Title, filepath.Ext(response.ImageId))
+	http.ServeContent(w, r, fileName, response.UpdatedAt, bytes.NewReader(response.ImageContent))
 }

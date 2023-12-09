@@ -24,10 +24,11 @@ func (r *ProjectRepository) GetProject(ctx context.Context, id int32) (*domain.P
 
 	err := r.pool.QueryRow(ctx, `
 		SELECT 
-		    id, title, description, image_id, created_at, updated_at, started_at, ended_at,
-		    link, isactive, technologies, team_id
-        FROM projects
-        WHERE id = $1`, id).Scan(
+		   p.id, title, description, image_id, created_at, updated_at, started_at, ended_at,
+		   link, isactive, technologies, team_id, pc.name
+       	FROM projects p
+		JOIN project_categories pc ON p.category_id = pc.id
+       	WHERE p.id = $1`, id).Scan(
 		&project.ID,
 		&project.Title,
 		&project.Description,
@@ -40,7 +41,9 @@ func (r *ProjectRepository) GetProject(ctx context.Context, id int32) (*domain.P
 		&project.IsActive,
 		&project.Technologies,
 		&project.TeamID,
+		&project.Category,
 	)
+
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, repository.ErrObjectNotFound
@@ -54,9 +57,10 @@ func (r *ProjectRepository) GetProject(ctx context.Context, id int32) (*domain.P
 func (r *ProjectRepository) GetProjects(ctx context.Context) ([]domain.Project, error) {
 	rows, err := r.pool.Query(ctx, `
 		SELECT 
-		    id, title, description, image_id, created_at, updated_at, started_at, ended_at,
-		    link, isactive, technologies, team_id
-        FROM projects
+		    p.id, title, description, image_id, created_at, updated_at, started_at, ended_at,
+		    link, isactive, technologies, team_id, pc.name
+        FROM projects p
+		JOIN project_categories pc ON p.category_id = pc.id
         WHERE isactive
         ORDER BY created_at`)
 	if err != nil {
@@ -81,6 +85,7 @@ func (r *ProjectRepository) GetProjects(ctx context.Context) ([]domain.Project, 
 			&project.IsActive,
 			&project.Technologies,
 			&project.TeamID,
+			&project.Category,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("scanning project: %w", err)
@@ -96,8 +101,8 @@ func (r *ProjectRepository) CreateProject(ctx context.Context, project *domain.P
 	var projectId int32
 
 	err := r.pool.QueryRow(ctx, `
-		INSERT INTO projects(title, description, team_id, isactive, link, technologies, image_id, started_at, ended_at)
-		VALUES($1, $2, $3, TRUE, $4, $5, $6, $7, $8)
+		INSERT INTO projects(title, description, team_id, isactive, link, technologies, image_id, started_at, ended_at, category_id)
+		VALUES($1, $2, $3, TRUE, $4, $5, $6, $7, $8, $9)
 		RETURNING id`,
 		project.Title,
 		project.Description,
@@ -107,6 +112,7 @@ func (r *ProjectRepository) CreateProject(ctx context.Context, project *domain.P
 		project.ImageId,
 		project.StartedAt,
 		project.EndedAt,
+		project.CategoryID,
 	).Scan(&projectId)
 	if err != nil {
 		return 0, fmt.Errorf("scanning project id: %w", err)
@@ -118,7 +124,7 @@ func (r *ProjectRepository) CreateProject(ctx context.Context, project *domain.P
 func (r *ProjectRepository) UpdateProject(ctx context.Context, project *domain.Project) error {
 	_, err := r.pool.Exec(ctx, `
 		UPDATE projects
-		SET title=$2, description=$3, link=$4, technologies=$5, started_at=$6, ended_at=$7, updated_at=now()
+		SET title=$2, description=$3, link=$4, technologies=$5, started_at=$6, ended_at=$7, updated_at=now(), category_id=$8
 		WHERE id = $1`,
 		project.ID,
 		project.Title,
@@ -127,6 +133,7 @@ func (r *ProjectRepository) UpdateProject(ctx context.Context, project *domain.P
 		project.Technologies,
 		project.StartedAt,
 		project.EndedAt,
+		project.CategoryID,
 	)
 	if err != nil {
 		return fmt.Errorf("updating project: %w", err)
@@ -251,6 +258,20 @@ func (r *ProjectRepository) RemoveParticipant(ctx context.Context, participantID
 		WHERE user_id=$1 AND project_id=$2`, participantID, projectID)
 	if err != nil {
 		return fmt.Errorf("deleting participant: %w", err)
+	}
+
+	return nil
+}
+
+func (r *ProjectRepository) SetProjectImageID(ctx context.Context, projectID int32, imageID string) error {
+	if _, err := r.pool.Exec(ctx, `
+	UPDATE projects
+	SET image_id=$2, updated_at=now()
+	WHERE id=$1`,
+		projectID,
+		imageID,
+	); err != nil {
+		return fmt.Errorf("updating project: %w", err)
 	}
 
 	return nil

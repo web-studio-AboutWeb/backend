@@ -4,10 +4,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
+	"path/filepath"
 
 	"web-studio-backend/internal/app/domain"
 	"web-studio-backend/internal/app/domain/apperr"
 	"web-studio-backend/internal/app/infrastructure/repository"
+
+	"github.com/gabriel-vasile/mimetype"
+	"github.com/google/uuid"
 )
 
 //go:generate mockgen -source=project.go -destination=./mocks/project.go -package=mocks
@@ -23,16 +28,19 @@ type ProjectRepository interface {
 	AddParticipant(ctx context.Context, participant *domain.ProjectParticipant) error
 	UpdateParticipant(ctx context.Context, participant *domain.ProjectParticipant) error
 	RemoveParticipant(ctx context.Context, participantID, projectID int32) error
+	SetProjectImageID(ctx context.Context, projectID int32, imageID string) error
 }
 
 type ProjectService struct {
+	filesDir    string
 	projectRepo ProjectRepository
 	userRepo    UserRepository
 	teamRepo    TeamRepository
+	fileRepo    FileRepository
 }
 
-func NewProjectService(repo ProjectRepository, userRepo UserRepository, teamRepo TeamRepository) *ProjectService {
-	return &ProjectService{repo, userRepo, teamRepo}
+func NewProjectService(repo ProjectRepository, userRepo UserRepository, teamRepo TeamRepository, fileRepo FileRepository) *ProjectService {
+	return &ProjectService{"projects", repo, userRepo, teamRepo, fileRepo}
 }
 
 func (s *ProjectService) GetProject(ctx context.Context, id int32) (*domain.Project, error) {
@@ -232,4 +240,73 @@ func (s *ProjectService) RemoveParticipant(ctx context.Context, participantID, p
 	}
 
 	return nil
+}
+
+func (s *ProjectService) SetProjectImage(ctx context.Context, projectID int32, img []byte) error {
+	if len(img) > 5<<20 {
+		return apperr.NewInvalidRequest("Image is too big.", "file")
+	}
+
+	mt := mimetype.Detect(img)
+	if !mt.Is("image/jpeg") &&
+		!mt.Is("image/png") &&
+		!mt.Is("image/webp") {
+		return apperr.NewInvalidRequest("Invalid image mime type.", "file")
+	}
+
+	fileID := uuid.New().String()
+	fileName := fileID + mt.Extension()
+
+	project, err := s.projectRepo.GetProject(ctx, projectID)
+	if err != nil {
+		if errors.Is(err, repository.ErrObjectNotFound) {
+			return apperr.NewNotFound("project_id")
+		}
+		return fmt.Errorf("getting project %d: %w", projectID, err)
+	}
+
+	err = s.projectRepo.SetProjectImageID(ctx, projectID, fileName)
+	if err != nil {
+		return fmt.Errorf("setting project %d image: %w", projectID, err)
+	}
+
+	err = s.fileRepo.Save(ctx, img, filepath.Join(s.filesDir, fileName))
+	if err != nil {
+		return fmt.Errorf("saving project image: %w", err)
+	}
+
+	if project.ImageId != "" {
+		err = s.fileRepo.Delete(ctx, filepath.Join(s.filesDir, project.ImageId))
+		if err != nil {
+			slog.Error("Deleting old project image", slog.String("error", err.Error()))
+		}
+	}
+
+	return nil
+}
+
+func (s *ProjectService) GetProjectImage(ctx context.Context, projectID int32) (*domain.Project, error) {
+	project, err := s.projectRepo.GetProject(ctx, projectID)
+	if err != nil {
+		if errors.Is(err, repository.ErrObjectNotFound) {
+			return nil, apperr.NewNotFound("project_id")
+		}
+		return nil, fmt.Errorf("getting project %d: %w", projectID, err)
+	}
+
+	if project.ImageId == "" {
+		return nil, apperr.NewNotFound("image_id")
+	}
+
+	data, err := s.fileRepo.Read(ctx, filepath.Join(s.filesDir, project.ImageId))
+	if err != nil {
+		if errors.Is(err, repository.ErrObjectNotFound) {
+			return nil, apperr.NewNotFound("image_id")
+		}
+		return nil, fmt.Errorf("reading team image: %w", err)
+	}
+
+	project.ImageContent = data
+
+	return project, nil
 }

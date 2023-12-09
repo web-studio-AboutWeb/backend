@@ -31,6 +31,8 @@
 
     Мы используем PostgreSQL, поэтому для работы приложения необходима запущенная бд.
 
+    (docker run --name ws -e POSTGRESQL_USERNAME=webstudio -e POSTGRESQL_PASSWORD=webstudio -e POSTGRESQL_DATABASE=ws -p 5432:5432 bitnami/postgresql:latest)
+
 
 4. (Опционально) Make для использования скриптов из `Makefile`.
 
