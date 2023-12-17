@@ -8,6 +8,8 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/httprate"
 	"github.com/rs/cors"
+
+	"web-studio-backend/internal/pkg/config"
 )
 
 func NewHandler(
@@ -33,7 +35,7 @@ func NewHandler(
 	r.Use(httprate.LimitByIP(69, time.Minute))
 	r.Use(middleware.Recoverer)
 	r.Use(cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:*", "http://127.0.0.1:*"},
+		AllowedOrigins:   config.Get().Http.AllowedOrigins,
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token", "X-Session-Id"},
 		ExposedHeaders:   []string{"Link"},

@@ -15,11 +15,12 @@ type Config struct {
 		Env string `yaml:"env" env-default:"dev"`
 	} `yaml:"app" env-required:"true"`
 	Http struct {
-		HttpsEnabled bool   `yaml:"https_enabled" env-default:"false"`
-		Port         uint16 `yaml:"port" env-default:"8080"`
-		Host         string `yaml:"host"`
-		KeyFilePath  string `yaml:"key_file_path"`
-		CertFilePath string `yaml:"cert_file_path"`
+		HttpsEnabled   bool     `yaml:"https_enabled" env-default:"false"`
+		Port           uint16   `yaml:"port" env-default:"8080"`
+		Host           string   `yaml:"host"`
+		KeyFilePath    string   `yaml:"key_file_path"`
+		CertFilePath   string   `yaml:"cert_file_path"`
+		AllowedOrigins []string `yaml:"allowed_origins" env-default:"http://localhost:*,http://127.0.0.1:*"`
 	} `yaml:"http"`
 	Database struct {
 		User     string `yaml:"user"`
