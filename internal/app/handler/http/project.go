@@ -20,6 +20,7 @@ type ProjectService interface {
 	GetProjects(ctx context.Context) ([]domain.Project, error)
 	CreateProject(ctx context.Context, project *domain.Project) (*domain.Project, error)
 	UpdateProject(ctx context.Context, project *domain.Project) (*domain.Project, error)
+	DeleteProject(ctx context.Context, projectID int32) error
 
 	GetParticipants(ctx context.Context, projectID int32) ([]domain.ProjectParticipant, error)
 	GetParticipant(ctx context.Context, participantID, projectID int32) (*domain.ProjectParticipant, error)
@@ -135,6 +136,28 @@ func (h *projectHandler) updateProject(w http.ResponseWriter, r *http.Request) {
 	}
 
 	httphelp.SendJSON(http.StatusOK, response, w)
+}
+
+// removeDocumentFromProject godoc
+// @Summary      Delete project
+// @Description  Deletes project.
+// @Tags         Projects
+// @Param        project_id path int true "Project identifier."
+// @Success      200
+// @Failure      400  {object}  Error
+// @Failure      404  {object}  Error
+// @Failure      500  {object}  Error
+// @Router       /api/v1/projects/{project_id} [delete]
+func (h *projectHandler) deleteProject(w http.ResponseWriter, r *http.Request) {
+	pid := httphelp.ParseParamInt32("project_id", r)
+
+	err := h.projectService.DeleteProject(r.Context(), pid)
+	if err != nil {
+		httphelp.SendError(fmt.Errorf("deleting project: %w", err), w)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
 }
 
 // getParticipants godoc

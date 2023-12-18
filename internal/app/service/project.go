@@ -21,6 +21,7 @@ type ProjectRepository interface {
 	GetProjects(ctx context.Context) ([]domain.Project, error)
 	CreateProject(ctx context.Context, project *domain.Project) (int32, error)
 	UpdateProject(ctx context.Context, project *domain.Project) error
+	DeleteProject(ctx context.Context, id int32) error
 	DisableProject(ctx context.Context, id int32) error
 
 	GetParticipants(ctx context.Context, projectID int32) ([]domain.ProjectParticipant, error)
@@ -126,6 +127,23 @@ func (s *ProjectService) UpdateProject(ctx context.Context, project *domain.Proj
 	}
 
 	return updatedProject, nil
+}
+
+func (s *ProjectService) DeleteProject(ctx context.Context, id int32) error {
+	_, err := s.projectRepo.GetProject(ctx, id)
+	if err != nil {
+		if errors.Is(err, repository.ErrObjectNotFound) {
+			return apperr.NewNotFound("project_id")
+		}
+		return fmt.Errorf("getting project %d: %w", id, err)
+	}
+
+	err = s.projectRepo.DeleteProject(ctx, id)
+	if err != nil {
+		return fmt.Errorf("deleting project %d: %w", id, err)
+	}
+
+	return nil
 }
 
 func (s *ProjectService) GetParticipants(ctx context.Context, projectID int32) ([]domain.ProjectParticipant, error) {

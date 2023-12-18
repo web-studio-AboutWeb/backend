@@ -142,10 +142,19 @@ func (r *ProjectRepository) UpdateProject(ctx context.Context, project *domain.P
 	return nil
 }
 
+func (r *ProjectRepository) DeleteProject(ctx context.Context, id int32) error {
+	_, err := r.pool.Exec(ctx, `DELETE FROM projects WHERE id = $1`, id)
+	if err != nil {
+		return fmt.Errorf("deleting project: %w", err)
+	}
+
+	return nil
+}
+
 func (r *ProjectRepository) DisableProject(ctx context.Context, id int32) error {
 	_, err := r.pool.Exec(ctx, `UPDATE projects SET isactive=FALSE WHERE id = $1`, id)
 	if err != nil {
-		return fmt.Errorf("deleting project: %w", err)
+		return fmt.Errorf("disabling project: %w", err)
 	}
 
 	return nil
